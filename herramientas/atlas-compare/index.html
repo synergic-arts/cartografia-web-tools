@@ -5,7 +5,7 @@
   <meta name="description" content="Comparador de cartografía histórica WMS del SCUAM y la UAM.">
   <title>Atlas Compare · Cartografía histórica</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
-  <link rel="stylesheet" href="styles.css?v=57062a4">
+  <link rel="stylesheet" href="styles.css?v=orientation-1">
 </head>
 <body>
   <header><a href="../">← Catálogo</a><div><strong>Atlas Compare</strong><span>SCUAM · cartografía histórica</span></div><span class="privacy">Capas públicas WMS</span></header>
@@ -15,6 +15,14 @@
       <div class="grid"><label>Capa A<select id="layerA"></select></label><label>Opacidad A<input id="opacityA" type="range" min="0" max="1" step=".05" value=".75"></label><label>Capa B<select id="layerB"></select></label><label>Opacidad B<input id="opacityB" type="range" min="0" max="1" step=".05" value=".65"></label></div>
       <div class="buttons"><button id="loadBtn">Actualizar capas</button><button id="clearBtn" class="secondary">Quitar capas históricas</button><a href="https://guiadigital.uam.es/SCUAM/wms.php" target="_blank" rel="noreferrer">Documentación SCUAM ↗</a></div>
       <p id="status" class="status">Selecciona capas y pulsa «Actualizar capas».</p>
+      <div class="orientation-box">
+        <div class="orientation-title"><div><p class="eyebrow">Orientación</p><h2>Gira o voltea una capa histórica</h2></div><span>El mapa base permanece norte-arriba.</span></div>
+        <label class="target-label">Capa a orientar<select id="orientationTarget"><option value="A">Capa A</option><option value="B">Capa B</option></select></label>
+        <div class="orientation-layout">
+          <div class="orientation-actions"><div class="quick-turn"><button id="turnLeft" type="button">↶ −90°</button><button id="resetOrientation" type="button">0°</button><button id="turnRight" type="button">↷ +90°</button></div><div class="flip-actions"><button id="flipX" type="button">Voltear horizontal</button><button id="flipY" type="button">Voltear vertical</button></div><label>Ángulo exacto (°)<input id="angleInput" type="number" min="-180" max="180" step="0.1" value="0"></label><p id="orientationStatus" class="orientation-status" role="status">Capa A · 0° · sin volteo</p></div>
+          <div id="rotationDial" class="rotation-dial" role="slider" tabindex="0" aria-label="Ángulo de rotación de la capa histórica" aria-valuemin="-180" aria-valuemax="180" aria-valuenow="0" aria-valuetext="0 grados"><span class="dial-needle" id="dialNeedle"></span><span class="dial-center">↻</span><small>arrastra</small></div>
+        </div>
+      </div>
     </section>
     <section class="map-panel panel" id="mapPanel" aria-label="Mapa comparativo">
       <div class="map-toolbar"><strong>Mapa comparativo</strong><button id="fullscreenBtn" class="map-action" type="button" aria-pressed="false">Pantalla completa</button></div>
@@ -24,6 +32,6 @@
     <section class="panel note"><b>Uso y atribución:</b> las capas históricas proceden de los servicios WMS públicos del <a href="https://www.uam.es/uam/vida-universitaria/bibliotecas/biblioteca-humanidades/cartoteca" target="_blank" rel="noreferrer">Servicio de Cartografía y Cartoteca Rafael Mas de la UAM</a>. Coello corresponde al Atlas de España (1847–1876); Tomás López al Atlas Geográfico (1765–1816). La herramienta no descarga ni almacena las imágenes.</section>
   </main>
   <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
-  <script src="app.js?v=57062a4"></script>
+  <script src="app.js?v=orientation-1"></script>
 </body>
 </html>
