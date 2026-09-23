@@ -10,7 +10,9 @@ Colección de herramientas web abiertas para cartografía, rutas y datos geoespa
 - [Spectral Lab](herramientas/spectral-lab/): cálculo local de NDVI con bandas RED y NIR.
 @@
 - [GeoRef Lite](herramientas/georef-lite/): puntos de control, transformación afín y exportación para mapas escaneados.
+@@
 - [Coord Converter](herramientas/coord-converter/): conversión local entre WGS84 decimal, DMS y UTM.
+- [Raster Color Lab](herramientas/raster-color-lab/): rampas de color, rango y gamma para imágenes ráster locales.
 
 ## RutaLite
 

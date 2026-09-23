@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Colorizador local de imágenes y rásteres con rampas cartográficas.">
+  <title>Raster Color Lab · rampas locales</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main>
+    <a class="back" href="../">← Catálogo</a>
+    <p class="eyebrow">07 · TELEDETECCIÓN · RÁSTER · LOCAL</p>
+    <h1>Da una lectura cartográfica a una imagen.</h1>
+    <p class="lede">Carga una imagen de una banda, un modelo de elevación renderizado o una captura ráster y aplica rampas de color, rango, gamma e inversión sin subirla a un servidor.</p>
+    <section class="workspace">
+      <aside class="panel controls">
+        <label class="file-label">Imagen local<input id="imageInput" type="file" accept="image/*"></label>
+        <p class="hint">PNG, JPEG, WebP o una captura exportada desde tu SIG. El navegador trabaja sobre los píxeles visibles de la imagen.</p>
+        <div class="fields">
+          <label>Canal de lectura<select id="channel"><option value="luma">Luminancia</option><option value="red">Rojo</option><option value="green">Verde</option><option value="blue">Azul</option></select></label>
+          <label>Rampa<select id="ramp"><option value="terrain">Terreno</option><option value="viridis">Viridis</option><option value="inferno">Inferno</option><option value="blueRed">Azul → rojo</option><option value="gray">Grises</option></select></label>
+          <label>Mínimo de entrada <output id="minOut">0</output><input id="min" type="range" min="0" max="255" value="0"></label>
+          <label>Máximo de entrada <output id="maxOut">255</output><input id="max" type="range" min="0" max="255" value="255"></label>
+          <label>Gamma <output id="gammaOut">1.00</output><input id="gamma" type="range" min="0.25" max="3" step="0.05" value="1"></label>
+          <label class="check"><input id="invert" type="checkbox"> Invertir la rampa</label>
+        </div>
+        <div class="actions"><button class="primary" id="applyBtn" disabled>Aplicar estilo</button><button id="resetBtn">Restablecer</button><button id="downloadBtn" disabled>Descargar PNG</button></div>
+        <p class="status" id="status" role="status">Carga una imagen para empezar.</p>
+        <div class="pixel"><span id="pixelLabel">Píxel</span><strong id="pixelValue">—</strong></div>
+      </aside>
+      <section class="panel preview-panel">
+        <div class="preview-head"><h2>Vista previa</h2><span id="dimensions">—</span></div>
+        <div class="canvas-wrap"><canvas id="canvas"></canvas><p id="empty">La imagen aparecerá aquí.</p></div>
+        <div class="legend"><span>Valores bajos</span><i id="legendBar"></i><span>Valores altos</span></div>
+      </section>
+    </section>
+    <p class="footnote">La rampa se aplica a los valores del canal seleccionado y no recupera información radiométrica ausente. Para análisis cuantitativo usa el dato original, conserva metadatos y documenta la fuente. Referencia de controles visuales: <a href="https://cartotecnia.com/teledeteccion/" rel="noreferrer">Cartotecnia · teledetección</a>.</p>
+  </main>
+  <script src="app.js"></script>
+</body>
+</html>
