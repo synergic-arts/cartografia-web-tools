@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#0b1220">
+  <meta name="description" content="Convierte GPX en rutas ligeras y síguelas con navegación GPS. Procesamiento 100 % local en el navegador.">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+  <link rel="stylesheet" href="styles.css">
+  <title>RutaLite · GPX local y navegación</title>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true">↗</div>
+      <div>
+        <strong>RutaLite</strong>
+        <span>GPX local · ligero · navegable</span>
+      </div>
+    </div>
+    <div class="privacy-pill" title="El archivo y el GPS se procesan en este dispositivo">
+      <span class="dot"></span> 100 % en tu móvil
+    </div>
+  </header>
+
+  <main class="app-shell">
+    <section class="map-card" aria-label="Mapa de la ruta">
+      <div id="map" class="map" role="application" aria-label="Mapa interactivo"></div>
+      <div id="mapFallback" class="map-fallback" hidden>
+        <strong>Mapa no disponible</strong>
+        <span>La conversión de GPX sigue funcionando. Conecta a Internet para cargar el mapa.</span>
+      </div>
+      <div class="map-toolbar">
+        <button id="fitRouteBtn" type="button" class="icon-btn" disabled title="Ver ruta completa" aria-label="Ver ruta completa">⌗</button>
+        <button id="centerGpsBtn" type="button" class="icon-btn" disabled title="Centrar en mi posición" aria-label="Centrar en mi posición">◎</button>
+        <button id="toggleBaseBtn" type="button" class="icon-btn" title="Activar o desactivar mapa base" aria-label="Activar o desactivar mapa base">◫</button>
+      </div>
+      <div id="navHud" class="nav-hud" hidden>
+        <div class="nav-arrow-wrap" aria-hidden="true"><div id="navArrow" class="nav-arrow">↑</div></div>
+        <div class="nav-main">
+          <strong id="navInstruction">Sigue la ruta</strong>
+          <span id="navSub">Esperando posición GPS…</span>
+        </div>
+        <div class="nav-distance"><strong id="nextDistance">—</strong><span>próx.</span></div>
+      </div>
+    </section>
+
+    <section class="workspace">
+      <div class="panel import-panel">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">1 · Cargar</p>
+            <h1>Convierte y sigue cualquier GPX</h1>
+          </div>
+          <span id="fileState" class="status-badge">Sin ruta</span>
+        </div>
+
+        <label id="dropZone" class="drop-zone" for="fileInput">
+          <input id="fileInput" type="file" accept=".gpx,.json,.route.json,application/gpx+xml,application/json" hidden>
+          <span class="drop-icon">＋</span>
+          <span><strong>Abrir GPX o Ruta Compacta</strong><small>Toca aquí o arrastra un archivo. Nunca se sube al servidor.</small></span>
+        </label>
+
+        <div id="routeSummary" class="route-summary" hidden>
+          <div class="route-title-row">
+            <div>
+              <span class="label">Ruta</span>
+              <strong id="routeName">—</strong>
+            </div>
+            <button id="clearBtn" type="button" class="link-btn">Quitar</button>
+          </div>
+          <div class="stats-grid">
+            <div><span>Distancia</span><strong id="statDistance">—</strong></div>
+            <div><span>Desnivel +</span><strong id="statAscent">—</strong></div>
+            <div><span>Puntos</span><strong id="statPoints">—</strong></div>
+            <div><span>Tamaño</span><strong id="statSize">—</strong></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel" id="optimizePanel">
+        <div class="section-heading compact">
+          <div>
+            <p class="eyebrow">2 · Aligerar</p>
+            <h2>Simplificación inteligente</h2>
+          </div>
+          <span id="reductionBadge" class="status-badge muted">—</span>
+        </div>
+        <div class="control-row">
+          <div>
+            <label for="toleranceRange">Tolerancia</label>
+            <small>Reduce puntos manteniendo la forma de la ruta.</small>
+          </div>
+          <output id="toleranceOut" for="toleranceRange">8 m</output>
+        </div>
+        <input id="toleranceRange" class="range" type="range" min="0" max="100" value="8" step="1" disabled>
+        <div class="preset-row" role="group" aria-label="Valores recomendados">
+          <button type="button" data-tolerance="2" disabled>Máxima precisión</button>
+          <button type="button" data-tolerance="8" disabled>Equilibrado</button>
+          <button type="button" data-tolerance="20" disabled>Muy ligero</button>
+        </div>
+        <div class="switch-grid">
+          <label class="switch"><input id="keepElevation" type="checkbox" checked disabled><span></span><em>Conservar altitud</em></label>
+          <label class="switch"><input id="keepTime" type="checkbox" disabled><span></span><em>Conservar tiempos</em></label>
+          <label class="switch"><input id="keepWaypoints" type="checkbox" checked disabled><span></span><em>Conservar waypoints</em></label>
+        </div>
+      </div>
+
+      <div class="panel" id="exportPanel">
+        <div class="section-heading compact">
+          <div>
+            <p class="eyebrow">3 · Exportar</p>
+            <h2>Elige el formato</h2>
+          </div>
+        </div>
+        <div class="export-grid">
+          <button id="exportCompactBtn" type="button" class="export-card primary" disabled>
+            <span class="format">RUTA</span>
+            <strong>Ruta Compacta</strong>
+            <small>La más ligera para RutaLite. Polyline6 + metadatos mínimos.</small>
+            <span id="compactSize" class="size">—</span>
+          </button>
+          <button id="exportGpxBtn" type="button" class="export-card" disabled>
+            <span class="format">GPX</span>
+            <strong>GPX Lite</strong>
+            <small>Compatible con la mayoría de apps GPS y móviles.</small>
+            <span id="gpxSize" class="size">—</span>
+          </button>
+          <button id="exportGeoBtn" type="button" class="export-card" disabled>
+            <span class="format">GEOJSON</span>
+            <strong>GeoJSON</strong>
+            <small>Estándar abierto para GIS, mapas y desarrollos web.</small>
+            <span id="geoSize" class="size">—</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="panel nav-panel" id="navigationPanel">
+        <div class="section-heading compact">
+          <div>
+            <p class="eyebrow">4 · Navegar</p>
+            <h2>Seguir la ruta con GPS</h2>
+          </div>
+          <span id="gpsBadge" class="status-badge muted">GPS parado</span>
+        </div>
+
+        <div class="nav-settings">
+          <label>
+            <span>Actividad / velocidad estimada</span>
+            <select id="activitySelect" disabled>
+              <option value="1.25">A pie · 4,5 km/h</option>
+              <option value="3.89">Bicicleta · 14 km/h</option>
+              <option value="8.33">BTT / e-bike · 30 km/h</option>
+              <option value="13.89">Vehículo · 50 km/h</option>
+            </select>
+          </label>
+          <label>
+            <span>Aviso fuera de ruta</span>
+            <select id="offRouteSelect" disabled>
+              <option value="20">20 m</option>
+              <option value="35" selected>35 m</option>
+              <option value="50">50 m</option>
+              <option value="100">100 m</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="switch-grid nav-switches">
+          <label class="switch"><input id="voiceToggle" type="checkbox" checked disabled><span></span><em>Avisos por voz</em></label>
+          <label class="switch"><input id="autoCenterToggle" type="checkbox" checked disabled><span></span><em>Seguir mi posición</em></label>
+        </div>
+
+        <button id="startNavBtn" type="button" class="big-action" disabled>▶ Iniciar navegación</button>
+
+        <div id="liveStats" class="live-stats" hidden aria-live="polite">
+          <div><span>Restante</span><strong id="liveRemaining">—</strong></div>
+          <div><span>Desvío</span><strong id="liveOffRoute">—</strong></div>
+          <div><span>ETA</span><strong id="liveEta">—</strong></div>
+          <div><span>Precisión GPS</span><strong id="liveAccuracy">—</strong></div>
+        </div>
+        <p class="fineprint">La navegación se calcula sobre el track del archivo. No recalcula carreteras ni senderos y no sustituye a señalización, cartografía oficial o indicaciones de seguridad.</p>
+      </div>
+
+      <div class="panel privacy-panel">
+        <strong>Privacidad real por diseño</strong>
+        <p>El GPX, la ruta convertida y tu posición GPS se procesan únicamente en este navegador. Solo el mapa base puede solicitar teselas al proveedor cartográfico. Puedes apagarlo con el botón ◫ y seguir usando la ruta sin enviar coordenadas del archivo a un backend propio.</p>
+      </div>
+    </section>
+  </main>
+
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script src="app.js"></script>
+</body>
+</html>

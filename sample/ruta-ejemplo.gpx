@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gpx version="1.1" creator="RutaLite sample" xmlns="http://www.topografix.com/GPX/1/1">
+  <metadata><name>Ruta de ejemplo</name></metadata>
+  <wpt lat="40.41680" lon="-3.70380"><name>Inicio</name></wpt>
+  <trk>
+    <name>Ruta de ejemplo</name>
+    <trkseg>
+      <trkpt lat="40.41680" lon="-3.70380"><ele>650.0</ele></trkpt>
+      <trkpt lat="40.41720" lon="-3.70295"><ele>651.0</ele></trkpt>
+      <trkpt lat="40.41785" lon="-3.70210"><ele>652.0</ele></trkpt>
+      <trkpt lat="40.41860" lon="-3.70195"><ele>652.5</ele></trkpt>
+      <trkpt lat="40.41920" lon="-3.70265"><ele>653.0</ele></trkpt>
+      <trkpt lat="40.41965" lon="-3.70355"><ele>654.0</ele></trkpt>
+      <trkpt lat="40.41910" lon="-3.70445"><ele>653.0</ele></trkpt>
+      <trkpt lat="40.41825" lon="-3.70490"><ele>652.0</ele></trkpt>
+      <trkpt lat="40.41745" lon="-3.70455"><ele>651.0</ele></trkpt>
+      <trkpt lat="40.41680" lon="-3.70380"><ele>650.0</ele></trkpt>
+    </trkseg>
+  </trk>
+</gpx>

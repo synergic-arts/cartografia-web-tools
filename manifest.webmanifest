@@ -1,0 +1,15 @@
+{
+  "name": "RutaLite · GPX local y navegación",
+  "short_name": "RutaLite",
+  "description": "Convierte GPX en rutas ligeras y síguelas con GPS, sin subir tus datos a un servidor.",
+  "lang": "es",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f3f5f8",
+  "theme_color": "#0b1220",
+  "icons": [
+    {"src":"icons/icon-192.png","sizes":"192x192","type":"image/png","purpose":"any maskable"},
+    {"src":"icons/icon-512.png","sizes":"512x512","type":"image/png","purpose":"any maskable"}
+  ]
+}
