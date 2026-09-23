@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Asistente cartográfico local para analizar GeoJSON con heurísticas o WebLLM en el navegador.">
+  <title>Carto Local AI · asistente cartográfico</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header><a href="../">← Catálogo</a><div><strong>Carto Local AI</strong><span>GeoJSON · WebGPU · privado</span></div><span class="privacy">Sin backend propio</span></header>
+  <main>
+    <section class="hero">
+      <p class="eyebrow">09 · Asistencia cartográfica local</p>
+      <h1>Interpreta una capa sin sacar sus datos del navegador.</h1>
+      <p>Analiza un GeoJSON, localiza sus entidades y pide un resumen, un control de calidad o una propuesta de trabajo. El modo rápido funciona siempre; WebLLM añade un modelo local opcional cuando hay WebGPU.</p>
+    </section>
+
+    <section class="workspace">
+      <aside class="panel controls">
+        <div class="section-title"><div><p class="eyebrow">Motor opcional</p><h2>IA local en el navegador</h2></div><span id="runtimeBadge" class="badge">Comprobando…</span></div>
+        <p class="muted">El modelo no se descarga hasta que lo pidas. La primera carga puede ser grande; después el navegador conserva la caché local.</p>
+        <label class="field"><span>Modelo WebLLM</span><select id="modelSelect"><option value="Llama-3.2-1B-Instruct-q4f16_1-MLC">Llama 3.2 1B · cuantizado</option></select></label>
+        <div class="button-row"><button id="prepareAiBtn" class="primary" type="button">Preparar IA local</button><button id="stopAiBtn" type="button" disabled>Descargar de memoria</button></div>
+        <progress id="modelProgress" max="1" value="0" hidden></progress>
+        <p id="engineStatus" class="status" role="status">Puedes trabajar ahora con el análisis rápido.</p>
+
+        <div class="divider"></div>
+        <p class="eyebrow">Datos de trabajo</p>
+        <label class="file-drop" for="fileInput"><input id="fileInput" type="file" accept=".geojson,.json,application/geo+json,application/json" hidden><b>＋ Abrir GeoJSON</b><small>Se procesa en este dispositivo; no se sube el archivo.</small></label>
+        <div class="button-row"><button id="exampleBtn" type="button">Cargar ejemplo</button><button id="clearBtn" type="button">Limpiar</button></div>
+        <label class="field"><span>Pegar GeoJSON</span><textarea id="geojsonInput" rows="7" spellcheck="false" placeholder='{"type":"FeatureCollection","features":[]}'></textarea></label>
+        <button id="loadTextBtn" class="secondary" type="button">Analizar texto</button>
+        <p id="dataStatus" class="status" role="status">Aún no hay una capa cargada.</p>
+
+        <div class="divider"></div>
+        <label class="field"><span>Qué quieres obtener</span><select id="taskSelect"><option value="summary">Resumen territorial</option><option value="quality">Control de calidad</option><option value="sampling">Propuesta de muestreo</option><option value="historical">Lectura para estudio histórico</option><option value="metadata">Metadatos y próximos pasos</option></select></label>
+        <button id="askBtn" class="primary wide" type="button" disabled>Generar diagnóstico</button>
+      </aside>
+
+      <section class="panel map-panel" aria-label="Mapa de la capa">
+        <div class="map-head"><div><p class="eyebrow">Mapa de trabajo</p><h2>Explora y localiza</h2></div><div id="placeSearch" class="cartografia-place-search" role="search" aria-label="Buscar un lugar"><label for="placeQuery">Buscar lugar</label><input id="placeQuery" type="search" placeholder="Buscar lugar…" autocomplete="off"><button id="placeSearchButton" type="button">Buscar</button><div id="placeResults" class="cartografia-place-results" role="listbox" hidden></div><p id="placeStatus" class="cartografia-place-status" role="status">Busca un topónimo para centrar el mapa.</p></div></div>
+        <div id="map" aria-label="Mapa GeoJSON"></div>
+        <div class="map-footer"><span id="mapStatus">Mapa base listo.</span><span>© OpenStreetMap contributors</span></div>
+      </section>
+    </section>
+
+    <section class="panel report-panel">
+      <div class="section-title"><div><p class="eyebrow">Resultado</p><h2>Diagnóstico cartográfico</h2></div><span id="answerMode" class="badge muted-badge">Modo rápido</span></div>
+      <div id="contextCards" class="context-cards" aria-live="polite"><div class="empty-card">Carga una capa para ver sus métricas y comenzar.</div></div>
+      <div id="answerOutput" class="answer-output" role="status" aria-live="polite">El informe aparecerá aquí. El modo rápido es determinista y no necesita descargar modelos.</div>
+      <div class="button-row report-actions"><button id="copyBtn" type="button" disabled>Copiar informe</button><button id="downloadBtn" type="button" disabled>Descargar Markdown</button></div>
+    </section>
+
+    <section class="panel note"><b>Privacidad y límites:</b> el GeoJSON y el contexto del diagnóstico se mantienen en este navegador. Si preparas WebLLM, el navegador descarga el runtime y los pesos desde sus repositorios públicos y los conserva en su caché local; la inferencia se ejecuta en el dispositivo. El buscador de lugares consulta únicamente el texto introducido en Nominatim / OpenStreetMap. El resultado de IA es una ayuda de exploración y debe contrastarse con la fuente cartográfica.</section>
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+  <script src="../place-search.js?v=place-search-2"></script>
+  <script src="app.js?v=ai-1"></script>
+</body>
+</html>
