@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Mezclador de capas WMS y XYZ para comparar cartografía histórica, ortofotos y capas públicas en el navegador.">
+  <title>Layer Mixer · capas cartográficas públicas</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header><a href="../">← Catálogo</a><div><strong>Layer Mixer</strong><span>WMS · XYZ · comparación visual</span></div><span class="privacy">Sin backend propio</span></header>
+  <main>
+    <section class="hero">
+      <p class="eyebrow">10 · Capas públicas</p>
+      <h1>Superpone historia, ortofotos y cartografía base.</h1>
+      <p>Añade servicios WMS públicos, ajusta su transparencia y utiliza una cortina para revisar rápidamente si una capa histórica encaja con la cartografía actual.</p>
+    </section>
+
+    <section class="workspace">
+      <aside class="panel controls">
+        <div class="section-title"><div><p class="eyebrow">Catálogo rápido</p><h2>Fuentes preparadas</h2></div><span id="layerCount" class="badge">0 capas</span></div>
+        <p class="muted">Las fuentes se dibujan directamente en tu navegador. Las capas de IGN y SCUAM se incluyen como accesos directos; también puedes añadir cualquier WMS compatible.</p>
+        <div id="catalog" class="catalog" aria-label="Fuentes cartográficas públicas"></div>
+
+        <div class="divider"></div>
+        <div class="section-title compact"><div><p class="eyebrow">Capa propia</p><h2>Añadir WMS</h2></div></div>
+        <form id="customForm" class="custom-form">
+          <label class="field"><span>URL del servicio</span><input id="serviceInput" type="url" required placeholder="https://servidor.example/geoserver/wms"></label>
+          <label class="field"><span>Nombre de capa</span><input id="wmsLayerInput" required placeholder="workspace:nombre_capa"></label>
+          <label class="field"><span>Etiqueta visible</span><input id="wmsLabelInput" placeholder="Mi capa WMS"></label>
+          <button class="secondary wide" type="submit">Añadir servicio WMS</button>
+        </form>
+        <p id="status" class="status" role="status">Añade una capa para empezar.</p>
+
+        <div class="divider"></div>
+        <div class="section-title compact"><div><p class="eyebrow">Cortina</p><h2>Comparación sincronizada</h2></div></div>
+        <label class="check-row"><input id="swipeEnabled" type="checkbox"><span>Activar cortina sobre una capa</span></label>
+        <label class="field"><span>Capa que queda a la derecha</span><select id="swipeLayer"><option value="">Añade una capa primero</option></select></label>
+        <label class="range-field"><span><b>Posición</b><output id="swipeOutput">50%</output></span><input id="swipeRange" type="range" min="5" max="95" value="50"></label>
+        <div class="button-row"><button id="fitSpainBtn" type="button">Vista España</button><button id="clearBtn" type="button">Limpiar capas</button></div>
+        <button id="downloadBtn" class="wide" type="button" disabled>Descargar configuración JSON</button>
+      </aside>
+
+      <section class="panel map-panel" aria-label="Mapa con capas superpuestas">
+        <div class="map-head">
+          <div><p class="eyebrow">Mapa de comparación</p><h2>Capas sincronizadas</h2></div>
+          <div id="placeSearch" class="cartografia-place-search" role="search" aria-label="Buscar un lugar"><label for="placeQuery">Buscar lugar</label><input id="placeQuery" type="search" placeholder="Buscar lugar…" autocomplete="off"><button id="placeSearchButton" type="button">Buscar</button><div id="placeResults" class="cartografia-place-results" role="listbox" hidden></div><p id="placeStatus" class="cartografia-place-status" role="status">Busca un topónimo para centrar el mapa.</p></div>
+        </div>
+        <div id="map" aria-label="Mapa de capas públicas"><div id="swipeLine" class="swipe-line" hidden><span></span></div></div>
+        <div class="map-footer"><span id="mapStatus">Mapa base listo.</span><span>© OpenStreetMap contributors · Fuentes: IGN / SCUAM</span></div>
+      </section>
+    </section>
+
+    <section class="panel layers-panel">
+      <div class="section-title"><div><p class="eyebrow">Capas activas</p><h2>Visibilidad, opacidad y orden</h2></div><span class="muted">La configuración se puede descargar para repetir la comparación.</span></div>
+      <div id="layersList" class="layers-list"><div class="empty-card">Todavía no hay capas añadidas.</div></div>
+    </section>
+
+    <section class="panel note"><b>Fuentes y límites:</b> este mezclador solo solicita teselas o imágenes a los servicios indicados. La disponibilidad, licencia, escala y fecha de actualización dependen de cada organismo. Las URLs preparadas apuntan a servicios públicos del IGN y del SCUAM; para un análisis formal conserva siempre la fecha, el servicio y el nombre de capa.</section>
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+  <script src="../place-search.js?v=place-search-2"></script>
+  <script src="app.js?v=layer-mixer-3"></script>
+</body>
+</html>
