@@ -219,7 +219,13 @@
         text += delta;
         els.answerOutput.textContent = text;
       }
-      showReport(text || 'El modelo no devolvió texto. Prueba el modo rápido.', 'WebLLM local');
+      const unusable = !text.trim() || /^(lo siento|no puedo|no puedo cumplir|i(?:'|’)m sorry|i can(?:not|'t))/i.test(text.trim());
+      if (unusable) {
+        els.engineStatus.textContent = 'La IA local no produjo un diagnóstico fiable; se conserva el análisis rápido.';
+        showReport(quickReport(), 'Modo rápido · recuperación');
+      } else {
+        showReport(text, 'WebLLM local');
+      }
     } catch (error) {
       els.engineStatus.textContent = `La IA local falló; se muestra el análisis rápido: ${error.message}`;
       showReport(quickReport(), 'Modo rápido · recuperación');
