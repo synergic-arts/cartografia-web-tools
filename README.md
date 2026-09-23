@@ -15,6 +15,7 @@ Colección de herramientas web abiertas para cartografía, rutas y datos geoespa
 - [Carto Local AI](herramientas/carto-local-ai/): diagnóstico local de GeoJSON con modo rápido determinista y WebLLM opcional sobre WebGPU.
 - [Layer Mixer](herramientas/layer-mixer/): mezcla capas WMS públicas, incluida cartografía histórica del SCUAM y fuentes del IGN, con opacidad, orden, cortina y exportación de configuración.
 - [WMS Explorer](herramientas/wms-explorer/): consulta GetCapabilities, descubre los nombres de capa reales y previsualiza servicios WMS públicos en el mapa.
+- [Spectral Indices](herramientas/spectral-indices/): cálculo local de NDVI, NDWI, NDBI, GNDVI y SAVI a partir de bandas RED, GREEN, NIR y SWIR.
 
 Carto Local AI funciona sin servidor: el modo rápido calcula métricas y recomendaciones en JavaScript. Si el navegador ofrece WebGPU, el usuario puede pulsar «Preparar IA local» para cargar explícitamente `Llama-3.2-1B-Instruct-q4f16_1-MLC` mediante WebLLM; el primer arranque descarga y almacena la caché del modelo en ese navegador. La aplicación no envía el GeoJSON a un backend propio.
 

@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Calcula índices espectrales multibanda localmente: NDVI, NDWI, NDBI, GNDVI y SAVI.">
+  <title>Spectral Indices · teledetección multibanda</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header><a href="../">← Catálogo</a><div><strong>Spectral Indices</strong><span>teledetección · índices locales</span></div><span class="privacy">Sin subir imágenes</span></header>
+  <main>
+    <section class="hero"><p class="eyebrow">12 · Teledetección avanzada</p><h1>Convierte bandas en una lectura espectral útil.</h1><p>Calcula índices habituales a partir de bandas RED, GREEN, NIR y SWIR. Todo se procesa píxel a píxel en este navegador y se puede exportar como PNG o JSON de resultados.</p></section>
+    <section class="workspace">
+      <aside class="panel controls">
+        <p class="eyebrow">Índice</p><h2>Elegir una medida</h2>
+        <label class="field"><span>Índice espectral</span><select id="indexSelect"><option value="ndvi">NDVI · vegetación</option><option value="ndwi">NDWI · agua</option><option value="ndbi">NDBI · construido</option><option value="gndvi">GNDVI · clorofila</option><option value="savi">SAVI · vegetación ajustada</option></select></label>
+        <p id="requirements" class="requirements">Necesita: NIR + RED</p>
+        <div class="divider"></div><p class="eyebrow">Bandas raster</p>
+        <label class="file-field"><span>RED <small>rojo</small></span><input id="redInput" type="file" accept="image/png,image/jpeg,.png,.jpg,.jpeg"></label>
+        <label class="file-field"><span>GREEN <small>verde</small></span><input id="greenInput" type="file" accept="image/png,image/jpeg,.png,.jpg,.jpeg"></label>
+        <label class="file-field"><span>NIR <small>infrarrojo cercano</small></span><input id="nirInput" type="file" accept="image/png,image/jpeg,.png,.jpg,.jpeg"></label>
+        <label class="file-field"><span>SWIR <small>infrarrojo de onda corta</small></span><input id="swirInput" type="file" accept="image/png,image/jpeg,.png,.jpg,.jpeg"></label>
+        <div class="button-row"><button id="exampleBtn" type="button">Cargar ejemplo</button><button id="clearBtn" type="button">Limpiar</button></div>
+        <button id="runBtn" class="primary wide" type="button">Calcular índice</button><p id="bandStatus" class="status">Carga las bandas necesarias o usa el ejemplo sintético.</p><p id="status" class="status" role="status">Preparado para trabajar localmente.</p>
+        <div class="formula"><b id="formula">(NIR − RED) / (NIR + RED)</b><small>Los valores se obtienen de la intensidad RGB de cada imagen. Para análisis cuantitativo usa bandas alineadas, calibradas y con la misma resolución.</small></div>
+      </aside>
+      <section class="panel result" aria-label="Resultado del índice espectral">
+        <div class="result-head"><div><p class="eyebrow">Resultado</p><h2 id="resultTitle">Sin cálculo</h2></div><span id="sourceBadge" class="badge">Local</span></div>
+        <canvas id="canvas" aria-label="Mapa coloreado del índice"></canvas>
+        <div id="stats" class="stats" hidden><div><span>Válidos</span><b id="valid">—</b></div><div><span>Mínimo</span><b id="min">—</b></div><div><span>Media</span><b id="mean">—</b></div><div><span>Máximo</span><b id="max">—</b></div><div><span>Positivos</span><b id="positive">—</b></div><div><span>Negativos</span><b id="negative">—</b></div></div>
+        <div class="legend"><span><i class="low"></i> −1</span><span><i class="mid"></i> 0</span><span><i class="high"></i> +1</span></div>
+        <div class="button-row exports"><button id="downloadPng" type="button" disabled>Descargar PNG</button><button id="downloadJson" type="button" disabled>Descargar estadísticas JSON</button></div>
+      </section>
+    </section>
+    <section class="panel note"><b>Interpretación y límites:</b> NDVI, NDWI, NDBI, GNDVI y SAVI son indicadores espectrales, no clasificaciones definitivas. La herramienta no conserva georreferenciación de GeoTIFF: trabaja con imágenes visibles y necesita que las bandas estén perfectamente alineadas. La calibración atmosférica, la máscara de nubes y la fecha de adquisición deben formar parte del estudio.</section>
+  </main>
+  <script src="app.js?v=spectral-indices-1"></script>
+</body>
+</html>
