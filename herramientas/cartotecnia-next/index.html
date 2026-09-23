@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Cartotecnia Next: visor cartográfico para relieve, geología, teledetección y cartografía histórica, ejecutado en el navegador.">
+  <title>Cartotecnia Next · visor de relieve y teledetección</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="back" href="../">← Catálogo</a>
+    <div class="brand"><strong>Cartotecnia Next</strong><span>relieve · geología · teledetección · historia</span></div>
+    <span class="runtime-badge">2D estable · sin backend</span>
+  </header>
+
+  <main>
+    <section class="hero">
+      <p class="eyebrow">Actualización abierta de Cartotecnia</p>
+      <h1>Explora el relieve y compón tus propias capas cartográficas.</h1>
+      <p>Una reconstrucción moderna del visor original: fuentes públicas, capas históricas, ortofotos, búsqueda de lugares y herramientas de lectura espacial, directamente en el navegador.</p>
+      <div class="hero-actions"><button id="tourBtn" class="primary" type="button">Empezar con una vista preparada</button><button id="sourcesBtn" class="ghost" type="button">Ver fuentes y créditos</button></div>
+    </section>
+
+    <section class="app-shell">
+      <aside class="sidebar panel" aria-label="Herramientas del visor">
+        <div class="tabbar" role="tablist" aria-label="Paneles del visor">
+          <button class="tab active" id="layersTab" role="tab" aria-selected="true" aria-controls="layersPanel">Capas</button>
+          <button class="tab" id="optionsTab" role="tab" aria-selected="false" aria-controls="optionsPanel">Opciones</button>
+          <button class="tab" id="analysisTab" role="tab" aria-selected="false" aria-controls="analysisPanel">Análisis</button>
+        </div>
+
+        <section id="layersPanel" class="tab-panel" role="tabpanel" aria-labelledby="layersTab">
+          <div class="panel-heading"><div><p class="eyebrow">Capas e imágenes</p><h2>Catálogo público</h2></div><span id="layerCount" class="badge">0 activas</span></div>
+          <p class="muted">Activa fuentes una a una. La vista inicial carga solo el mapa base para no ocultar controles ni saturar el visor.</p>
+          <label class="field compact-field"><span>Filtrar catálogo</span><input id="catalogFilter" type="search" placeholder="PNOA, geología, histórico…"></label>
+          <div id="catalog" class="catalog"></div>
+          <div class="divider"></div>
+          <div class="panel-heading small-heading"><div><p class="eyebrow">Servicio propio</p><h2>Añadir WMS / XYZ</h2></div></div>
+          <form id="customLayerForm" class="custom-form">
+            <label class="field"><span>Tipo</span><select id="customType"><option value="wms">WMS</option><option value="xyz">XYZ / teselas</option></select></label>
+            <label class="field"><span>URL del servicio</span><input id="customUrl" type="url" required placeholder="https://servidor.example/wms"></label>
+            <label class="field" id="customNameField"><span>Nombre de capa WMS</span><input id="customName" placeholder="workspace:capa"></label>
+            <label class="field"><span>Etiqueta visible</span><input id="customLabel" placeholder="Mi fuente cartográfica"></label>
+            <button class="secondary wide" type="submit">Añadir al visor</button>
+          </form>
+          <p id="layerStatus" class="status" role="status">Elige una fuente para empezar.</p>
+        </section>
+
+        <section id="optionsPanel" class="tab-panel" role="tabpanel" aria-labelledby="optionsTab" hidden>
+          <div class="panel-heading"><div><p class="eyebrow">Opciones de visualización</p><h2>Control del visor</h2></div></div>
+          <label class="check-row"><input id="scaleToggle" type="checkbox" checked><span>Mostrar escala</span></label>
+          <label class="check-row"><input id="coordsToggle" type="checkbox" checked><span>Mostrar coordenadas del cursor</span></label>
+          <label class="check-row"><input id="northToggle" type="checkbox"><span>Bloquear vista al norte</span></label>
+          <label class="check-row"><input id="navigationToggle" type="checkbox" checked><span>Navegación con ratón</span></label>
+          <label class="check-row"><input id="labelsToggle" type="checkbox"><span>Mostrar etiquetas del mapa base</span></label>
+          <div class="divider"></div>
+          <div class="panel-heading small-heading"><div><p class="eyebrow">Controles de imagen</p><h2>Ajuste visual</h2></div><button id="resetImageBtn" class="tiny" type="button">Restablecer</button></div>
+          <label class="range-field"><span><b>Brillo</b><output id="brightnessOutput">100%</output></span><input id="brightnessRange" type="range" min="60" max="160" value="100"></label>
+          <label class="range-field"><span><b>Contraste</b><output id="contrastOutput">100%</output></span><input id="contrastRange" type="range" min="60" max="160" value="100"></label>
+          <label class="range-field"><span><b>Saturación</b><output id="saturationOutput">100%</output></span><input id="saturationRange" type="range" min="0" max="180" value="100"></label>
+          <div class="divider"></div>
+          <div class="panel-heading small-heading"><div><p class="eyebrow">Vista</p><h2>Acciones rápidas</h2></div></div>
+          <div class="button-grid"><button id="spainBtn" type="button">España</button><button id="madridBtn" type="button">Madrid</button><button id="homeBtn" type="button">Vista inicial</button><button id="locateBtn" type="button">Mi ubicación</button></div>
+          <p class="hint">La vista 3D antigua dependía de un shader que ya no compila en muchos navegadores. Esta edición prioriza una vista 2D fiable y deja los datos listos para una futura escena 3D opcional.</p>
+        </section>
+
+        <section id="analysisPanel" class="tab-panel" role="tabpanel" aria-labelledby="analysisTab" hidden>
+          <div class="panel-heading"><div><p class="eyebrow">Lectura espacial</p><h2>Consulta y comparación</h2></div></div>
+          <p class="muted">Haz clic en el mapa para leer la posición. Activa una cortina para comparar una capa con la base sin perder la referencia.</p>
+          <div class="coordinate-card"><span>Última posición consultada</span><strong id="clickedCoords">Haz clic en el mapa</strong><button id="copyCoordsBtn" type="button" disabled>Copiar coordenadas</button></div>
+          <label class="check-row"><input id="swipeToggle" type="checkbox"><span>Activar cortina de comparación</span></label>
+          <label class="field"><span>Capa a comparar</span><select id="swipeLayer"><option value="">Añade una capa primero</option></select></label>
+          <label class="range-field"><span><b>Posición de la cortina</b><output id="swipeOutput">50%</output></span><input id="swipeRange" type="range" min="5" max="95" value="50"></label>
+          <div class="divider"></div>
+          <div class="button-row"><button id="downloadConfigBtn" type="button" disabled>Descargar configuración</button><button id="clearLayersBtn" type="button">Limpiar capas</button></div>
+          <p id="analysisStatus" class="status" role="status">Lista para consultar una posición.</p>
+        </section>
+      </aside>
+
+      <section class="map-card panel" aria-label="Mapa de Cartotecnia Next">
+        <div class="map-toolbar">
+          <div><p class="eyebrow">Mapa de estudio</p><h2 id="mapTitle">Vista general de España</h2></div>
+          <div id="placeSearch" class="cartografia-place-search" role="search" aria-label="Buscar un lugar"><label for="placeQuery">Buscar lugar</label><input id="placeQuery" type="search" placeholder="Madrid, Segovia, río…" autocomplete="off"><button id="placeSearchButton" type="button">Buscar</button><div id="placeResults" class="cartografia-place-results" role="listbox" hidden></div><p id="placeStatus" class="cartografia-place-status" role="status">Busca un topónimo para centrar el mapa.</p></div>
+          <div class="map-actions"><button id="fullscreenBtn" class="tiny" type="button">Pantalla completa</button><button id="northBtn" class="tiny" type="button" title="Restablecer norte">Norte</button></div>
+        </div>
+        <div id="map" aria-label="Mapa interactivo"><div id="swipeLine" class="swipe-line" hidden><span>↔</span></div><div id="cursorCoords" class="cursor-coords" hidden>—</div></div>
+        <div class="map-footer"><span id="mapStatus">Mapa base listo.</span><span id="sourceStatus">OSM · IGN · SCUAM</span></div>
+      </section>
+    </section>
+
+    <section class="panel active-layers-panel"><div class="panel-heading"><div><p class="eyebrow">Capas activas</p><h2>Visibilidad, opacidad y orden de dibujo</h2></div><span class="muted">Las fuentes se solicitan desde tu navegador.</span></div><div id="activeLayers" class="active-layers"><div class="empty-card">No hay capas adicionales activas.</div></div></section>
+
+    <section class="panel note"><b>Estado de esta actualización:</b> Cartotecnia Next replica el flujo central del visor original —capas, opacidad, orden, opciones, búsqueda, escala, consulta y créditos— y evita que un fallo de WebGL deje la pantalla inutilizable. La disponibilidad de cada WMS/XYZ depende del organismo proveedor, su licencia, escala y mantenimiento.</section>
+  </main>
+
+  <dialog id="sourcesDialog"><div class="dialog-head"><div><p class="eyebrow">Trazabilidad</p><h2>Fuentes y créditos</h2></div><button id="closeSourcesBtn" class="tiny" type="button">Cerrar</button></div><p>Las capas no se descargan ni se almacenan en un servidor propio: se dibujan desde sus servicios públicos cuando las activas.</p><ul><li><a href="https://www.ign.es/" target="_blank" rel="noreferrer">Instituto Geográfico Nacional (IGN)</a> · PNOA y servicios geográficos.</li><li><a href="https://guiadigital.uam.es/SCUAM/index.php" target="_blank" rel="noreferrer">SCUAM / Universidad Autónoma de Madrid</a> · cartografía histórica.</li><li><a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">OpenStreetMap contributors</a> · mapa base.</li><li><a href="https://cartotecnia.com/teledeteccion/" target="_blank" rel="noreferrer">Cartotecnia original</a> · referencia funcional y créditos históricos de la herramienta.</li></ul><p class="hint">Para trabajos publicables conserva el nombre exacto de la capa, URL del servicio, fecha de consulta, escala y condiciones de uso.</p></dialog>
+
+  <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+  <script src="../place-search.js?v=place-search-2"></script>
+  <script src="app.js?v=cartotecnia-next-3"></script>
+</body>
+</html>
