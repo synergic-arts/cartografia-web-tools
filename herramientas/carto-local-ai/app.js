@@ -137,7 +137,7 @@
 
   function showReport(text, mode = 'Modo rápido') {
     state.report = text;
-    els.answerOutput.textContent = text;
+    els.answerOutput.textContent = text.replace(/\*\*/g, '').replace(/^#{1,3}\s/gm, '').replace(/^_+|_+$/gm, '');
     els.answerMode.textContent = mode;
     els.copyBtn.disabled = !text;
     els.downloadBtn.disabled = !text;
