@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Conversor local de coordenadas WGS84 entre decimal, DMS y UTM.">
+  <title>Coord Converter · WGS84 local</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main>
+    <a class="back" href="../">← Catálogo</a>
+    <p class="eyebrow">06 · COORDENADAS · CLIENTE · LOCAL</p>
+    <h1>Convierte coordenadas sin perder el contexto.</h1>
+    <p class="lede">Pasa de grados decimales a grados-minutos-segundos y UTM, o vuelve de UTM a WGS84. Todo el cálculo sucede en tu navegador.</p>
+
+    <section class="grid two">
+      <article class="panel">
+        <h2>WGS84 decimal</h2>
+        <p class="hint">Introduce longitud y latitud en grados decimales. Usa punto como separador decimal.</p>
+        <div class="fields two-fields">
+          <label>Longitud (°)<input id="lon" type="number" step="any" value="-3.7038" inputmode="decimal"></label>
+          <label>Latitud (°)<input id="lat" type="number" step="any" value="40.4168" inputmode="decimal"></label>
+        </div>
+        <button class="primary" id="convertBtn">Convertir</button>
+        <p class="status" id="decimalStatus" role="status">Listo para convertir.</p>
+      </article>
+
+      <article class="panel result-panel">
+        <h2>Resultado</h2>
+        <dl class="results">
+          <div><dt>Longitud DMS</dt><dd id="lonDms">—</dd></div>
+          <div><dt>Latitud DMS</dt><dd id="latDms">—</dd></div>
+          <div><dt>Zona UTM</dt><dd id="utmZone">—</dd></div>
+          <div><dt>Este (m)</dt><dd id="utmEasting">—</dd></div>
+          <div><dt>Norte (m)</dt><dd id="utmNorthing">—</dd></div>
+          <div><dt>Hemisferio</dt><dd id="utmHemisphere">—</dd></div>
+        </dl>
+        <div class="actions"><button id="copyBtn" disabled>Copiar resumen</button><button id="downloadBtn" disabled>Descargar JSON</button></div>
+      </article>
+    </section>
+
+    <section class="grid two">
+      <article class="panel">
+        <h2>UTM → WGS84</h2>
+        <p class="hint">Usa el datum WGS84, zona 1–60 y el hemisferio correcto.</p>
+        <div class="fields two-fields">
+          <label>Zona<input id="zone" type="number" min="1" max="60" step="1" value="30"></label>
+          <label>Hemisferio<select id="hemisphere"><option value="N">Norte</option><option value="S">Sur</option></select></label>
+          <label>Este (m)<input id="easting" type="number" step="any" value="440290"></label>
+          <label>Norte (m)<input id="northing" type="number" step="any" value="4474258"></label>
+        </div>
+        <button id="reverseBtn">Convertir UTM</button>
+        <p class="status" id="utmStatus" role="status">Puedes pegar coordenadas UTM de un SIG.</p>
+        <div class="reverse-result"><span>Longitud</span><strong id="reverseLon">—</strong><span>Latitud</span><strong id="reverseLat">—</strong></div>
+      </article>
+
+      <article class="panel note">
+        <h2>Notas de uso</h2>
+        <ul>
+          <li>La conversión UTM usa el elipsoide WGS84 y el meridiano central de cada zona.</li>
+          <li>Los DMS se muestran con hemisferio para evitar confundir signos.</li>
+          <li>Comprueba datum, huso y hemisferio antes de cargar el resultado en QGIS, ArcGIS o un visor histórico.</li>
+          <li>No se envían las coordenadas a ningún servidor. La herramienta no necesita mapa base ni conexión después de cargarla.</li>
+        </ul>
+      </article>
+    </section>
+    <footer>Cartografía Web Tools · conversión aproximada WGS84 para trabajo de campo, control y preparación de datos.</footer>
+  </main>
+  <script src="app.js"></script>
+</body>
+</html>

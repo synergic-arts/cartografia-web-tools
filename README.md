@@ -8,7 +8,9 @@ Colección de herramientas web abiertas para cartografía, rutas y datos geoespa
 - [GeoJSON Inspector](herramientas/geojson-inspector/): revisión local de entidades GeoJSON, extensión, mapa y exportación de vértices CSV.
 - [Atlas Compare](herramientas/atlas-compare/): comparador de capas históricas WMS del SCUAM y la Cartoteca Rafael Mas de la UAM.
 - [Spectral Lab](herramientas/spectral-lab/): cálculo local de NDVI con bandas RED y NIR.
+@@
 - [GeoRef Lite](herramientas/georef-lite/): puntos de control, transformación afín y exportación para mapas escaneados.
+- [Coord Converter](herramientas/coord-converter/): conversión local entre WGS84 decimal, DMS y UTM.
 
 ## RutaLite
 
