@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Explorador WMS que lee GetCapabilities y permite descubrir y previsualizar capas públicas.">
+  <title>WMS Explorer · descubrir capas públicas</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header><a href="../">← Catálogo</a><div><strong>WMS Explorer</strong><span>GetCapabilities · descubrimiento de capas</span></div><span class="privacy">Cliente · sin backend</span></header>
+  <main>
+    <section class="hero"><p class="eyebrow">11 · Servicios OGC</p><h1>Descubre qué capas ofrece un WMS antes de usarlo.</h1><p>Consulta el documento GetCapabilities de un servicio, revisa sus nombres reales, lee su descripción y previsualiza la capa elegida sobre OpenStreetMap.</p></section>
+    <section class="workspace">
+      <aside class="panel controls">
+        <p class="eyebrow">Servicio WMS</p><h2>Elegir una fuente</h2>
+        <label class="field"><span>URL del servicio</span><input id="serviceInput" type="url" value="https://www.ign.es/wms-inspire/pnoa-ma" spellcheck="false"></label>
+        <div class="button-row"><button id="inspectBtn" class="primary" type="button">Leer capacidades</button><button id="clearBtn" type="button">Limpiar</button></div>
+        <p class="quick-label">Accesos directos</p><div class="quick-buttons"><button type="button" data-service="https://www.ign.es/wms-inspire/pnoa-ma">IGN · PNOA</button><button type="button" data-service="https://guiadigital.uam.es/geoserver/atlas_lopez_UAM_WMS/wms?">SCUAM · Tomás López</button></div>
+        <p id="status" class="status" role="status">Escribe una URL y lee sus capacidades.</p>
+        <label class="field"><span>Capa disponible</span><select id="layerSelect" disabled><option>Primero consulta el servicio</option></select></label>
+        <div id="layerMeta" class="layer-meta"><span class="meta-empty">La descripción de la capa aparecerá aquí.</span></div>
+        <button id="previewBtn" class="secondary wide" type="button" disabled>Previsualizar capa seleccionada</button>
+        <button id="downloadBtn" class="wide" type="button" disabled>Descargar inventario JSON</button>
+      </aside>
+      <section class="panel map-panel" aria-label="Previsualización de capa WMS">
+        <div class="map-head"><div><p class="eyebrow">Previsualización</p><h2 id="mapTitle">Mapa base</h2></div><div id="placeSearch" class="cartografia-place-search" role="search" aria-label="Buscar un lugar"><label for="placeQuery">Buscar lugar</label><input id="placeQuery" type="search" placeholder="Buscar lugar…" autocomplete="off"><button id="placeSearchButton" type="button">Buscar</button><div id="placeResults" class="cartografia-place-results" role="listbox" hidden></div><p id="placeStatus" class="cartografia-place-status" role="status">Busca un topónimo para centrar el mapa.</p></div></div>
+        <div id="map" aria-label="Mapa de previsualización WMS"></div>
+        <div class="map-footer"><span id="mapStatus">Mapa base listo.</span><span>© OpenStreetMap contributors</span></div>
+      </section>
+    </section>
+    <section class="panel note"><b>Cómo interpretar el resultado:</b> GetCapabilities describe el servicio que responde en ese momento; algunas capas pueden tener una cobertura geográfica o escala limitada. Conserva la URL, el nombre exacto y la fecha de consulta cuando uses una fuente en un estudio.</section>
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+  <script src="../place-search.js?v=place-search-2"></script>
+  <script src="app.js?v=wms-explorer-2"></script>
+</body>
+</html>
