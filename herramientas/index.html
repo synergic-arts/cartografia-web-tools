@@ -1,0 +1,13 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Catálogo de herramientas web de cartografía que funcionan en el navegador.">
+  <title>Cartografía Web Tools</title>
+  <style>
+    :root{color-scheme:dark;--bg:#0b1220;--panel:#121d31;--line:#263651;--text:#edf4ff;--muted:#9eacc4;--accent:#58d6a4}
+    *{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at top right,#183352 0,#0b1220 45%);font:16px system-ui,sans-serif;color:var(--text)}main{max-width:980px;margin:auto;padding:64px 22px}h1{font-size:clamp(2rem,5vw,4rem);line-height:1.02;margin:.2em 0}.eyebrow{color:var(--accent);letter-spacing:.12em;text-transform:uppercase;font-size:.75rem;font-weight:700}.intro{max-width:680px;color:var(--muted);font-size:1.1rem;line-height:1.6}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px;margin-top:38px}.card{display:flex;flex-direction:column;gap:12px;background:rgba(18,29,49,.9);border:1px solid var(--line);border-radius:20px;padding:24px;min-height:230px}.card h2{margin:0}.card p{color:var(--muted);line-height:1.5;margin:0}.card a{margin-top:auto;display:inline-block;color:#07131d;background:var(--accent);border-radius:10px;padding:11px 14px;text-decoration:none;font-weight:700;width:max-content}.privacy{margin-top:36px;border-top:1px solid var(--line);padding-top:20px;color:var(--muted);font-size:.9rem}
+  </style>
+</head>
+<body><main><p class="eyebrow">Cartografía · cliente · privacidad</p><h1>Herramientas geográficas que caben en tu navegador.</h1><p class="intro">Pequeñas utilidades para trabajar con rutas y datos espaciales sin subir los archivos a un backend propio.</p><section class="grid"><article class="card"><span class="eyebrow">01 · Rutas</span><h2>RutaLite</h2><p>Convierte GPX, simplifica geometrías, exporta GeoJSON y sigue un track con GPS.</p><a href="../">Abrir RutaLite →</a></article><article class="card"><span class="eyebrow">02 · Datos</span><h2>GeoJSON Inspector</h2><p>Inspecciona capas GeoJSON, calcula su extensión, visualízalas y exporta sus vértices a CSV.</p><a href="geojson-inspector/">Abrir GeoJSON Inspector →</a></article></section><p class="privacy">Procesamiento local por diseño. El mapa base, cuando está activo, solicita teselas directamente a OpenStreetMap.</p></main></body>
+</html>

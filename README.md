@@ -2,6 +2,11 @@
 
 Colección de herramientas web abiertas para cartografía, rutas y datos geoespaciales.
 
+## Catálogo
+
+- [Abrir el catálogo](herramientas/): entrada común para las utilidades.
+- [GeoJSON Inspector](herramientas/geojson-inspector/): revisión local de entidades GeoJSON, extensión, mapa y exportación de vértices CSV.
+
 ## RutaLite
 
 La primera herramienta del repositorio es una PWA estática para convertir archivos GPX en rutas ligeras y seguirlas con GPS.
@@ -27,4 +32,3 @@ python -m http.server 8000
 ```
 
 Después abre `http://localhost:8000/`.
-
