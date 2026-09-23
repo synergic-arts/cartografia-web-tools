@@ -1,1 +1,29 @@
-<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Atlas Compare · Cartografía histórica</title><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css" crossorigin=""><link rel="stylesheet" href="styles.css"></head><body><header><a href="../">← Catálogo</a><div><strong>Atlas Compare</strong><span>SCUAM · cartografía histórica</span></div><span class="privacy">Capas públicas WMS</span></header><main><section class="controls panel"><div><p class="eyebrow">Cartografía histórica</p><h1>Compara atlas antiguos sobre el territorio actual.</h1><p>Activa dos capas georreferenciadas de los atlas de Francisco Coello y Tomás López, ajusta su opacidad y estudia cambios territoriales con el mapa base.</p></div><div class="grid"><label>Capa A<select id="layerA"></select></label><label>Opacidad A<input id="opacityA" type="range" min="0" max="1" step=".05" value=".75"></label><label>Capa B<select id="layerB"></select></label><label>Opacidad B<input id="opacityB" type="range" min="0" max="1" step=".05" value=".65"></label></div><div class="buttons"><button id="loadBtn">Actualizar capas</button><button id="clearBtn" class="secondary">Quitar capas históricas</button><a href="https://guiadigital.uam.es/SCUAM/wms.php" target="_blank" rel="noreferrer">Documentación SCUAM ↗</a></div><p id="status" class="status">Selecciona capas y pulsa «Actualizar capas».</p></section><section class="map-panel"><div id="map"></div><div class="legend"><b>Fuentes</b><span>© SCUAM / Cartoteca Rafael Mas, UAM</span><span>© OpenStreetMap contributors</span></div></section><section class="panel note"><b>Uso y atribución:</b> las capas históricas proceden de los servicios WMS públicos del <a href="https://www.uam.es/uam/vida-universitaria/bibliotecas/biblioteca-humanidades/cartoteca" target="_blank" rel="noreferrer">Servicio de Cartografía y Cartoteca Rafael Mas de la UAM</a>. Coello corresponde al Atlas de España (1847–1876); Tomás López al Atlas Geográfico (1765–1816). La herramienta no descarga ni almacena las imágenes.</section></main><script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script><script src="app.js"></script></body></html>
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Comparador de cartografía histórica WMS del SCUAM y la UAM.">
+  <title>Atlas Compare · Cartografía histórica</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header><a href="../">← Catálogo</a><div><strong>Atlas Compare</strong><span>SCUAM · cartografía histórica</span></div><span class="privacy">Capas públicas WMS</span></header>
+  <main>
+    <section class="controls panel">
+      <div><p class="eyebrow">Cartografía histórica</p><h1>Compara atlas antiguos sobre el territorio actual.</h1><p>Activa dos capas georreferenciadas de los atlas de Francisco Coello y Tomás López, ajusta su opacidad y estudia cambios territoriales con el mapa base.</p></div>
+      <div class="grid"><label>Capa A<select id="layerA"></select></label><label>Opacidad A<input id="opacityA" type="range" min="0" max="1" step=".05" value=".75"></label><label>Capa B<select id="layerB"></select></label><label>Opacidad B<input id="opacityB" type="range" min="0" max="1" step=".05" value=".65"></label></div>
+      <div class="buttons"><button id="loadBtn">Actualizar capas</button><button id="clearBtn" class="secondary">Quitar capas históricas</button><a href="https://guiadigital.uam.es/SCUAM/wms.php" target="_blank" rel="noreferrer">Documentación SCUAM ↗</a></div>
+      <p id="status" class="status">Selecciona capas y pulsa «Actualizar capas».</p>
+    </section>
+    <section class="map-panel panel" id="mapPanel" aria-label="Mapa comparativo">
+      <div class="map-toolbar"><strong>Mapa comparativo</strong><button id="fullscreenBtn" class="map-action" type="button" aria-pressed="false">Pantalla completa</button></div>
+      <div id="map"></div>
+      <div class="legend"><b>Fuentes</b><span>© SCUAM / Cartoteca Rafael Mas, UAM</span><span>© OpenStreetMap contributors</span></div>
+    </section>
+    <section class="panel note"><b>Uso y atribución:</b> las capas históricas proceden de los servicios WMS públicos del <a href="https://www.uam.es/uam/vida-universitaria/bibliotecas/biblioteca-humanidades/cartoteca" target="_blank" rel="noreferrer">Servicio de Cartografía y Cartoteca Rafael Mas de la UAM</a>. Coello corresponde al Atlas de España (1847–1876); Tomás López al Atlas Geográfico (1765–1816). La herramienta no descarga ni almacena las imágenes.</section>
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+  <script src="app.js"></script>
+</body>
+</html>
