@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Control de calidad local para capas GeoJSON antes de usarlas en un SIG.">
+  <title>GeoJSON QA · control de calidad</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
+    <link rel="stylesheet" href="styles.css">
+    <style>#mapFallback[hidden]{display:none!important}</style>
+</head>
+<body>
+  <header><a class="back" href="../">← Catálogo</a><div><strong>GeoJSON QA</strong><span>control de calidad · local · trazable</span></div><span class="privacy">sin backend propio</span></header>
+  <main>
+    <section class="hero"><p class="eyebrow">14 · CALIDAD VECTORIAL · CLIENTE · LOCAL</p><h1>Valida una capa antes de llevarla al SIG.</h1><p>Detecta errores habituales en GeoJSON: geometrías vacías, coordenadas fuera de WGS84, anillos abiertos, vértices duplicados, entidades repetidas y propiedades mal formadas. El archivo no sale de este navegador.</p></section>
+    <section class="layout">
+      <div class="panel controls">
+        <label class="drop" for="fileInput"><input id="fileInput" type="file" accept=".geojson,.json,application/geo+json,application/json" hidden><b>＋ Abrir GeoJSON</b><small>Se analiza localmente con File.text(). No se sube la capa.</small></label>
+        <div class="sample-row"><button id="exampleBtn" class="secondary" type="button">Cargar ejemplo con hallazgos</button><button id="clearBtn" class="secondary" type="button">Limpiar</button></div>
+        <p id="status" class="status" role="status">Sin capa cargada</p>
+        <div id="summary" hidden>
+          <div class="stats"><div><span>Features</span><b id="featureCount">—</b></div><div><span>Vértices</span><b id="vertexCount">—</b></div><div><span>Errores</span><b id="errorCount">—</b></div><div><span>Avisos</span><b id="warningCount">—</b></div><div><span>Repetidas</span><b id="duplicateCount">—</b></div><div><span>Extensión</span><b id="bbox">—</b></div></div>
+          <div id="types" class="chips"></div>
+          <p class="eyebrow fix-title">COPIA REVISADA</p>
+          <label class="check"><input id="closeRings" type="checkbox" checked> Cerrar anillos poligonales abiertos</label>
+          <label class="check"><input id="removeEmpty" type="checkbox"> Eliminar entidades sin geometría</label>
+          <label class="check"><input id="removeDuplicates" type="checkbox"> Eliminar geometrías repetidas</label>
+          <p class="hint">Las correcciones sólo se aplican al archivo exportado; la capa original no se modifica.</p>
+          <div class="actions"><button id="reportBtn" class="action" type="button">Descargar informe JSON</button><button id="csvBtn" class="action secondary-action" type="button">Descargar hallazgos CSV</button><button id="cleanBtn" class="action" type="button">Descargar GeoJSON revisado</button></div>
+        </div>
+      </div>
+      <div class="panel map-panel">
+        <div id="placeSearch" class="cartografia-place-search map-place-search" role="search" aria-label="Buscar un lugar"><label for="placeQuery">Buscar lugar</label><input id="placeQuery" type="search" placeholder="Buscar lugar…" autocomplete="off"><button id="placeSearchButton" type="button">Buscar</button><div id="placeResults" class="cartografia-place-results" role="listbox" hidden></div><p id="placeStatus" class="cartografia-place-status" role="status">Busca un topónimo para centrar el mapa.</p></div>
+        <div id="map" aria-label="Mapa de la capa GeoJSON"></div><div id="mapFallback" hidden>El mapa no está disponible, pero el control de calidad local sí funciona.</div>
+      </div>
+    </section>
+    <section class="panel findings"><div class="section-head"><div><p class="eyebrow">Diagnóstico</p><h2>Hallazgos de la capa</h2></div><span id="issueCount">—</span></div><div class="table-wrap"><table><thead><tr><th>Nivel</th><th>Feature</th><th>Regla</th><th>Detalle</th></tr></thead><tbody id="issueTable"><tr><td colspan="4">Carga un GeoJSON o el ejemplo para ver los hallazgos.</td></tr></tbody></table></div></section>
+    <section class="panel guide"><div><p class="eyebrow">Criterios de revisión</p><h2>Qué comprueba</h2></div><div class="guide-grid"><p><b>Coordenadas</b><br>Longitud −180…180, latitud −90…90 y valores numéricos.</p><p><b>Geometrías</b><br>Tipos GeoJSON soportados, estructuras completas y entidades con geometría.</p><p><b>Polígonos</b><br>Anillos con al menos cuatro posiciones y cierre entre el primer y último vértice.</p><p><b>Duplicados</b><br>Geometrías idénticas y posiciones consecutivas repetidas que pueden inflar una capa.</p></div></section>
+    <p class="note"><b>Uso profesional:</b> este control detecta problemas estructurales frecuentes, pero no sustituye la revisión del sistema de referencia, topología entre capas, tolerancia cartográfica ni la validación temática. GeoJSON se interpreta como WGS84 lon/lat por su especificación habitual. Conserva el informe junto con la fecha y la fuente de la capa.</p>
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+  <script src="../place-search.js?v=place-search-1"></script>
+  <script src="app.js?v=geojson-qa-1"></script>
+</body>
+</html>
