@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Generador local de cuadrículas para muestreo, inventarios históricos y teledetección.">
+  <title>Grid Lab · cuadrícula AOI</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header><a href="../">← Catálogo</a><div><strong>Grid Lab</strong><span>AOI · muestreo · teselas</span></div><span class="privacy">Procesamiento local</span></header>
+  <main>
+    <section class="hero"><p class="eyebrow">08 · PLANIFICACIÓN · CLIENTE · LOCAL</p><h1>Divide un área en unidades de trabajo.</h1><p>Genera una cuadrícula geográfica numerada para muestreos de teledetección, inventarios históricos, hojas de campo o preparación de teselas.</p></section>
+    <section class="layout">
+      <aside class="panel controls">
+        <h2>Extensión WGS84</h2>
+        <div class="fields"><label>Longitud mínima<input id="minLon" type="number" step="any" value="-4.2"></label><label>Latitud mínima<input id="minLat" type="number" step="any" value="40.1"></label><label>Longitud máxima<input id="maxLon" type="number" step="any" value="-3.2"></label><label>Latitud máxima<input id="maxLat" type="number" step="any" value="40.9"></label></div>
+        <div class="fields two"><label>Columnas<input id="cols" type="number" min="1" max="100" step="1" value="5"></label><label>Filas<input id="rows" type="number" min="1" max="100" step="1" value="4"></label></div>
+        <label class="order">Numeración<select id="order"><option value="north">De norte a sur</option><option value="south">De sur a norte</option></select></label>
+        <div class="actions"><button class="primary" id="generateBtn">Generar cuadrícula</button><button id="clearBtn">Limpiar</button></div>
+        <p class="status" id="status" role="status">Introduce una extensión y genera la cuadrícula.</p>
+        <div class="stats"><div><span>Celdas</span><b id="cellCount">—</b></div><div><span>Tamaño lon</span><b id="cellWidth">—</b></div><div><span>Tamaño lat</span><b id="cellHeight">—</b></div><div><span>Centro AOI</span><b id="center">—</b></div></div>
+        <div class="exports"><button id="geoBtn" disabled>Descargar GeoJSON</button><button id="csvBtn" disabled>Descargar CSV</button></div>
+      </aside>
+      <section class="panel map-panel"><div class="map-head"><h2>Vista de trabajo</h2><span>Haz clic en una celda para consultar su identificador</span></div><div id="map"></div></section>
+    </section>
+    <p class="note"><b>Uso:</b> la cuadrícula usa coordenadas WGS84 en grados decimales y no reproyecta el área. Para mediciones precisas, transforma después a un sistema proyectado adecuado. Cada celda conserva límites, centroide, fila, columna y tamaño para continuar el trabajo en un SIG. El mapa base solicita teselas a OpenStreetMap cuando está activo.</p>
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script><script src="app.js"></script>
+</body>
+</html>
