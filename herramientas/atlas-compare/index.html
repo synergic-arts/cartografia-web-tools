@@ -24,13 +24,14 @@
       </div>
     </section>
     <section class="map-panel panel" id="mapPanel" aria-label="Mapa comparativo">
-      <div class="map-toolbar"><strong>Mapa comparativo</strong><button id="fullscreenBtn" class="map-action" type="button" aria-pressed="false">Pantalla completa</button></div>
+      <div class="map-toolbar"><strong>Mapa comparativo</strong><div id="placeSearch" class="cartografia-place-search" role="search" aria-label="Buscar un lugar"><label for="placeQuery">Buscar lugar</label><input id="placeQuery" type="search" placeholder="Buscar lugar…" autocomplete="off"><button id="placeSearchButton" type="button">Buscar</button><div id="placeResults" class="cartografia-place-results" role="listbox" hidden></div><p id="placeStatus" class="cartografia-place-status" role="status">Busca un topónimo para centrar el mapa.</p></div><button id="fullscreenBtn" class="map-action" type="button" aria-pressed="false">Pantalla completa</button></div>
       <div id="map"></div>
       <div class="legend"><b>Fuentes</b><span>© SCUAM / Cartoteca Rafael Mas, UAM</span><span>© OpenStreetMap contributors</span></div>
     </section>
-    <section class="panel note"><b>Uso y atribución:</b> las capas históricas proceden de los servicios WMS públicos del <a href="https://www.uam.es/uam/vida-universitaria/bibliotecas/biblioteca-humanidades/cartoteca" target="_blank" rel="noreferrer">Servicio de Cartografía y Cartoteca Rafael Mas de la UAM</a>. Coello corresponde al Atlas de España (1847–1876); Tomás López al Atlas Geográfico (1765–1816). La herramienta no descarga ni almacena las imágenes.</section>
+    <section class="panel note"><b>Uso y atribución:</b> las capas históricas proceden de los servicios WMS públicos del <a href="https://www.uam.es/uam/vida-universitaria/bibliotecas/biblioteca-humanidades/cartoteca" target="_blank" rel="noreferrer">Servicio de Cartografía y Cartoteca Rafael Mas de la UAM</a>. Coello corresponde al Atlas de España (1847–1876); Tomás López al Atlas Geográfico (1765–1816). La herramienta no descarga ni almacena las imágenes. Si usas el buscador, el texto del lugar se consulta en Nominatim / OpenStreetMap.</section>
   </main>
   <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
-  <script src="app.js?v=canvas-4"></script>
+  <script src="../place-search.js?v=place-search-1"></script>
+  <script src="app.js?v=place-search-1"></script>
 </body>
 </html>

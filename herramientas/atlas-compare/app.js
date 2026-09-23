@@ -59,6 +59,7 @@
   const orientation = { angle: 0, flipX: false, flipY: false };
   let wmsA = null;
   let wmsB = null;
+  let searchPlace = null;
 
   const make = (item, opacity, pane) => L.tileLayer.wms(item.service, {
     layers: item.layer,
@@ -120,6 +121,22 @@
     drawPane(tilePane, 1);
     drawPane(paneA, Number(document.getElementById('opacityA').value));
     drawPane(paneB, Number(document.getElementById('opacityB').value));
+    if (searchPlace) {
+      const point = map.latLngToContainerPoint(searchPlace.latlng);
+      context.save();
+      context.fillStyle = '#ffbf69';
+      context.strokeStyle = '#09111e';
+      context.lineWidth = 3;
+      context.beginPath();
+      context.arc(point.x, point.y, 9, 0, Math.PI * 2);
+      context.fill();
+      context.stroke();
+      context.beginPath();
+      context.moveTo(point.x, point.y + 7);
+      context.lineTo(point.x, point.y + 18);
+      context.stroke();
+      context.restore();
+    }
     context.restore();
   }
 
@@ -129,6 +146,16 @@
   map.on('moveend zoomend', queueDraw);
   baseLayer.on('load tileload tileerror', queueDraw);
   resizeCanvas();
+  CartografiaPlaceSearch(map, {
+    input: document.getElementById('placeQuery'),
+    button: document.getElementById('placeSearchButton'),
+    results: document.getElementById('placeResults'),
+    status: document.getElementById('placeStatus'),
+    onLocate(place) {
+      searchPlace = { latlng: place.latlng, displayName: place.displayName };
+      queueDraw();
+    }
+  });
 
   function normalise(value) {
     let number = Number(value);

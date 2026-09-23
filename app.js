@@ -13,7 +13,8 @@
     startNavBtn: $('startNavBtn'), gpsBadge: $('gpsBadge'), liveStats: $('liveStats'), liveRemaining: $('liveRemaining'),
     liveOffRoute: $('liveOffRoute'), liveEta: $('liveEta'), liveAccuracy: $('liveAccuracy'), navHud: $('navHud'), navArrow: $('navArrow'),
     navInstruction: $('navInstruction'), navSub: $('navSub'), nextDistance: $('nextDistance'), fitRouteBtn: $('fitRouteBtn'),
-    centerGpsBtn: $('centerGpsBtn'), toggleBaseBtn: $('toggleBaseBtn'), mapFallback: $('mapFallback'), toast: $('toast')
+    centerGpsBtn: $('centerGpsBtn'), toggleBaseBtn: $('toggleBaseBtn'), mapFallback: $('mapFallback'), toast: $('toast'),
+    placeQuery: $('placeQuery'), placeSearchButton: $('placeSearchButton'), placeResults: $('placeResults'), placeStatus: $('placeStatus')
   };
 
   const state = {
@@ -455,6 +456,12 @@
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors'
     }).addTo(state.map);
     state.routeGroup = L.layerGroup().addTo(state.map);
+    CartografiaPlaceSearch(state.map, {
+      input: els.placeQuery,
+      button: els.placeSearchButton,
+      results: els.placeResults,
+      status: els.placeStatus
+    });
   }
 
   function divIcon(className) {

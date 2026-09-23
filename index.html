@@ -28,6 +28,7 @@
 
   <main class="app-shell">
     <section class="map-card" aria-label="Mapa de la ruta">
+      <div id="placeSearch" class="cartografia-place-search map-place-search" role="search" aria-label="Buscar un lugar"><label for="placeQuery">Buscar lugar</label><input id="placeQuery" type="search" placeholder="Buscar lugar…" autocomplete="off"><button id="placeSearchButton" type="button">Buscar</button><div id="placeResults" class="cartografia-place-results" role="listbox" hidden></div><p id="placeStatus" class="cartografia-place-status" role="status">Busca un topónimo para centrar el mapa.</p></div>
       <div id="map" class="map" role="application" aria-label="Mapa interactivo"></div>
       <div id="mapFallback" class="map-fallback" hidden>
         <strong>Mapa no disponible</strong>
@@ -186,7 +187,7 @@
 
       <div class="panel privacy-panel">
         <strong>Privacidad real por diseño</strong>
-        <p>El GPX, la ruta convertida y tu posición GPS se procesan únicamente en este navegador. Solo el mapa base puede solicitar teselas al proveedor cartográfico. Puedes apagarlo con el botón ◫ y seguir usando la ruta sin enviar coordenadas del archivo a un backend propio.</p>
+        <p>El GPX, la ruta convertida y tu posición GPS se procesan únicamente en este navegador. Solo el mapa base solicita teselas al proveedor cartográfico; si usas el buscador, el texto del lugar se consulta en Nominatim / OpenStreetMap. Puedes apagar el mapa base con el botón ◫ y seguir usando la ruta sin enviar coordenadas del archivo a un backend propio.</p>
       </div>
     </section>
   </main>
@@ -194,6 +195,7 @@
   <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
 
   <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-  <script src="app.js"></script>
+  <script src="herramientas/place-search.js?v=place-search-1"></script>
+  <script src="app.js?v=place-search-1"></script>
 </body>
 </html>
