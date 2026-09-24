@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Autocorrelación espacial local de puntos GeoJSON con Moran I y clasificación LISA aproximada.">
+  <title>Moran Lab · Cartografía Web Tools</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main>
+    <a class="back" href="../">← Catálogo</a>
+    <header class="hero">
+      <p class="eyebrow">39 · PATRONES ESPACIALES · CLIENTE · LOCAL</p>
+      <h1>Moran Lab</h1>
+      <p class="lede">Mide si los valores altos o bajos se agrupan espacialmente con Moran global y una lectura local tipo LISA.</p>
+    </header>
+
+    <section class="panel" aria-labelledby="input-title">
+      <div class="section-heading"><div><p class="eyebrow">01 · ENTRADA</p><h2 id="input-title">Puntos con un atributo numérico</h2></div><span class="badge">sin backend propio</span></div>
+      <div class="control-grid">
+        <label class="file-control">Cargar GeoJSON
+          <input id="fileInput" type="file" accept=".json,.geojson,application/json,application/geo+json">
+          <span id="fileName">Ningún archivo seleccionado</span>
+        </label>
+        <label>Atributo de análisis
+          <select id="field" disabled><option>Primero carga una capa</option></select>
+        </label>
+        <label>Vecindad
+          <select id="method"><option value="knn" selected>K vecinos más cercanos</option><option value="distance">Distancia máxima</option></select>
+        </label>
+        <label id="neighboursWrap">Número de vecinos (k)
+          <input id="neighbours" type="number" min="1" max="30" step="1" value="4">
+        </label>
+        <label id="radiusWrap" hidden>Distancia máxima (metros)
+          <input id="radius" type="number" min="1" max="500000" step="100" value="2000">
+        </label>
+      </div>
+      <div class="button-row"><button id="exampleBtn" class="secondary">Cargar ejemplo</button><button id="clearBtn" class="secondary">Limpiar</button><button id="runBtn" disabled>Calcular autocorrelación</button></div>
+      <p id="status" class="status" role="status">Carga una capa de puntos o usa el ejemplo.</p>
+    </section>
+
+    <section id="summary" class="panel" hidden aria-labelledby="summary-title">
+      <div class="section-heading"><div><p class="eyebrow">02 · RESULTADO</p><h2 id="summary-title">Autocorrelación espacial</h2></div><span id="fieldLabel" class="badge">—</span></div>
+      <div class="metrics">
+        <div class="metric"><span>Observaciones válidas</span><strong id="pointCount">—</strong></div>
+        <div class="metric"><span>Con vecinos</span><strong id="connectedCount">—</strong></div>
+        <div class="metric"><span>Moran global (I)</span><strong id="moranI">—</strong></div>
+        <div class="metric"><span>I esperado bajo azar</span><strong id="expectedI">—</strong></div>
+        <div class="metric"><span>Media del atributo</span><strong id="mean">—</strong></div>
+        <div class="metric"><span>Vecinos por observación</span><strong id="averageNeighbours">—</strong></div>
+      </div>
+      <div class="interpretation" id="interpretation">—</div>
+      <div class="class-grid" aria-label="Resumen de tipos locales">
+        <div><i class="swatch hh"></i><span>Alto–alto</span><strong id="hhCount">0</strong></div>
+        <div><i class="swatch ll"></i><span>Bajo–bajo</span><strong id="llCount">0</strong></div>
+        <div><i class="swatch hl"></i><span>Alto–bajo</span><strong id="hlCount">0</strong></div>
+        <div><i class="swatch lh"></i><span>Bajo–alto</span><strong id="lhCount">0</strong></div>
+        <div><i class="swatch isolated"></i><span>Sin vecinos</span><strong id="isolatedCount">0</strong></div>
+      </div>
+    </section>
+
+    <section class="panel" aria-labelledby="map-title">
+      <div class="section-heading"><div><p class="eyebrow">03 · INSPECCIÓN</p><h2 id="map-title">Clústeres locales</h2></div><span class="badge">LISA aproximado</span></div>
+      <div id="map" class="map" aria-label="Mapa de clases locales de autocorrelación">
+        <div class="map-place-search cartografia-place-search">
+          <label for="placeQuery">Buscar lugar</label>
+          <input id="placeQuery" type="search" placeholder="Buscar un lugar para centrar el mapa" autocomplete="off">
+          <button id="placeSearchButton" type="button">Buscar</button>
+          <div id="placeResults" class="cartografia-place-results" role="listbox" hidden></div>
+          <p id="placeStatus" class="cartografia-place-status">Busca un topónimo para centrar el mapa.</p>
+        </div>
+      </div>
+      <div class="legend"><span><i class="swatch hh"></i>Alto–alto</span><span><i class="swatch ll"></i>Bajo–bajo</span><span><i class="swatch hl"></i>Alto–bajo</span><span><i class="swatch lh"></i>Bajo–alto</span><span><i class="swatch isolated"></i>Sin vecinos</span></div>
+      <p id="mapFallback" class="status" hidden>El mapa necesita cargar Leaflet con conexión. El cálculo local sigue disponible.</p>
+    </section>
+
+    <section class="panel" aria-labelledby="export-title">
+      <div class="section-heading"><div><p class="eyebrow">04 · SALIDA</p><h2 id="export-title">Exporta una capa trazable</h2></div></div>
+      <div class="button-row"><button id="geojsonBtn" disabled>Descargar GeoJSON enriquecido</button><button id="csvBtn" class="secondary" disabled>Descargar CSV LISA</button></div>
+      <p class="note">La vecindad se calcula con una proyección local aproximada en metros. Moran I describe asociación espacial, no causalidad; contrasta k o el radio y valida el resultado con el diseño de muestreo.</p>
+    </section>
+
+    <section class="privacy"><p class="eyebrow">MÉTODO Y PRIVACIDAD</p><p>El archivo se lee y procesa en este navegador. No se envía a un servidor propio ni se guarda fuera de la sesión. El mapa base usa teselas de <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>; la consulta de topónimos, si la utilizas, se realiza contra Nominatim y queda sujeta a su política de uso.</p></section>
+  </main>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+  <script src="../place-search.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

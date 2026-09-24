@@ -39,6 +39,7 @@ Colección de herramientas web abiertas para cartografía, rutas y datos geoespa
 - [IDW Surface Lab](herramientas/idw-lab/): interpola valores puntuales con distancia inversa ponderada, genera una malla GeoJSON exploratoria, colorea la superficie y exporta GeoJSON/CSV.
 - [Cluster Lab](herramientas/cluster-lab/): detecta agrupaciones espaciales y ruido con DBSCAN, etiqueta las entidades, resume tamaños y exporta GeoJSON/CSV.
 - [Attribute Stats Lab](herramientas/attribute-stats-lab/): resume atributos numéricos y categóricos, muestra histogramas, detecta valores ausentes, clasifica entidades por cuantiles y exporta GeoJSON/CSV/JSON.
+- [Moran Lab](herramientas/moran-lab/): calcula Moran global, explora agrupaciones y contrastes locales tipo LISA con vecindad por k vecinos o distancia y exporta una capa enriquecida.
 
 Carto Local AI funciona sin servidor: el modo rápido calcula métricas y recomendaciones en JavaScript. Si el navegador ofrece WebGPU, el usuario puede pulsar «Preparar IA local» para cargar explícitamente `Llama-3.2-1B-Instruct-q4f16_1-MLC` mediante WebLLM; el primer arranque descarga y almacena la caché del modelo en ese navegador. La aplicación no envía el GeoJSON a un backend propio.
 
