@@ -55,6 +55,36 @@
       catalogUrl: 'https://datos.gob.es/es/catalogo/e0dat0002-poblaciones-aisladas',
       license: 'CC BY 4.0',
       notes: 'Capa nacional de poblaciones aisladas conforme a la definición del RD 1481/2001, actualizada en 2018. Es contexto de asentamientos remotos, no un inventario de despoblados históricos.'
+    },
+    {
+      id: 'caceres-ribera-marco',
+      label: 'Cáceres · patrimonio arqueológico de La Ribera del Marco',
+      publisher: 'Ayuntamiento de Cáceres · IDE Cáceres',
+      format: 'WFS / GeoJSON',
+      urls: ['https://ide.caceres.es/geoserver/Archivo_Historico/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=Archivo_Historico%3ARIBERA&outputFormat=application%2Fjson'],
+      catalogUrl: 'https://datos.gob.es/gl/catalogo/l01100377-inventario-informativo-del-patrimonio-de-la-ribera-del-marco',
+      license: 'Consultar condiciones de la fuente',
+      notes: 'Inventario local con categorías arqueológicas, etnográficas, hidráulicas y ambientales de La Ribera del Marco. Cobertura local de Cáceres; no es una capa nacional.'
+    },
+    {
+      id: 'madrid-bic-inmuebles',
+      label: 'Comunidad de Madrid · inmuebles BIC (443 registros)',
+      publisher: 'Comunidad de Madrid · Dirección General de Patrimonio Cultural',
+      format: 'JSON',
+      urls: ['https://datos.comunidad.madrid/dataset/dde86e1d-a06b-4f65-8668-920a566fa264/resource/c243eee1-2c1e-4dfc-92b8-624a5bb5ed8b/download/inmuebles_bic.json'],
+      catalogUrl: 'https://datos.gob.es/es/catalogo/a13002908-patrimonio-cultural-protegido-en-la-comunidad-de-madrid',
+      license: 'CC BY 4.0',
+      notes: 'Registro público de inmuebles BIC. La distribución aporta municipio y denominación, pero no coordenadas; Arqueo Atlas conserva el registro y permite completar una envolvente aproximada.'
+    },
+    {
+      id: 'barcelona-carta-2022-local',
+      label: 'Barcelona · Carta arqueológica 2022 (copia local trazable)',
+      publisher: 'Ajuntament de Barcelona · Servei d’Arqueologia',
+      format: 'GeoJSON local',
+      urls: ['./datos/barcelona-carta-2022.geojson'],
+      catalogUrl: 'https://datos.gob.es/es/catalogo/l01080193-carta-arqueologica-de-la-ciudad-de-barcelona',
+      license: 'CC BY 4.0',
+      notes: 'Copia local de la distribución pública 2022 incluida para evitar el bloqueo CORS del servidor original. Conserva geometrías y propiedades publicadas; cobertura Barcelona.'
     }
   ];
 
@@ -94,6 +124,30 @@
       description: 'Capa estatal de poblaciones aisladas según el criterio ambiental del RD 1481/2001. Ayuda a localizar asentamientos remotos, pero no debe confundirse con despoblados históricos ni con yacimientos.',
       url: 'https://datos.gob.es/es/catalogo/e0dat0002-poblaciones-aisladas',
       downloadUrl: 'https://www.miteco.gob.es/es/cartografia-y-sig/ide/descargas/poblaciones-aisladas_tcm30-450725.zip',
+      license: 'CC BY 4.0'
+    },
+    {
+      group: 'Arqueología · fuentes autonómicas',
+      label: 'Barcelona · Carta arqueológica (2014–2022)',
+      description: 'Conjunto oficial del Servei d’Arqueologia de Barcelona con cartas anuales en GeoJSON/KMZ y restos documentados desde la prehistoria hasta la Guerra Civil. El servidor municipal no permite lectura CORS desde la aplicación, por lo que se ofrece como descarga local trazable.',
+      url: 'https://datos.gob.es/es/catalogo/l01080193-carta-arqueologica-de-la-ciudad-de-barcelona',
+      downloadUrl: 'https://opendata-ajuntament.barcelona.cat/data/dataset/b58a1160-0d27-45d3-91a6-f93efee0c916/resource/98f39a8e-7d76-4789-b275-b1160ed8bf65/download',
+      license: 'CC BY 4.0'
+    },
+    {
+      group: 'Arqueología · fuentes autonómicas',
+      label: 'Cáceres · Inventario de La Ribera del Marco',
+      description: 'Servicio WFS/GeoJSON local con elementos arqueológicos, etnográficos, hidráulicos y ambientales. Se carga directamente desde el navegador y sus atributos se conservan en la ficha.',
+      url: 'https://datos.gob.es/gl/catalogo/l01100377-inventario-informativo-del-patrimonio-de-la-ribera-del-marco',
+      downloadUrl: 'https://ide.caceres.es/geoserver/Archivo_Historico/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=Archivo_Historico%3ARIBERA&outputFormat=application%2Fjson',
+      license: 'Consultar condiciones de la fuente'
+    },
+    {
+      group: 'Arqueología · fuentes autonómicas',
+      label: 'Comunidad de Madrid · patrimonio cultural protegido',
+      description: 'Registro público de bienes BIC/BIP, incluidos bienes con categoría arqueológica o paleontológica. La distribución de inmuebles aporta 443 registros con municipio y denominación, pero no coordenadas puntuales.',
+      url: 'https://datos.gob.es/es/catalogo/a13002908-patrimonio-cultural-protegido-en-la-comunidad-de-madrid',
+      downloadUrl: 'https://datos.comunidad.madrid/dataset/dde86e1d-a06b-4f65-8668-920a566fa264/resource/c243eee1-2c1e-4dfc-92b8-624a5bb5ed8b/download/inmuebles_bic.json',
       license: 'CC BY 4.0'
     },
     {
@@ -329,7 +383,7 @@
   function makeRecord(raw, source, index) {
     const incoming = raw?.type === 'Feature' ? raw : (raw?.geometry ? { type: 'Feature', geometry: raw.geometry, properties: raw.properties || raw } : { type: 'Feature', geometry: null, properties: raw || {} });
     const properties = { ...(incoming.properties || {}) };
-    const name = pickValue(properties, ['nombre', 'name', 'denominacion', 'denominación', 'yacimiento', 'sitio', 'site', 'toponimo', 'topónimo', 'title']) || `Registro ${index + 1}`;
+    const name = pickValue(properties, ['nombre', 'name', 'denominacion', 'denominación', 'denominacion_registral', 'denominación registral', 'yacimiento', 'sitio', 'site', 'toponimo', 'topónimo', 'title']) || `Registro ${index + 1}`;
     const point = pointFromRecord(incoming, properties);
     let geometry = incoming.geometry || null;
     if (!geometry && point) geometry = { type: 'Point', coordinates: [point.lng, point.lat] };
