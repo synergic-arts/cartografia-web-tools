@@ -19,6 +19,7 @@ Colección de herramientas web abiertas para cartografía, rutas y datos geoespa
 - [Cartotecnia Next](herramientas/cartotecnia-next/): actualización del visor histórico de Cartotecnia con capas IGN/SCUAM, búsqueda, consulta de coordenadas, opciones de imagen, cortina y créditos.
 - [GeoJSON QA](herramientas/geojson-qa/): control local de calidad para geometrías vacías, coordenadas fuera de rango, anillos abiertos, vértices duplicados y entidades repetidas, con informes JSON/CSV y copia revisada.
 - [Arqueo Atlas](herramientas/arqueo-atlas/): atlas arqueológico local que agrega fuentes públicas, filtra por cronología, conserva procedencia, exporta inventarios y busca fotografías relacionadas en Wikimedia Commons.
+- [Topo Profile](herramientas/topo-profile/): perfil topográfico local desde CSV, JSON, GeoJSON o GPX, con distancia acumulada, ascensos, pendientes, gráfico interactivo y exportación.
 
 Carto Local AI funciona sin servidor: el modo rápido calcula métricas y recomendaciones en JavaScript. Si el navegador ofrece WebGPU, el usuario puede pulsar «Preparar IA local» para cargar explícitamente `Llama-3.2-1B-Instruct-q4f16_1-MLC` mediante WebLLM; el primer arranque descarga y almacena la caché del modelo en ese navegador. La aplicación no envía el GeoJSON a un backend propio.
 
