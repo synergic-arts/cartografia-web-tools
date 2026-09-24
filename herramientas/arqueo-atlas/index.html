@@ -15,7 +15,7 @@
     <section class="layout">
       <aside class="panel controls">
         <p class="eyebrow">Fuentes públicas</p>
-        <label class="drop" for="fileInput"><input id="fileInput" type="file" accept=".geojson,.json,.zip,application/geo+json,application/json,application/zip" hidden><b>＋ Abrir capa local</b><small>GeoJSON, JSON o Shapefile ZIP. No se sube.</small></label>
+        <label class="drop" for="fileInput"><input id="fileInput" type="file" accept=".geojson,.json,.csv,.zip,application/geo+json,application/json,text/csv,application/zip" hidden><b>＋ Abrir capa local</b><small>GeoJSON, JSON, CSV o Shapefile ZIP. No se sube.</small></label>
         <label class="field"><span>Fuente del catálogo</span><select id="sourceSelect"></select></label>
         <div class="button-row"><button id="loadSourceBtn" class="primary" type="button">Cargar fuente</button><button id="exampleBtn" class="secondary" type="button">Ejemplo</button></div>
         <div class="source-card" id="sourceMeta">Selecciona una fuente para ver su cobertura, licencia y enlace oficial.</div>
@@ -50,6 +50,6 @@
   <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
   <script src="https://cdn.jsdelivr.net/npm/shpjs@6.1.0/dist/shp.js"></script>
   <script src="../place-search.js?v=place-search-1"></script>
-  <script src="app.js?v=arqueo-atlas-2"></script>
+  <script src="app.js?v=arqueo-atlas-3"></script>
 </body>
 </html>

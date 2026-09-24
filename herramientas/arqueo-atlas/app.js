@@ -4,8 +4,11 @@
       id: 'malaga-2026',
       label: 'Málaga · yacimientos arqueológicos 2026',
       publisher: 'Diputación Provincial de Málaga',
-      format: 'JSON',
-      urls: ['https://opendata.malaga.es/dataset/c396a724-769e-4298-9e4e-5da74e6236da/resource/fe819fb6-5a32-42d8-bc18-a15b6e2eda8f/download/yacimientos-arqueologicos_2026.json'],
+      format: 'JSON / CSV',
+      urls: [
+        'https://opendata.malaga.es/dataset/c396a724-769e-4298-9e4e-5da74e6236da/resource/fe819fb6-5a32-42d8-bc18-a15b6e2eda8f/download/yacimientos-arqueologicos_2026.json',
+        'https://opendata.malaga.es/dataset/c396a724-769e-4298-9e4e-5da74e6236da/resource/6601657b-0e2c-489a-9bbb-e5d0af3d50fe/download/yacimientos-arqueologicos_2026.csv'
+      ],
       catalogUrl: 'https://datos.gob.es/es/catalogo/l02000029-yacimientos-arqueologicos',
       license: 'CC BY 4.0',
       notes: 'Inventario provincial con registros publicados por el portal de datos abiertos de Málaga.'
@@ -32,6 +35,26 @@
       catalogUrl: 'https://datos.gob.es/es/catalogo/a15002917-yacimientos-arqueologicos1',
       license: 'CC BY 4.0',
       notes: 'Capa de polígonos de yacimientos arqueológicos declarados Bien de Interés Cultural en Navarra.'
+    },
+    {
+      id: 'cyl-poblacion-recintos',
+      label: 'Castilla y León · entidades, asentamientos y despoblados',
+      publisher: 'Junta de Castilla y León',
+      format: 'GeoJSON',
+      urls: ['https://analisis.datosabiertos.jcyl.es/api/explore/v2.1/catalog/datasets/sunuc_urb_cyl_recintos/exports/geojson?lang=es&timezone=Europe%2FMadrid'],
+      catalogUrl: 'https://analisis.datosabiertos.jcyl.es/explore/dataset/sunuc_urb_cyl_recintos/',
+      license: 'Licencia de datos abiertos de Castilla y León',
+      notes: 'Capa oficial de recintos que incluye núcleos, asentamientos diseminados, despoblados y otros espacios relacionados. Cobertura Castilla y León; no es un inventario nacional.'
+    },
+    {
+      id: 'miteco-poblaciones-aisladas',
+      label: 'MITECO · poblaciones aisladas de España (2018)',
+      publisher: 'Ministerio para la Transición Ecológica y el Reto Demográfico',
+      format: 'Shapefile ZIP',
+      urls: ['https://www.miteco.gob.es/es/cartografia-y-sig/ide/descargas/poblaciones-aisladas_tcm30-450725.zip'],
+      catalogUrl: 'https://datos.gob.es/es/catalogo/e0dat0002-poblaciones-aisladas',
+      license: 'CC BY 4.0',
+      notes: 'Capa nacional de poblaciones aisladas conforme a la definición del RD 1481/2001, actualizada en 2018. Es contexto de asentamientos remotos, no un inventario de despoblados históricos.'
     }
   ];
 
@@ -41,6 +64,13 @@
       label: 'IGN · Nomenclátor Geográfico Básico de España (WFS)',
       description: 'Lugares nombrados y asentamientos con geometría oficial. Sirve para contextualizar topónimos y completar áreas, pero no clasifica por sí solo todos los despoblados.',
       url: 'https://www.ign.es/wfs-inspire/ngbe?service=WFS&request=GetCapabilities',
+      license: 'CC BY 4.0 IGN'
+    },
+    {
+      group: 'Nacional · población',
+      label: 'IGN · Información Geográfica de Referencia de Poblaciones',
+      description: 'Geometrías y denominaciones de núcleos, poblaciones y agrupaciones no residenciales. Es una base nacional de referencia para localizar entidades y contrastar despoblados, no una capa arqueológica.',
+      url: 'https://datos.gob.es/es/catalogo/e00125901-https-centrodedescargas-cnig-es-centrodescargas-poblaciones',
       license: 'CC BY 4.0 IGN'
     },
     {
@@ -55,8 +85,16 @@
       label: 'Castilla y León · límites de entidades y despoblados',
       description: 'Capa autonómica que declara incluir núcleos, asentamientos diseminados, despoblados y otros recintos. No se presenta como inventario nacional.',
       url: 'https://datos.gob.es/es/catalogo/a07002862-limites-de-entidades-de-poblacion-de-castilla-y-leon-recintos',
-      downloadUrl: 'https://datosabiertos.jcyl.es/web/jcyl/risp/es/medio-ambiente/limites-entidades-poblacion-recintos/1284872029895.shp',
-      license: 'Licencia IGCyL'
+      downloadUrl: 'https://analisis.datosabiertos.jcyl.es/api/explore/v2.1/catalog/datasets/sunuc_urb_cyl_recintos/exports/geojson?lang=es&timezone=Europe%2FMadrid',
+      license: 'Licencia de datos abiertos de Castilla y León'
+    },
+    {
+      group: 'Despoblados · geometría publicada',
+      label: 'MITECO · poblaciones aisladas de España',
+      description: 'Capa estatal de poblaciones aisladas según el criterio ambiental del RD 1481/2001. Ayuda a localizar asentamientos remotos, pero no debe confundirse con despoblados históricos ni con yacimientos.',
+      url: 'https://datos.gob.es/es/catalogo/e0dat0002-poblaciones-aisladas',
+      downloadUrl: 'https://www.miteco.gob.es/es/cartografia-y-sig/ide/descargas/poblaciones-aisladas_tcm30-450725.zip',
+      license: 'CC BY 4.0'
     },
     {
       group: 'Arqueología · fuentes autonómicas',
@@ -147,6 +185,21 @@
       referenceLinks: [
         { label: 'Ruiz de Alda · Cuenca del Segura 1929-1930', url: 'https://centrodedescargas.cnig.es/CentroDescargas/vuelo-ruiz-alda-cuenca-segura' },
         { label: 'Ruiz de Alda · fotoplanos Cuenca del Ebro 1927', url: 'https://centrodedescargas.cnig.es/CentroDescargas/novedades?codSerie=FPLEB' }
+      ]
+    },
+    {
+      id: 'miteco-aisladas',
+      label: 'MITECO · poblaciones aisladas (capa de contexto)',
+      url: 'https://wms.mapama.gob.es/sig/EvaluacionAmbiental/Residuos/PobAisladas/wms.aspx',
+      capabilities: 'https://wms.mapama.gob.es/sig/EvaluacionAmbiental/Residuos/PobAisladas/wms.aspx?request=GetCapabilities&service=WMS',
+      attribution: '© MITECO · Poblaciones aisladas',
+      layers: [],
+      referenceOnly: true,
+      referenceHint: 'Este servicio se consulta en el catálogo MITECO; si el navegador bloquea la descarga por CORS, abre el ZIP oficial y cárgalo como capa local.',
+      referenceUrl: 'https://datos.gob.es/es/catalogo/e0dat0002-servicio-wms-web-map-service-poblaciones-aisladas',
+      referenceLinks: [
+        { label: 'Descargar Shapefile ZIP', url: 'https://www.miteco.gob.es/es/cartografia-y-sig/ide/descargas/poblaciones-aisladas_tcm30-450725.zip' },
+        { label: 'Abrir servicio WMS', url: 'https://wms.mapama.gob.es/sig/EvaluacionAmbiental/Residuos/PobAisladas/wms.aspx' }
       ]
     }
   ];
@@ -348,7 +401,7 @@
         const key = layerKey(service.id, layer.name);
         return `<label class="layer-row"><input type="checkbox" data-imagery-key="${escapeHtml(key)}" ${state.imageryLayers.has(key) ? 'checked' : ''}><span><b>${escapeHtml(layer.title || layer.name)}</b><small>${escapeHtml(layer.name)}</small></span></label>`;
       }).join('');
-      const reference = service.referenceOnly ? `<p class="hint">Este servicio se abre en la Fototeca para consultar huellas y fotogramas; el WMS histórico del PNOA contiene las ortofotos publicadas.</p><a href="${escapeHtml(service.referenceUrl)}" target="_blank" rel="noreferrer">Abrir Fototeca digital ↗</a>${(service.referenceLinks || []).map((link) => `<a href="${escapeHtml(link.url)}" target="_blank" rel="noreferrer">${escapeHtml(link.label)} ↗</a>`).join('')}` : '';
+      const reference = service.referenceOnly ? `<p class="hint">${escapeHtml(service.referenceHint || 'Este servicio se abre en su catálogo oficial; el WMS histórico del PNOA contiene las ortofotos publicadas.')}</p><a href="${escapeHtml(service.referenceUrl)}" target="_blank" rel="noreferrer">Abrir catálogo oficial ↗</a>${(service.referenceLinks || []).map((link) => `<a href="${escapeHtml(link.url)}" target="_blank" rel="noreferrer">${escapeHtml(link.label)} ↗</a>`).join('')}` : '';
       return `<details class="layer-service" open><summary>${escapeHtml(service.label)} <small>${service.layers.length} capas</small></summary>${layers || reference}</details>`;
     }).join('');
   }
@@ -628,13 +681,44 @@
 
   function sourceById(id) { return SOURCES.find((source) => source.id === id); }
 
+  function parseCsvText(text) {
+    const input = String(text || '').replace(/^\uFEFF/, '');
+    const firstLine = input.split(/\r?\n/, 1)[0] || '';
+    const candidates = [';', ',', '\t'];
+    const delimiter = candidates.sort((a, b) => (firstLine.split(b).length - 1) - (firstLine.split(a).length - 1))[0];
+    const rows = [];
+    let row = [];
+    let cell = '';
+    let quoted = false;
+    for (let index = 0; index < input.length; index += 1) {
+      const char = input[index];
+      if (char === '"') {
+        if (quoted && input[index + 1] === '"') { cell += '"'; index += 1; }
+        else quoted = !quoted;
+      } else if (char === delimiter && !quoted) {
+        row.push(cell.trim()); cell = '';
+      } else if ((char === '\n' || char === '\r') && !quoted) {
+        if (char === '\r' && input[index + 1] === '\n') index += 1;
+        row.push(cell.trim()); cell = '';
+        if (row.some((value) => value !== '')) rows.push(row);
+        row = [];
+      } else cell += char;
+    }
+    if (cell || row.length) { row.push(cell.trim()); if (row.some((value) => value !== '')) rows.push(row); }
+    if (!rows.length) return [];
+    const headers = rows.shift().map((header, index) => header || `campo_${index + 1}`);
+    return rows.map((values) => headers.reduce((record, header, index) => { record[header] = values[index] ?? ''; return record; }, {}));
+  }
+
   async function parseResponse(response, url) {
-    const isZip = url.toLowerCase().endsWith('.zip') || (response.headers.get('content-type') || '').includes('zip');
+    const contentType = response.headers.get('content-type') || '';
+    const isZip = url.toLowerCase().endsWith('.zip') || contentType.includes('zip');
     if (isZip) {
       if (typeof window.shp !== 'function') throw new Error('No se ha cargado el lector Shapefile.');
       return window.shp(await response.arrayBuffer());
     }
     const text = await response.text();
+    if (url.toLowerCase().endsWith('.csv') || contentType.includes('csv') || contentType.includes('text/plain')) return parseCsvText(text);
     try { return JSON.parse(text); } catch { throw new Error('La respuesta no es JSON/GeoJSON válido.'); }
   }
 
@@ -672,14 +756,17 @@
   }
 
   async function loadFile(file) {
-    const source = { id: `local-${Date.now()}`, label: `Archivo local · ${file.name}`, publisher: 'Archivo aportado por el usuario', format: file.name.toLowerCase().endsWith('.zip') ? 'Shapefile ZIP' : 'GeoJSON / JSON', urls: [], catalogUrl: '', license: 'Según el archivo', notes: 'Cargado localmente; no se ha transmitido a ningún servidor.' };
+    const extension = file.name.toLowerCase();
+    const format = extension.endsWith('.zip') ? 'Shapefile ZIP' : (extension.endsWith('.csv') ? 'CSV' : 'GeoJSON / JSON');
+    const source = { id: `local-${Date.now()}`, label: `Archivo local · ${file.name}`, publisher: 'Archivo aportado por el usuario', format, urls: [], catalogUrl: '', license: 'Según el archivo', notes: 'Cargado localmente; no se ha transmitido a ningún servidor.' };
     setStatus(`Analizando ${file.name} en este navegador…`);
     try {
       let payload;
       if (file.name.toLowerCase().endsWith('.zip')) {
         if (typeof window.shp !== 'function') throw new Error('No se ha cargado el lector Shapefile.');
         payload = await window.shp(await file.arrayBuffer());
-      } else payload = JSON.parse(await file.text());
+      } else if (extension.endsWith('.csv')) payload = parseCsvText(await file.text());
+      else payload = JSON.parse(await file.text());
       addPayload(payload, source);
     } catch (error) { setStatus(`No se pudo leer ${file.name}: ${error.message}`, 'error'); }
   }
