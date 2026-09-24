@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Reproyección local de capas GeoJSON entre WGS84 y UTM con control de zona y hemisferio.">
+  <title>GeoJSON Reproject · reproyección local</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
+  <link rel="stylesheet" href="styles.css">
+  <style>#mapFallback[hidden]{display:none!important}</style>
+</head>
+<body>
+  <header><a class="back" href="../">← Catálogo</a><div><strong>GeoJSON Reproject</strong><span>WGS84 · UTM · ETRS89 · local</span></div><span class="privacy">sin backend propio</span></header>
+  <main>
+    <section class="hero"><p class="eyebrow">26 · SISTEMAS DE REFERENCIA · CLIENTE · LOCAL</p><h1>Reproyecta una capa sin abandonar el navegador.</h1><p>Convierte geometrías GeoJSON entre WGS84 lon/lat y UTM. Define zona y hemisferio, conserva atributos y visualiza el resultado sobre un mapa para revisar que la transformación sea coherente.</p></section>
+    <section class="layout">
+      <div class="panel controls">
+        <label class="drop" for="fileInput"><input id="fileInput" type="file" accept=".geojson,.json,application/geo+json,application/json" hidden><b>＋ Abrir GeoJSON</b><small>El archivo se lee y transforma en este navegador. No se sube.</small></label>
+        <div class="sample-row"><button id="exampleBtn" class="secondary" type="button">Cargar ejemplo</button><button id="clearBtn" class="secondary" type="button">Limpiar</button></div>
+        <p id="status" class="status" role="status">Sin capa cargada</p>
+        <div class="crs-grid">
+          <fieldset><legend>Origen</legend><label for="sourceCrs">Sistema</label><select id="sourceCrs"><option value="wgs84">WGS84 geográficas · EPSG:4326</option><option value="utm-etrs89">UTM ETRS89 · EPSG:258xx</option><option value="utm-wgs84">UTM WGS84 · EPSG:326xx/327xx</option></select><div class="zone-row"><label for="sourceZone">Zona UTM</label><input id="sourceZone" type="number" min="1" max="60" value="30" inputmode="numeric"><select id="sourceHemisphere" aria-label="Hemisferio de origen"><option value="N">Norte</option><option value="S">Sur</option></select></div><small id="sourceCode" class="crs-code">EPSG:4326</small></fieldset>
+          <fieldset><legend>Destino</legend><label for="targetCrs">Sistema</label><select id="targetCrs"><option value="wgs84">WGS84 geográficas · EPSG:4326</option><option value="utm-etrs89" selected>UTM ETRS89 · EPSG:258xx</option><option value="utm-wgs84">UTM WGS84 · EPSG:326xx/327xx</option></select><div class="zone-row"><label for="targetZone">Zona UTM</label><input id="targetZone" type="number" min="1" max="60" value="30" inputmode="numeric"><select id="targetHemisphere" aria-label="Hemisferio de destino"><option value="N">Norte</option><option value="S">Sur</option></select></div><small id="targetCode" class="crs-code">EPSG:25830</small><button id="autoZoneBtn" class="mini-action" type="button">Inferir zona desde el centro</button></fieldset>
+        </div>
+        <div id="summary" hidden><div class="stats"><div><span>Features</span><b id="featureCount">—</b></div><div><span>Vértices</span><b id="vertexCount">—</b></div><div><span>Geometrías</span><b id="geometryCount">—</b></div><div><span>EPSG destino</span><b id="outputCode">—</b></div></div><p class="hint">La conversión usa el elipsoide WGS84. ETRS89 se trata como coincidente a escala cartográfica web; para precisión geodésica o transformaciones oficiales, valida el resultado en un SIG con la rejilla adecuada.</p><div class="actions"><button id="processBtn" class="action" type="button">Reproyectar capa</button><button id="downloadBtn" class="action secondary-action" type="button" disabled>Descargar GeoJSON reproyectado</button></div></div>
+      </div>
+      <div class="panel map-panel"><div id="placeSearch" class="cartografia-place-search map-place-search" role="search" aria-label="Buscar un lugar"><label for="placeQuery">Buscar lugar</label><input id="placeQuery" type="search" placeholder="Buscar lugar…" autocomplete="off"><button id="placeSearchButton" type="button">Buscar</button><div id="placeResults" class="cartografia-place-results" role="listbox" hidden></div><p id="placeStatus" class="cartografia-place-status" role="status">Busca un topónimo para centrar el mapa.</p></div><div id="map" aria-label="Vista previa de la capa original y reproyectada"></div><div id="mapFallback" hidden>El mapa no está disponible, pero la reproyección local sí funciona.</div><div class="legend"><span><i class="input-swatch"></i>Entrada</span><span><i class="output-swatch"></i>Salida</span></div></div>
+    </section>
+    <section class="panel guide"><div><p class="eyebrow">Control de transformación</p><h2>Qué conserva y qué debes revisar</h2></div><div class="guide-grid"><p><b>Geometría completa</b><br>Transforma puntos, líneas, polígonos, multipartes y GeometryCollection, incluidos anillos y vértices.</p><p><b>Atributos</b><br>Conserva properties, id y la estructura de cada Feature. El GeoJSON proyectado incluye un miembro <code>crs</code> informativo.</p><p><b>Zona y hemisferio</b><br>La zona UTM debe coincidir con los datos; la inferencia usa el centro de la extensión geográfica.</p><p><b>Precisión</b><br>La vista previa vuelve a WGS84 para dibujarse en Leaflet. Comprueba datum, huso y unidades antes de entregar.</p></div></section>
+    <p class="note"><b>Privacidad y atribución:</b> la capa permanece en el navegador y no se envía a un servidor propio. La búsqueda opcional de lugares usa Nominatim/OpenStreetMap y sólo transmite el texto que escribas. El mapa base se sirve desde OpenStreetMap; respeta sus <a href="https://operations.osmfoundation.org/policies/tiles/" target="_blank" rel="noopener">condiciones de uso</a>.</p>
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+  <script src="../place-search.js?v=place-search-1"></script>
+  <script src="app.js?v=geojson-reproject-1"></script>
+</body>
+</html>
