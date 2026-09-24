@@ -22,6 +22,7 @@ Colección de herramientas web abiertas para cartografía, rutas y datos geoespa
 - [Topo Profile](herramientas/topo-profile/): perfil topográfico local desde CSV, JSON, GeoJSON o GPX, con distancia acumulada, ascensos, pendientes, gráfico interactivo y exportación.
 - [Field Notes](herramientas/field-notes/): cuaderno de campo local con GPS, observaciones, fotografías reducidas, importación y exportación GeoJSON/CSV.
 - [Transect Planner](herramientas/transect-planner/): diseño local de transectos orientables, puntos de muestreo, métricas y exportación GeoJSON/CSV para campañas de campo.
+- [Map Layout Studio](herramientas/map-layout/): composición local de mapas PNG desde GeoJSON, con título, cuadrícula, escala, flecha norte, leyenda y temas visuales.
 
 Carto Local AI funciona sin servidor: el modo rápido calcula métricas y recomendaciones en JavaScript. Si el navegador ofrece WebGPU, el usuario puede pulsar «Preparar IA local» para cargar explícitamente `Llama-3.2-1B-Instruct-q4f16_1-MLC` mediante WebLLM; el primer arranque descarga y almacena la caché del modelo en ese navegador. La aplicación no envía el GeoJSON a un backend propio.
 

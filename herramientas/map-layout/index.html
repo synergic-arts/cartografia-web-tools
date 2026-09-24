@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="description" content="Compositor cartográfico local para convertir GeoJSON en mapas PNG con título, leyenda, escala y orientación.">
+  <title>Map Layout Studio · Cartografía Web Tools</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="topbar"><a href="../">← Catálogo</a><div><strong>Map Layout Studio</strong><span>composición · impresión · GeoJSON</span></div><span class="privacy">100% local</span></header>
+  <main>
+    <section class="hero"><p class="eyebrow">19 · CARTOGRAFÍA DE SALIDA</p><h1>Convierte tus datos en un mapa listo para compartir.</h1><p>Carga un GeoJSON, añade la información cartográfica esencial y exporta una imagen PNG desde el navegador. Tus datos no salen del dispositivo.</p></section>
+    <section class="workspace">
+      <aside class="panel controls">
+        <div class="section-title"><div><p class="eyebrow">Composición</p><h2>Diseño del mapa</h2></div><span id="featureCount" class="badge">sin capa</span></div>
+        <label class="file-drop"><span>GeoJSON local</span><input id="file" type="file" accept=".json,.geojson,application/geo+json,application/json"><small>Arrastra un archivo o pulsa para seleccionarlo.</small></label>
+        <div class="actions"><button id="demoBtn" type="button" class="secondary">Cargar ejemplo</button><button id="clearBtn" type="button" class="danger">Limpiar</button></div>
+        <label class="field">Título<input id="title" maxlength="90" value="Mapa de trabajo" placeholder="Título del mapa"></label>
+        <label class="field">Subtítulo<input id="subtitle" maxlength="130" value="Inventario cartográfico · edición local" placeholder="Fuente, fecha o área"></label>
+        <div class="fields two"><label>Formato<select id="orientation"><option value="landscape">Apaisado</option><option value="portrait">Vertical</option></select></label><label>Tema<select id="theme"><option value="midnight">Noche cartográfica</option><option value="parchment">Papel histórico</option><option value="blueprint">Blueprint</option></select></label></div>
+        <fieldset><legend>Elementos</legend><label class="check"><input id="showGrid" type="checkbox" checked><span>Cuadrícula y coordenadas</span></label><label class="check"><input id="showNorth" type="checkbox" checked><span>Flecha norte</span></label><label class="check"><input id="showScale" type="checkbox" checked><span>Barra de escala</span></label><label class="check"><input id="showLegend" type="checkbox" checked><span>Leyenda de geometrías</span></label></fieldset>
+        <button id="exportBtn" type="button" class="primary wide" disabled>Descargar mapa PNG</button><p id="status" class="status" role="status">Carga un GeoJSON o usa el ejemplo para empezar.</p>
+        <div class="summary"><span>Archivo</span><b id="fileName">—</b><span>Extensión</span><b id="extent">—</b><span>Geometrías</span><b id="geometryTypes">—</b></div>
+      </aside>
+      <section class="panel preview-panel" aria-label="Previsualización cartográfica"><div class="preview-head"><div><p class="eyebrow">Previsualización</p><h2>Salida cartográfica</h2></div><span>PNG · alta resolución</span></div><div class="canvas-wrap"><canvas id="mapCanvas" width="1200" height="800" aria-label="Previsualización del mapa compuesto"></canvas></div><p class="preview-note">El mapa se dibuja en un lienzo independiente y puede descargarse para informes, presentaciones o revisión de campo. Las coordenadas se interpretan como longitud/latitud WGS84.</p></section>
+    </section>
+    <p class="privacy-note"><b>Privacidad:</b> el archivo se lee y procesa en este navegador. La exportación es una descarga local; no hay backend, cuenta ni almacenamiento remoto.</p>
+  </main>
+  <script src="app.js?v=map-layout-1"></script>
+</body>
+</html>
