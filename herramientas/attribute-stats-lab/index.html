@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Resumen estadístico local de atributos GeoJSON con mapa graduado y exportación.">
+  <title>Attribute Stats Lab · Cartografía Web Tools</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main>
+    <a class="back" href="../">← Catálogo</a>
+    <header class="hero">
+      <p class="eyebrow">38 · DATOS · CLIENTE · LOCAL</p>
+      <h1>Attribute Stats Lab</h1>
+      <p class="lede">Explora la distribución de un atributo GeoJSON, detecta valores ausentes y genera una lectura cartográfica graduada sin subir los datos.</p>
+    </header>
+
+    <section class="panel controls" aria-labelledby="input-title">
+      <div class="section-heading"><div><p class="eyebrow">01 · ENTRADA</p><h2 id="input-title">Una capa GeoJSON</h2></div><span class="badge">sin backend propio</span></div>
+      <div class="control-grid">
+        <label class="file-control">Cargar GeoJSON
+          <input id="fileInput" type="file" accept=".json,.geojson,application/json,application/geo+json">
+          <span id="fileName">Ningún archivo seleccionado</span>
+        </label>
+        <label>Atributo numérico
+          <select id="field" disabled><option>Primero carga una capa</option></select>
+        </label>
+        <label>Clases cartográficas
+          <select id="classCount"><option value="3">3</option><option value="4">4</option><option value="5" selected>5</option><option value="6">6</option><option value="7">7</option></select>
+        </label>
+      </div>
+      <div class="button-row">
+        <button id="exampleBtn" class="secondary">Cargar ejemplo</button>
+        <button id="clearBtn" class="secondary">Limpiar</button>
+        <button id="runBtn" disabled>Analizar atributo</button>
+      </div>
+      <p id="status" class="status" role="status">Carga una capa o usa el ejemplo.</p>
+    </section>
+
+    <section id="summary" class="panel" hidden aria-labelledby="summary-title">
+      <div class="section-heading"><div><p class="eyebrow">02 · RESUMEN</p><h2 id="summary-title">Lectura estadística</h2></div><span id="fieldLabel" class="badge">—</span></div>
+      <div class="metrics">
+        <div class="metric"><span>Entidades</span><strong id="featureCount">—</strong></div>
+        <div class="metric"><span>Valores válidos</span><strong id="validCount">—</strong></div>
+        <div class="metric"><span>Ausentes / no numéricos</span><strong id="missingCount">—</strong></div>
+        <div class="metric"><span>Media</span><strong id="mean">—</strong></div>
+        <div class="metric"><span>Mediana</span><strong id="median">—</strong></div>
+        <div class="metric"><span>Desviación típica</span><strong id="stddev">—</strong></div>
+        <div class="metric"><span>Mínimo</span><strong id="minimum">—</strong></div>
+        <div class="metric"><span>Máximo</span><strong id="maximum">—</strong></div>
+      </div>
+      <div class="detail-grid">
+        <article class="subpanel"><div class="subheading"><h3>Distribución</h3><span id="histogramHint">—</span></div><div id="histogram" class="histogram" role="img" aria-label="Histograma del atributo"></div></article>
+        <article class="subpanel"><div class="subheading"><h3>Categorías</h3><label>Campo <select id="categoryField" disabled><option>—</option></select></label></div><div class="table-wrap"><table><thead><tr><th>Valor</th><th>Entidades</th><th>%</th></tr></thead><tbody id="categoryBody"><tr><td colspan="3" class="empty">No hay categorías.</td></tr></tbody></table></div></article>
+      </div>
+    </section>
+
+    <section class="panel" aria-labelledby="map-title">
+      <div class="section-heading"><div><p class="eyebrow">03 · MAPA</p><h2 id="map-title">Distribución espacial graduada</h2></div><span class="badge">cuantiles</span></div>
+      <div id="map" class="map" aria-label="Mapa de entidades coloreadas por clase">
+        <div class="map-place-search cartografia-place-search">
+          <label for="placeQuery">Buscar lugar</label>
+          <input id="placeQuery" type="search" placeholder="Buscar un lugar para centrar el mapa" autocomplete="off">
+          <button id="placeSearchButton" type="button">Buscar</button>
+          <div id="placeResults" class="cartografia-place-results" role="listbox" hidden></div>
+          <p id="placeStatus" class="cartografia-place-status">Busca un topónimo para centrar el mapa.</p>
+        </div>
+      </div>
+      <div class="legend" aria-label="Leyenda de clases"><span><i class="dot c1"></i> menor</span><span><i class="dot c2"></i></span><span><i class="dot c3"></i></span><span><i class="dot c4"></i></span><span><i class="dot c5"></i> mayor</span><span><i class="dot missing"></i> sin valor</span></div>
+      <p id="mapFallback" class="status" hidden>El mapa necesita cargar Leaflet con conexión. El resumen local sigue disponible.</p>
+    </section>
+
+    <section class="panel" aria-labelledby="export-title">
+      <div class="section-heading"><div><p class="eyebrow">04 · SALIDA</p><h2 id="export-title">Conserva el análisis</h2></div></div>
+      <div class="button-row"><button id="geojsonBtn" disabled>Descargar GeoJSON clasificado</button><button id="csvBtn" class="secondary" disabled>Descargar resumen CSV</button><button id="jsonBtn" class="secondary" disabled>Descargar estadísticas JSON</button></div>
+      <p class="note">Las clases se calculan por cuantiles y se añaden como <code>stats_class</code>; revisa los umbrales antes de comparar capas con distribuciones diferentes.</p>
+    </section>
+
+    <section class="privacy"><p class="eyebrow">MÉTODO Y PRIVACIDAD</p><p>El archivo se lee y procesa en este navegador. No se envía a un servidor propio ni se guarda fuera de la sesión. El mapa base usa teselas de <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>; Leaflet se carga desde un CDN público.</p></section>
+  </main>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+  <script src="../place-search.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
