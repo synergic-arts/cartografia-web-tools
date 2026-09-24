@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="description" content="Convierte tablas de coordenadas a GeoJSON, GPX y KML directamente en el navegador.">
+  <title>Coord Batch · tablas a capas</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="shell">
+    <a class="back" href="../">← Catálogo</a>
+    <p class="eyebrow">23 · DATOS · CLIENTE · LOCAL</p>
+    <h1>Convierte una tabla en una capa cartográfica.</h1>
+    <p class="lede">Carga o pega un CSV/TSV de puntos, valida sus coordenadas y exporta una capa lista para QGIS, ArcGIS, un GPS o un visor web. Los datos no salen de este navegador.</p>
+
+    <section class="layout">
+      <article class="panel input-panel">
+        <div class="panel-heading"><div><h2>1 · Entrada</h2><p class="hint">Se detectan automáticamente separadores y columnas habituales.</p></div><span class="local-badge">100 % local</span></div>
+        <div class="file-row"><label class="file-button" for="fileInput">Abrir CSV / TSV<input id="fileInput" type="file" accept=".csv,.tsv,.txt,text/csv,text/tab-separated-values" hidden></label><button id="sampleBtn" type="button">Usar ejemplo</button></div>
+        <label class="textarea-label" for="sourceText">Tabla de coordenadas<textarea id="sourceText" spellcheck="false" rows="9" placeholder="nombre,latitud,longitud&#10;Castillo,40.4168,-3.7038"></textarea></label>
+        <div class="options">
+          <label>Separador<select id="delimiter"><option value="auto">Automático</option><option value=",">Coma (,)</option><option value=";">Punto y coma (;)</option><option value="	">Tabulador</option></select></label>
+          <label>Latitud<select id="latField" disabled><option>—</option></select></label>
+          <label>Longitud<select id="lonField" disabled><option>—</option></select></label>
+          <label>Nombre<select id="nameField" disabled><option value="">Sin nombre</option></select></label>
+        </div>
+        <button id="parseBtn" class="primary wide" type="button">Validar y mostrar puntos</button>
+        <p id="status" class="status" role="status" aria-live="polite">Pega una tabla o abre un archivo para empezar.</p>
+      </article>
+
+      <article class="panel map-panel">
+        <div class="panel-heading"><div><h2>2 · Revisión espacial</h2><p class="hint">Los puntos válidos aparecen en verde; los registros rechazados quedan en el informe.</p></div><span id="countBadge" class="count-badge">0 puntos</span></div>
+        <div id="map" class="map" aria-label="Vista previa de los puntos"></div>
+        <div id="mapFallback" class="map-fallback" hidden>La vista de mapa necesita conexión para cargar Leaflet. La validación y las exportaciones siguen disponibles.</div>
+      </article>
+    </section>
+
+    <section class="panel">
+      <div class="panel-heading"><div><h2>3 · Resultado y exportación</h2><p class="hint">Se conservan todas las columnas originales como propiedades.</p></div><span id="validBadge" class="valid-badge muted">Sin validar</span></div>
+      <div class="stats" aria-live="polite"><div><span>Registros</span><strong id="totalStat">—</strong></div><div><span>Válidos</span><strong id="validStat">—</strong></div><div><span>Rechazados</span><strong id="invalidStat">—</strong></div><div><span>Extensión</span><strong id="extentStat">—</strong></div></div>
+      <div id="tableWrap" class="table-wrap"><p class="empty">La vista previa aparecerá aquí después de validar.</p></div>
+      <div class="exports" role="group" aria-label="Formatos de exportación">
+        <button id="geojsonBtn" type="button" disabled><strong>GeoJSON</strong><small>Capa de puntos con propiedades</small></button>
+        <button id="gpxBtn" type="button" disabled><strong>GPX</strong><small>Waypoints para GPS</small></button>
+        <button id="kmlBtn" type="button" disabled><strong>KML</strong><small>Google Earth y visores</small></button>
+        <button id="csvBtn" type="button" disabled><strong>CSV limpio</strong><small>Tabla normalizada</small></button>
+      </div>
+      <p class="fineprint">La herramienta interpreta WGS84 en grados decimales. Comprueba el datum y el orden de columnas si tu fuente procede de otro sistema de referencia.</p>
+    </section>
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script src="app.js"></script>
+</body>
+</html>
