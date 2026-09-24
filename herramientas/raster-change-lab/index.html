@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Comparador local de imágenes raster para detectar cambios y exportar mapas de diferencias.">
+  <title>Raster Change Lab · Cartografía Web Tools</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="app">
+    <header class="hero"><a href="../">← Catálogo cartográfico</a><span class="badge">teledetección · local</span><h1>Raster Change Lab</h1><p>Compara dos imágenes raster renderizables en el navegador para revisar transformaciones, obras, incendios o cambios de cobertura sin subir los archivos.</p></header>
+    <section class="panel controls">
+      <h2>Imágenes de entrada</h2>
+      <div class="inputs"><label class="file before"><span>Imagen anterior</span><input id="beforeFile" type="file" accept="image/png,image/jpeg,image/webp"></label><label class="file after"><span>Imagen actual</span><input id="afterFile" type="file" accept="image/png,image/jpeg,image/webp"></label><button type="button" id="demo" class="secondary">Generar ejemplo</button><button type="button" id="clear" class="ghost">Limpiar</button></div>
+      <div class="filters"><label>Visualización<select id="mode"><option value="heat">Mapa de cambios</option><option value="blend">Mezcla temporal</option><option value="before">Solo anterior</option><option value="after">Solo actual</option></select></label><label>Umbral <input id="threshold" type="range" min="0" max="100" value="18"><output id="thresholdValue">18</output></label><label>Mezcla <input id="mix" type="range" min="0" max="100" value="50"><output id="mixValue">50%</output></label></div>
+      <p id="status" class="status" role="status" aria-live="polite">Carga dos imágenes o genera el ejemplo.</p>
+    </section>
+    <section class="metrics" id="metrics" aria-label="Métricas del cambio"></section>
+    <section class="panel preview"><div class="heading"><div><h2>Resultado</h2><p class="hint">El análisis se calcula píxel a píxel a resolución normalizada.</p></div><button type="button" id="export" class="primary" disabled>Exportar PNG</button></div><canvas id="canvas" aria-label="Mapa raster de diferencias"></canvas></section>
+    <section class="panel guide"><h2>Interpretación rápida</h2><div class="legend"><span><i class="stable"></i>Estable</span><span><i class="low"></i>Cambio leve</span><span><i class="high"></i>Cambio intenso</span></div><p class="privacy">Procesamiento local. Esta herramienta no corrige desplazamientos geométricos ni sustituye una corrección radiométrica; para comparar escenas reales, alinea previamente las imágenes y conserva sus metadatos.</p></section>
+  </main>
+  <script src="app.js"></script>
+</body>
+</html>
