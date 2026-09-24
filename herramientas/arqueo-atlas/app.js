@@ -306,6 +306,69 @@
     }
   ];
 
+  const cartoWms = (id, group, label, service, layerName, options = {}) => ({ id, group, label, short: options.short || 'WMS público', type: 'wms', service, layerName, format: options.format || 'image/png', transparent: options.transparent !== false, attribution: options.attribution || 'Servicio cartográfico público', opacity: options.opacity ?? .78 });
+  const cartoXyz = (id, group, label, url, options = {}) => ({ id, group, label, short: options.short || 'Teselas XYZ públicas', type: 'xyz', url, attribution: options.attribution || 'Teselas públicas', opacity: options.opacity ?? .84, maxZoom: options.maxZoom || 19 });
+  const IGN_PNOA = 'https://www.ign.es/wms/pnoa-historico';
+  const IGN_MDT = 'https://servicios.idee.es/wms-inspire/mdt';
+  const IGME_GEODE = 'https://mapas.igme.es/gis/services/Cartografia_Geologica/IGME_Geode_50/MapServer/WMSServer';
+  const IGME_MAGNA = 'https://mapas.igme.es/gis/services/Cartografia_Geologica/IGME_MAGNA_50/MapServer/WMSServer';
+  const IGME_TECTONIC = 'https://mapas.igme.es/gis/services/Cartografia_Tematica/IGME_Tectonico_1M/MapServer/WMSServer';
+  const IGME_EUROPE = 'https://mapas.igme.es/gis/services/Cartografia_Geologica/IGME_EP_Geologico_1M_2018/MapServer/WMSServer';
+  const IGME_MOVES = 'https://mapas.igme.es/gis/services/BasesDatos/IGME_BDMoves_ES/MapServer/WMSServer';
+
+  const CARTO_LAYER_CATALOG = [
+    cartoWms('carto-pnoa-current', 'IGN · relieve y teledetección', 'PNOA máxima actualidad', 'https://www.ign.es/wms-inspire/pnoa-ma', 'OI.OrthoimageCoverage', { format: 'image/jpeg', transparent: false, opacity: .9, short: 'Ortoimagen nacional · WMS', attribution: 'PNOA / IGN' }),
+    cartoWms('carto-pnoa-mosaic', 'IGN · relieve y teledetección', 'PNOA mosaico histórico disponible', 'https://www.ign.es/wms-inspire/pnoa-ma', 'OI.MosaicElement', { format: 'image/jpeg', transparent: false, short: 'Mosaico ortofotográfico · WMS', attribution: 'PNOA / IGN' }),
+    ...Array.from({ length: 21 }, (_, index) => { const year = 2024 - index; return cartoWms(`carto-pnoa-${year}`, 'IGN · ortofotos históricas', `PNOA anual ${year}`, IGN_PNOA, `PNOA${year}`, { format: 'image/jpeg', transparent: false, short: 'Ortofoto anual histórica · WMS', attribution: 'PNOA histórico / IGN-CNIG' }); }),
+    cartoWms('carto-sigpac', 'IGN · vuelos históricos', 'SIGPAC (1997–2003)', IGN_PNOA, 'SIGPAC', { short: 'Ortofoto histórica · WMS', attribution: 'IGN-CNIG · SIGPAC' }),
+    cartoWms('carto-olistat', 'IGN · vuelos históricos', 'OLISTAT (1997–1998)', IGN_PNOA, 'OLISTAT', { short: 'Ortofoto histórica · WMS', attribution: 'IGN-CNIG · OLISTAT' }),
+    cartoWms('carto-national', 'IGN · vuelos históricos', 'Vuelo Nacional (1981–1986)', IGN_PNOA, 'Nacional_1981-1986', { short: 'Fotografía aérea histórica · WMS', attribution: 'IGN-CNIG · Vuelo Nacional' }),
+    cartoWms('carto-interministerial', 'IGN · vuelos históricos', 'Vuelo Interministerial (1973–1986)', IGN_PNOA, 'Interministerial_1973-1986', { short: 'Fotografía aérea histórica · WMS', attribution: 'IGN-CNIG · Vuelo Interministerial' }),
+    cartoWms('carto-american-b', 'IGN · vuelos históricos', 'Vuelo Americano Serie B (1956–1957)', IGN_PNOA, 'AMS_1956-1957', { short: 'Fotografía aérea histórica · WMS', attribution: 'CEGET / IGN-CNIG' }),
+    cartoWms('carto-pnoa-flights', 'IGN · vuelos históricos', 'Años de los vuelos PNOA', IGN_PNOA, 'infoVuelos', { short: 'Índice de vuelos · WMS', attribution: 'IGN-CNIG' }),
+    cartoWms('carto-mtn-first', 'IGN · cartografía histórica', 'Primera edición MTN25', 'https://www.ign.es/wms/primera-edicion-mtn', 'MTN25', { short: 'Mapa topográfico histórico · WMS', attribution: 'IGN-CNIG' }),
+    cartoWms('carto-minutas', 'IGN · cartografía histórica', 'Minutas cartográficas (1870–1950)', 'https://www.ign.es/wms/minutas-cartograficas', 'Minutas', { short: 'Minutas históricas · WMS', attribution: 'IGN-CNIG' }),
+    cartoWms('carto-raster', 'IGN · cartografía histórica', 'Mapas raster del IGN', 'https://www.ign.es/wms-inspire/mapa-raster', 'mtn_rasterizado', { short: 'Cartografía raster · WMS', attribution: 'IGN-CNIG' }),
+    cartoWms('carto-mdt-relief', 'IGN · relieve', 'MDT · mapa del relieve (5 m)', IGN_MDT, 'relieve', { short: 'Modelo digital del terreno · WMS', attribution: 'IGN · MDT' }),
+    cartoWms('carto-mdt-hillshade', 'IGN · relieve', 'MDT · sombreado (5 m)', IGN_MDT, 'sombreado', { short: 'Sombreado del relieve · WMS', attribution: 'IGN · MDT' }),
+    cartoWms('carto-mdt-slope', 'IGN · relieve', 'MDT · pendientes (25 m)', IGN_MDT, 'Pendientes', { short: 'Pendientes · WMS', attribution: 'IGN · MDT' }),
+    cartoWms('carto-mdt-aspect', 'IGN · relieve', 'MDT · orientaciones (25 m)', IGN_MDT, 'Orientaciones', { short: 'Orientaciones · WMS', attribution: 'IGN · MDT' }),
+    cartoWms('carto-scuam-lopez', 'Cartografía histórica', 'SCUAM · Tomás López (1773)', 'https://guiadigital.uam.es/geoserver/atlas_lopez_UAM_WMS/wms?', 'ATLopez_Madrid_1773_lam1_UAM', { short: 'Mapa histórico georreferenciado · WMS', attribution: 'SCUAM / UAM' }),
+    cartoWms('carto-igme-ibiza', 'IGME · geología insular', 'Geológico de Ibiza y Formentera 1:100.000', 'https://mapas.igme.es/gis/services/Cartografia_Geologica/IGME_GeologicoIbiza_100/MapServer/WMSServer', '0', { short: 'Mapa geológico · WMS', attribution: 'IGME' }),
+    cartoWms('carto-igme-menorca', 'IGME · geología insular', 'Geológico de Menorca 1:100.000', 'https://mapas.igme.es/gis/services/Cartografia_Geologica/IGME_GeologicoMenorca_100/MapServer/WMSServer', '0', { short: 'Mapa geológico · WMS', attribution: 'IGME' }),
+    cartoWms('carto-igme-lapalma', 'IGME · geología insular', 'Geológico de La Palma 1:100.000', 'https://mapas.igme.es/gis/services/Cartografia_Geologica/IGME_GeologicoLaPalma_100/MapServer/WMSServer', '0', { short: 'Mapa geológico · WMS', attribution: 'IGME' }),
+    cartoWms('carto-igme-metalogenia', 'IGME · recursos y riesgos', 'Metalogenia · yacimientos e indicios minerales', 'https://mapas.igme.es/gis/services/BasesDatos/IGME_BDMIN_Indicios/MapServer/WMSServer', '0', { short: 'Base de datos minera · WMS', attribution: 'IGME' }),
+    ...[
+      ['Zonas GEODE', '0'], ['Recintos geología GEODE', '1'], ['Contactos GEODE', '2'], ['Cuaternario · recintos GEODE', '3'], ['Cuaternario · líneas GEODE', '4'], ['Ejes GEODE', '5'], ['Buzamientos GEODE', '6'], ['Rótulos y líneas GEODE', '7']
+    ].map(([label, layer]) => cartoWms(`carto-geode-${layer}`, 'IGME · GEODE continuo 1:50.000', label, IGME_GEODE, layer, { short: 'Mapa geológico continuo · WMS', attribution: 'IGME · GEODE' })),
+    ...[
+      ['Litologías color MAGNA', '0'], ['Litologías tramas MAGNA', '1'], ['Contactos y fallas MAGNA', '2'], ['Estructuras de plegamiento MAGNA', '3'], ['Elementos diversos MAGNA', '4'], ['Líneas diversas MAGNA', '5'], ['Medidas estructurales MAGNA', '6'], ['Elementos puntuales MAGNA', '7'], ['Identificadores lineales MAGNA', '8'], ['Identificadores anotados MAGNA', '9'], ['Medidas estructurales anotadas MAGNA', '10'], ['Hojas MAGNA 1:50.000', '11']
+    ].map(([label, layer]) => cartoWms(`carto-magna-${layer}`, 'IGME · MAGNA 1:50.000', label, IGME_MAGNA, layer, { short: 'Cartografía geológica · WMS', attribution: 'IGME · MAGNA' })),
+    ...[
+      ['Unidades tectónicas 1:1.000.000', '0'], ['Unidades de metamorfismo 1:1.000.000', '1'], ['Elementos diversos tectónicos', '2'], ['Estructuras de plegamiento tectónicas', '3'], ['Contactos y fallas tectónicos', '4'], ['Elementos puntuales tectónicos', '5']
+    ].map(([label, layer]) => cartoWms(`carto-tectonic-${layer}`, 'IGME · tectónica 1:1.000.000', label, IGME_TECTONIC, layer, { short: 'Mapa tectónico · WMS', attribution: 'IGME' })),
+    ...[
+      ['Unidades geológicas plataforma peninsular y Baleares', '0'], ['Unidades geológicas plataforma Canarias', '1'], ['Unidades geológicas generales', '2'], ['Estructuras peninsulares y Baleares', '3'], ['Estructuras de plataforma', '4'], ['Formas Canarias', '5'], ['Diques', '6'], ['Volcanes', '7']
+    ].map(([label, layer]) => cartoWms(`carto-europe-${layer}`, 'IGME · geología nacional 1:1.000.000', label, IGME_EUROPE, layer, { short: 'Mapa geológico nacional · WMS', attribution: 'IGME' })),
+    ...[
+      ['Masas movidas BDMOVES', '0'], ['Zonas de movimientos generalizados BDMOVES', '1'], ['Flujos de derrubios BDMOVES', '2'], ['Escarpes BDMOVES', '3'], ['Eventos observados BDMOVES', '4']
+    ].map(([label, layer]) => cartoWms(`carto-moves-${layer}`, 'IGME · movimientos del terreno', label, IGME_MOVES, layer, { short: 'Base de datos de movimientos · WMS', attribution: 'IGME · BDMOVES' })),
+    cartoWms('carto-qafi', 'IGME · riesgos geológicos', 'Fallas del Cuaternario de Iberia (QAFI)', 'https://mapas.igme.es/gis/services/Cartografia_Geologica/IGME_EP_Geologico_1M_2018/MapServer/WMSServer', '2', { short: 'Base de fallas cuaternarias · WMS', attribution: 'IGME · QAFI' }),
+    cartoWms('carto-zesis', 'IGME · riesgos geológicos', 'Zonas sismogénicas de la Península Ibérica', 'https://mapas.igme.es/gis/services/BasesDatos/IGME_ZESIS/MapServer/WMSServer', '2', { short: 'Zonificación sísmica · WMS', attribution: 'IGME · ZESIS' }),
+    cartoXyz('carto-esri-imagery', 'Bases globales', 'Esri World Imagery', 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { short: 'Imagen satélite global · XYZ', attribution: 'Esri, Maxar, Earthstar Geographics', opacity: .9 }),
+    cartoXyz('carto-opentopo', 'Bases globales', 'OpenTopoMap', 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', { short: 'Topografía mundial · XYZ', attribution: 'OpenTopoMap · OpenStreetMap contributors' }),
+    cartoXyz('carto-natgeo', 'Bases globales', 'Esri National Geographic', 'https://services.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer/tile/{z}/{y}/{x}', { short: 'Mapa mundial de referencia · XYZ', attribution: 'Esri' }),
+    ...[
+      ['Infrarrojo global', 'globalir'], ['Vapor de agua global', 'globalwv'], ['Espectro visible global', 'globalvis'], ['Espectro visible global 1 km', 'global1kmvis'], ['Infrarrojo CONUS', 'conusir']
+    ].map(([label, product]) => cartoXyz(`carto-ssec-${product}`, 'Teledetección · UW-Madison SSEC', label, `https://re.ssec.wisc.edu/api/image?products=${product}&x={x}&y={y}&z={z}`, { short: 'Imagen meteorológica · XYZ', attribution: 'UW-Madison SSEC' }))
+  ];
+
+  const CARTO_REFERENCE_LAYERS = [
+    { label: 'Ruiz de Alda · Cuenca del Segura (1929–1930)', description: 'Fotogramas y fotoplanos históricos consultables en la Fototeca/CNIG; no se fuerza una capa WMS si el proveedor no la publica como ortofoto nacional.', url: 'https://centrodedescargas.cnig.es/CentroDescargas/vuelo-ruiz-alda-cuenca-segura' },
+    { label: 'Ruiz de Alda · Cuenca del Ebro (1927)', description: 'Mosaicos de fotoplanos históricos; deben tratarse como referencia histórica y no como ortofoto verdadera.', url: 'https://centrodedescargas.cnig.es/CentroDescargas/novedades?codSerie=FPLEB' },
+    { label: 'Fototeca digital IGN-CNIG', description: 'Huellas de vuelo, fotogramas y disponibilidad de vuelos históricos.', url: 'https://fototeca.cnig.es/' }
+  ];
+
   const DEMO = {
     type: 'FeatureCollection',
     features: [
@@ -317,10 +380,10 @@
     ]
   };
 
-  const state = { records: [], selectedId: null, layer: null, photoCache: new Map(), loadedSources: new Map(), imageryLayers: new Map(), imageryCatalog: [], imageryOpacity: .82 };
+  const state = { records: [], selectedId: null, layer: null, photoCache: new Map(), loadedSources: new Map(), imageryLayers: new Map(), imageryCatalog: [], imageryOpacity: .82, baseLayers: new Map(), baseLayer: null, scaleControl: null, cartoLayers: new Map(), cartoOrder: [], cartoFilter: '', swipeEnabled: false, swipeLayerId: '', swipePosition: 50, measure: { mode: '', points: [], layer: null }, clicked: null };
   const $ = (id) => document.getElementById(id);
   const els = {
-    fileInput: $('fileInput'), sourceSelect: $('sourceSelect'), loadSourceBtn: $('loadSourceBtn'), exampleBtn: $('exampleBtn'), customName: $('customName'), customUrl: $('customUrl'), customLoadBtn: $('customLoadBtn'), sourceMeta: $('sourceMeta'), imageryLayerList: $('imageryLayerList'), discoverLayersBtn: $('discoverLayersBtn'), removeImageryBtn: $('removeImageryBtn'), imageryOpacity: $('imageryOpacity'), imageryOpacityValue: $('imageryOpacityValue'), imageryStatus: $('imageryStatus'), loadNgbeBtn: $('loadNgbeBtn'), referenceCatalog: $('referenceCatalog'), approximateBtn: $('approximateBtn'), status: $('status'), filterText: $('filterText'), periodFilter: $('periodFilter'), loadedSourceFilter: $('loadedSourceFilter'), totalCount: $('totalCount'), visibleCount: $('visibleCount'), sourceCount: $('sourceCount'), namedCount: $('namedCount'), approxCount: $('approxCount'), exportGeoBtn: $('exportGeoBtn'), exportCsvBtn: $('exportCsvBtn'), exportReportBtn: $('exportReportBtn'), clearBtn: $('clearBtn'), resultHint: $('resultHint'), resultTable: $('resultTable'), detailPanel: $('detailPanel'), detailTitle: $('detailTitle'), detailMeta: $('detailMeta'), detailProperties: $('detailProperties'), detailLinks: $('detailLinks'), closeDetailBtn: $('closeDetailBtn'), photoBtn: $('photoBtn'), photoStatus: $('photoStatus'), photoGrid: $('photoGrid')
+    fileInput: $('fileInput'), sourceSelect: $('sourceSelect'), loadSourceBtn: $('loadSourceBtn'), exampleBtn: $('exampleBtn'), customName: $('customName'), customUrl: $('customUrl'), customLoadBtn: $('customLoadBtn'), sourceMeta: $('sourceMeta'), imageryLayerList: $('imageryLayerList'), discoverLayersBtn: $('discoverLayersBtn'), removeImageryBtn: $('removeImageryBtn'), imageryOpacity: $('imageryOpacity'), imageryOpacityValue: $('imageryOpacityValue'), imageryStatus: $('imageryStatus'), loadNgbeBtn: $('loadNgbeBtn'), referenceCatalog: $('referenceCatalog'), approximateBtn: $('approximateBtn'), status: $('status'), filterText: $('filterText'), periodFilter: $('periodFilter'), loadedSourceFilter: $('loadedSourceFilter'), totalCount: $('totalCount'), visibleCount: $('visibleCount'), sourceCount: $('sourceCount'), namedCount: $('namedCount'), approxCount: $('approxCount'), exportGeoBtn: $('exportGeoBtn'), exportCsvBtn: $('exportCsvBtn'), exportReportBtn: $('exportReportBtn'), clearBtn: $('clearBtn'), resultHint: $('resultHint'), resultTable: $('resultTable'), detailPanel: $('detailPanel'), detailTitle: $('detailTitle'), detailMeta: $('detailMeta'), detailProperties: $('detailProperties'), detailLinks: $('detailLinks'), closeDetailBtn: $('closeDetailBtn'), photoBtn: $('photoBtn'), photoStatus: $('photoStatus'), photoGrid: $('photoGrid'), cartoLayerFilter: $('cartoLayerFilter'), baseLayerSelect: $('baseLayerSelect'), cartoHomeBtn: $('cartoHomeBtn'), cartoLocateBtn: $('cartoLocateBtn'), cartoCatalog: $('cartoCatalog'), activeCartoLayers: $('activeCartoLayers'), cartoLayerCount: $('cartoLayerCount'), clearCartoBtn: $('clearCartoBtn'), exportCartoBtn: $('exportCartoBtn'), scaleToggle: $('scaleToggle'), cursorToggle: $('cursorToggle'), navigationToggle: $('navigationToggle'), swipeToggle: $('swipeToggle'), swipeLayer: $('swipeLayer'), swipeRange: $('swipeRange'), swipeOutput: $('swipeOutput'), brightnessRange: $('brightnessRange'), contrastRange: $('contrastRange'), saturationRange: $('saturationRange'), hueRange: $('hueRange'), brightnessOutput: $('brightnessOutput'), contrastOutput: $('contrastOutput'), saturationOutput: $('saturationOutput'), hueOutput: $('hueOutput'), resetImageBtn: $('resetImageBtn'), northBtn: $('northBtn'), customLayerType: $('customLayerType'), customLayerUrl: $('customLayerUrl'), customLayerName: $('customLayerName'), customLayerNameField: $('customLayerNameField'), customLayerLabel: $('customLayerLabel'), customLayerBtn: $('customLayerBtn'), fullscreenBtn: $('fullscreenBtn'), measureDistanceBtn: $('measureDistanceBtn'), measureAreaBtn: $('measureAreaBtn'), clearMeasureBtn: $('clearMeasureBtn'), measureStatus: $('measureStatus'), cursorCoords: $('cursorCoords'), swipeLine: $('swipeLine')
   };
 
   let map;
@@ -472,8 +535,21 @@
   function initMap() {
     map = L.map('map', { zoomControl: false, preferCanvas: true }).setView([40.25, -3.7], 5);
     L.control.zoom({ position: 'bottomright' }).addTo(map);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '&copy; OpenStreetMap contributors' }).addTo(map);
+    const baseDefinitions = [
+      ['osm', L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '&copy; OpenStreetMap contributors' })],
+      ['esri', L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { maxZoom: 19, attribution: 'Esri, Maxar, Earthstar Geographics' })],
+      ['opentopo', L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', { maxZoom: 17, attribution: 'OpenTopoMap · OpenStreetMap contributors' })],
+      ['carto-light', L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', { maxZoom: 20, attribution: 'CARTO · OpenStreetMap contributors' })],
+      ['carto-dark', L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { maxZoom: 20, attribution: 'CARTO · OpenStreetMap contributors' })]
+    ];
+    state.baseLayers = new Map(baseDefinitions);
+    state.baseLayer = state.baseLayers.get('osm');
+    state.baseLayer.addTo(map);
+    state.scaleControl = L.control.scale({ imperial: false, position: 'bottomleft' }).addTo(map);
     placeSearch = window.CartografiaPlaceSearch?.(map, { input: $('placeQuery'), button: $('placeSearchButton'), results: $('placeResults'), status: $('placeStatus'), zoom: 12, onLocate: ({ lat, lng, displayName }) => { map.setView([lat, lng], Math.max(map.getZoom(), 12)); L.popup().setLatLng([lat, lng]).setContent(`<strong>${escapeHtml(displayName)}</strong>`).openOn(map); } });
+    map.on('mousemove', (event) => { if (els.cursorCoords) { els.cursorCoords.textContent = `${event.latlng.lat.toFixed(5)}, ${event.latlng.lng.toFixed(5)}`; } });
+    map.on('click', handleMapClick);
+    map.on('dblclick', (event) => { if (state.measure.mode) { event.originalEvent?.preventDefault(); finishMeasure(); } });
   }
 
   function layerKey(serviceId, name) { return `${serviceId}::${name}`; }
@@ -561,6 +637,57 @@
     if (input.checked) addImageryLayer(service, layer); else removeImageryLayer(input.dataset.imageryKey);
     if (els.imageryStatus) els.imageryStatus.textContent = `${state.imageryLayers.size} capa${state.imageryLayers.size === 1 ? '' : 's'} fotográfica${state.imageryLayers.size === 1 ? '' : 's'} visible${state.imageryLayers.size === 1 ? '' : 's'}.`;
   }
+
+  function normaliseUrl(value) { try { const url = new URL(value); return ['http:', 'https:'].includes(url.protocol) ? url.href : ''; } catch { return ''; } }
+  function cartoItems() { return state.cartoOrder.map((id) => state.cartoLayers.get(id)).filter(Boolean); }
+  function makeCartoLeafletLayer(config) {
+    if (config.type === 'xyz') return L.tileLayer(config.url, { maxZoom: config.maxZoom || 19, opacity: config.opacity ?? .8, attribution: config.attribution || 'Teselas públicas' });
+    return L.tileLayer.wms(config.service, { layers: config.layerName, format: config.format || 'image/png', transparent: config.transparent !== false, version: '1.3.0', opacity: config.opacity ?? .8, maxZoom: 22, attribution: config.attribution || 'Servicio WMS público' });
+  }
+  function updateCartoZIndexes() { cartoItems().forEach((item, index) => item.leafletLayer.setZIndex(450 + index)); }
+  function addCartoLayer(config) {
+    const existing = state.cartoLayers.get(config.id);
+    if (existing) { existing.visible = true; existing.leafletLayer.addTo(map); renderCartoState(); setStatus(`«${config.label}» ya estaba preparada y vuelve a estar visible.`, 'ok'); return existing; }
+    const layer = makeCartoLeafletLayer(config);
+    const item = { ...config, leafletLayer: layer, visible: true, loaded: false, errorTimer: null };
+    layer.on('loading', () => { if (els.measureStatus) els.measureStatus.textContent = `Cargando ${item.label}…`; });
+    layer.on('tileload load', () => { item.loaded = true; if (item.errorTimer) clearTimeout(item.errorTimer); if (els.measureStatus) els.measureStatus.textContent = `${state.cartoOrder.length + state.imageryLayers.size} capa${state.cartoOrder.length + state.imageryLayers.size === 1 ? '' : 's'} cartográfica${state.cartoOrder.length + state.imageryLayers.size === 1 ? '' : 's'} activa${state.cartoOrder.length + state.imageryLayers.size === 1 ? '' : 's'}.`; applyCartoSwipe(); });
+    layer.on('tileerror', () => { if (item.loaded || item.errorTimer) return; item.errorTimer = setTimeout(() => { if (!item.loaded) setStatus(`«${item.label}» no ha entregado teselas en esta vista. Puede requerir otra escala o que el servicio haya cambiado.`, 'error'); }, 3000); });
+    state.cartoLayers.set(config.id, item); state.cartoOrder.push(config.id); layer.addTo(map); updateCartoZIndexes(); renderCartoState(); setStatus(`Añadida «${config.label}».`, 'ok'); return item;
+  }
+  function removeCartoLayer(id) { const item = state.cartoLayers.get(id); if (!item) return; item.leafletLayer.remove(); state.cartoLayers.delete(id); state.cartoOrder = state.cartoOrder.filter((value) => value !== id); if (state.swipeLayerId === id) state.swipeLayerId = state.cartoOrder.at(-1) || ''; updateCartoZIndexes(); renderCartoState(); }
+  function toggleCartoLayer(id, visible) { const item = state.cartoLayers.get(id); if (!item) return; item.visible = visible; if (visible) item.leafletLayer.addTo(map); else item.leafletLayer.remove(); applyCartoSwipe(); renderCartoState(); }
+  function updateCartoOpacity(id, value) { const item = state.cartoLayers.get(id); if (!item) return; item.opacity = Number(value); item.leafletLayer.setOpacity(item.opacity); const output = els.activeCartoLayers.querySelector(`[data-carto-output="${CSS.escape(id)}"]`); if (output) output.textContent = `${Math.round(item.opacity * 100)}%`; }
+  function moveCartoLayer(id, direction) { const index = state.cartoOrder.indexOf(id); const next = index + direction; if (index < 0 || next < 0 || next >= state.cartoOrder.length) return; [state.cartoOrder[index], state.cartoOrder[next]] = [state.cartoOrder[next], state.cartoOrder[index]]; updateCartoZIndexes(); renderCartoState(); }
+  function applyCartoSwipe() { const selected = state.cartoLayers.get(state.swipeLayerId); cartoItems().forEach((item) => { const container = item.leafletLayer.getContainer?.(); if (container) container.style.clipPath = state.swipeEnabled && selected && item.id === selected.id && item.visible ? `inset(0 0 0 ${state.swipePosition}%)` : ''; }); const visible = Boolean(state.swipeEnabled && selected?.visible); els.swipeLine.hidden = !visible; els.swipeLine.style.left = `${state.swipePosition}%`; }
+  function renderCartoCatalog() {
+    if (!els.cartoCatalog) return;
+    const filter = state.cartoFilter.toLocaleLowerCase('es');
+    const groups = [];
+    CARTO_LAYER_CATALOG.filter((config) => !filter || `${config.label} ${config.short} ${config.group}`.toLocaleLowerCase('es').includes(filter)).forEach((config) => {
+      if (groups.at(-1)?.name !== config.group) groups.push({ name: config.group, items: [] });
+      groups.at(-1).items.push(config);
+    });
+    const markup = groups.map((group) => `<div class="catalog-group">${escapeHtml(group.name)}</div>${group.items.map((config) => { const active = state.cartoLayers.has(config.id); return `<div class="layer-row${active ? ' is-active' : ''}"><span><b>${escapeHtml(config.label)}</b><small>${escapeHtml(config.short)}</small><small class="layer-kind">${escapeHtml(config.type === 'xyz' ? config.url : `${config.service} · ${config.layerName}`)}</small></span><button type="button" data-carto-add="${escapeHtml(config.id)}">${active ? 'Mostrar' : 'Añadir'}</button></div>`; }).join('')}`).join('');
+    const references = CARTO_REFERENCE_LAYERS.filter((item) => !filter || `${item.label} ${item.description}`.toLocaleLowerCase('es').includes(filter)).map((item) => `<article class="reference-card"><b>${escapeHtml(item.label)}</b><p>${escapeHtml(item.description)}</p><a href="${escapeHtml(item.url)}" target="_blank" rel="noreferrer">Abrir referencia ↗</a></article>`).join('');
+    els.cartoCatalog.innerHTML = (markup || references) ? `${markup}${references ? `<div class="catalog-group">Fuentes históricas con consulta externa</div>${references}` : ''}` : '<p class="hint">No hay coincidencias en el catálogo.</p>';
+  }
+  function updateCartoSwipeOptions() { const current = state.swipeLayerId; els.swipeLayer.replaceChildren(); const items = cartoItems(); if (!items.length) { const option = document.createElement('option'); option.value = ''; option.textContent = 'Activa una capa primero'; els.swipeLayer.appendChild(option); state.swipeLayerId = ''; } else { items.forEach((item) => { const option = document.createElement('option'); option.value = item.id; option.textContent = item.label; els.swipeLayer.appendChild(option); }); state.swipeLayerId = items.some((item) => item.id === current) ? current : items.at(-1).id; els.swipeLayer.value = state.swipeLayerId; } applyCartoSwipe(); }
+  function renderActiveCartoLayers() { const items = cartoItems(); els.cartoLayerCount.textContent = `${items.length} activa${items.length === 1 ? '' : 's'}`; if (!items.length) { els.activeCartoLayers.innerHTML = '<p class="hint">Activa una capa del catálogo.</p>'; updateCartoSwipeOptions(); return; } els.activeCartoLayers.innerHTML = items.map((item, index) => `<div class="active-layer-row"><input type="checkbox" data-carto-visible="${escapeHtml(item.id)}" ${item.visible ? 'checked' : ''} aria-label="Visibilidad de ${escapeHtml(item.label)}"><div class="active-layer-name"><b>${escapeHtml(item.label)}</b><small>${escapeHtml(item.type === 'xyz' ? item.url : `${item.service} · ${item.layerName}`)}</small></div><div class="active-layer-tools"><input type="range" min="0" max="1" step=".01" value="${item.opacity}" data-carto-opacity="${escapeHtml(item.id)}" aria-label="Opacidad de ${escapeHtml(item.label)}"><output data-carto-output="${escapeHtml(item.id)}">${Math.round(item.opacity * 100)}%</output><button type="button" data-carto-action="up" data-carto-id="${escapeHtml(item.id)}" ${index === 0 ? 'disabled' : ''}>▲</button><button type="button" data-carto-action="down" data-carto-id="${escapeHtml(item.id)}" ${index === items.length - 1 ? 'disabled' : ''}>▼</button><button type="button" data-carto-action="remove" data-carto-id="${escapeHtml(item.id)}">×</button></div></div>`).join(''); updateCartoSwipeOptions(); }
+  function renderCartoState() { renderCartoCatalog(); renderActiveCartoLayers(); }
+  function setBaseLayer(id) { const next = state.baseLayers.get(id); if (!next || next === state.baseLayer) return; state.baseLayer?.remove(); state.baseLayer = next; next.addTo(map); }
+  function updateMapFilter() { const brightness = els.brightnessRange.value, contrast = els.contrastRange.value, saturation = els.saturationRange.value, hue = els.hueRange.value; map.getContainer().style.filter = `brightness(${brightness}%) contrast(${contrast}%) saturate(${saturation}%) hue-rotate(${hue}deg)`; els.brightnessOutput.textContent = `${brightness}%`; els.contrastOutput.textContent = `${contrast}%`; els.saturationOutput.textContent = `${saturation}%`; els.hueOutput.textContent = `${hue}°`; }
+  function resetImage() { ['brightnessRange', 'contrastRange', 'saturationRange', 'hueRange'].forEach((id) => { els[id].value = id === 'hueRange' ? 0 : 100; }); updateMapFilter(); }
+  function exportCartoConfig() { const payload = { tool: 'Arqueo Atlas · Cartotecnia Next', generatedAt: new Date().toISOString(), baseLayer: els.baseLayerSelect.value, center: map.getCenter(), zoom: map.getZoom(), layers: cartoItems().map(({ id, group, label, type, service, layerName, url, opacity, visible, attribution }) => ({ id, group, label, type, service, layer: layerName, url, opacity, visible, attribution })) }; download('arqueo-atlas-cartotecnia-configuracion.json', JSON.stringify(payload, null, 2), 'application/json'); els.measureStatus.textContent = 'Configuración de capas descargada.'; }
+
+  function distanceBetween(a, b) { const radius = 6371008.8; const p1 = a.lat * Math.PI / 180, p2 = b.lat * Math.PI / 180, dp = (b.lat - a.lat) * Math.PI / 180, dl = (b.lng - a.lng) * Math.PI / 180; const h = Math.sin(dp / 2) ** 2 + Math.cos(p1) * Math.cos(p2) * Math.sin(dl / 2) ** 2; return 2 * radius * Math.atan2(Math.sqrt(h), Math.sqrt(1 - h)); }
+  function formatDistance(value) { return value >= 1000 ? `${(value / 1000).toFixed(2)} km` : `${Math.round(value)} m`; }
+  function polygonArea(points) { const radius = 6371008.8, meanLat = points.reduce((sum, point) => sum + point.lat, 0) / points.length * Math.PI / 180; let area = 0; for (let i = 0; i < points.length; i += 1) { const a = points[i], b = points[(i + 1) % points.length]; area += (b.lng - a.lng) * Math.PI / 180 * (2 + Math.sin(a.lat * Math.PI / 180) + Math.sin(b.lat * Math.PI / 180)); } return Math.abs(area * radius * radius * Math.cos(meanLat) / 2); }
+  function updateMeasureLayer() { state.measure.layer?.remove(); const points = state.measure.points; if (!points.length) return; const latLngs = points.map((point) => [point.lat, point.lng]); state.measure.layer = state.measure.mode === 'area' && points.length >= 3 ? L.polygon(latLngs, { color: '#f2bd72', weight: 3, dashArray: '7 5', fillColor: '#f2bd72', fillOpacity: .16 }) : L.polyline(latLngs, { color: '#f2bd72', weight: 3, dashArray: '7 5' }); state.measure.layer.addTo(map); }
+  function startMeasure(mode) { if (state.measure.mode === mode) { finishMeasure(); return; } clearMeasure(); state.measure.mode = mode; els.measureDistanceBtn.classList.toggle('primary', mode === 'distance'); els.measureAreaBtn.classList.toggle('primary', mode === 'area'); els.measureStatus.textContent = mode === 'distance' ? 'Medición de distancia: haz clic en varios puntos y doble clic para terminar.' : 'Medición de área: marca al menos tres vértices y doble clic para terminar.'; }
+  function finishMeasure() { const mode = state.measure.mode, points = state.measure.points.slice(); if (!mode) return; state.measure.mode = ''; els.measureDistanceBtn.classList.remove('primary'); els.measureAreaBtn.classList.remove('primary'); updateMeasureLayer(); if (mode === 'distance' && points.length >= 2) { const total = points.slice(1).reduce((sum, point, index) => sum + distanceBetween(points[index], point), 0); els.measureStatus.textContent = `Distancia medida: ${formatDistance(total)} · ${points.length} vértices.`; } else if (mode === 'area' && points.length >= 3) { const area = polygonArea(points); els.measureStatus.textContent = `Área medida: ${area >= 1000000 ? `${(area / 1000000).toFixed(2)} km²` : `${Math.round(area).toLocaleString('es-ES')} m²`} · ${points.length} vértices.`; } else { els.measureStatus.textContent = 'Medición cancelada: faltan vértices.'; clearMeasure(); } }
+  function clearMeasure() { state.measure.layer?.remove(); state.measure = { mode: '', points: [], layer: null }; els.measureDistanceBtn.classList.remove('primary'); els.measureAreaBtn.classList.remove('primary'); els.measureStatus.textContent = 'Haz clic en el mapa para consultar coordenadas o iniciar una medida.'; }
+  function handleMapClick(event) { if (state.measure.mode) { state.measure.points.push(event.latlng); updateMeasureLayer(); if (state.measure.mode === 'distance' && state.measure.points.length > 1) { const total = state.measure.points.slice(1).reduce((sum, point, index) => sum + distanceBetween(state.measure.points[index], point), 0); els.measureStatus.textContent = `Distancia provisional: ${formatDistance(total)} · doble clic para terminar.`; } else if (state.measure.mode === 'area' && state.measure.points.length > 2) { els.measureStatus.textContent = `Área provisional: ${Math.round(polygonArea(state.measure.points)).toLocaleString('es-ES')} m² · doble clic para terminar.`; } return; } state.clicked = event.latlng; const coords = `${event.latlng.lat.toFixed(6)}, ${event.latlng.lng.toFixed(6)}`; els.measureStatus.textContent = `Coordenadas WGS84: ${coords}`; L.popup().setLatLng(event.latlng).setContent(`<b>Coordenadas WGS84</b><br>${escapeHtml(coords)}`).openOn(map); }
 
   async function loadNGBEInView() {
     const bounds = map.getBounds();
@@ -917,14 +1044,42 @@
     els.imageryOpacity.addEventListener('input', () => { state.imageryOpacity = Number(els.imageryOpacity.value); els.imageryOpacityValue.textContent = `${Math.round(state.imageryOpacity * 100)}%`; state.imageryLayers.forEach((layer) => layer.setOpacity(state.imageryOpacity)); });
     els.loadNgbeBtn.addEventListener('click', loadNGBEInView);
     els.approximateBtn.addEventListener('click', approximateMissingLocations);
+    els.cartoLayerFilter.addEventListener('input', () => { state.cartoFilter = els.cartoLayerFilter.value; renderCartoCatalog(); });
+    els.baseLayerSelect.addEventListener('change', () => setBaseLayer(els.baseLayerSelect.value));
+    els.cartoHomeBtn.addEventListener('click', () => map.fitBounds([[35.95, -9.4], [43.9, 4.5]], { padding: [20, 20] }));
+    els.cartoLocateBtn.addEventListener('click', () => map.locate({ setView: true, maxZoom: 14 }));
+    els.cartoCatalog.addEventListener('click', (event) => { const button = event.target.closest('[data-carto-add]'); if (!button) return; const config = CARTO_LAYER_CATALOG.find((item) => item.id === button.dataset.cartoAdd); if (config) addCartoLayer(config); });
+    els.activeCartoLayers.addEventListener('change', (event) => { const target = event.target; if (target.matches('[data-carto-visible]')) toggleCartoLayer(target.dataset.cartoVisible, target.checked); if (target.matches('[data-carto-opacity]')) updateCartoOpacity(target.dataset.cartoOpacity, target.value); });
+    els.activeCartoLayers.addEventListener('click', (event) => { const button = event.target.closest('[data-carto-action]'); if (!button) return; const action = button.dataset.cartoAction; const id = button.dataset.cartoId; if (action === 'remove') removeCartoLayer(id); if (action === 'up') moveCartoLayer(id, -1); if (action === 'down') moveCartoLayer(id, 1); });
+    els.clearCartoBtn.addEventListener('click', () => { cartoItems().forEach((item) => item.leafletLayer.remove()); state.cartoLayers.clear(); state.cartoOrder = []; state.swipeLayerId = ''; renderCartoState(); els.measureStatus.textContent = 'Capas de Cartotecnia retiradas del mapa.'; });
+    els.exportCartoBtn.addEventListener('click', exportCartoConfig);
+    els.scaleToggle.addEventListener('change', () => { if (els.scaleToggle.checked) state.scaleControl.addTo(map); else state.scaleControl.remove(); });
+    els.cursorToggle.addEventListener('change', () => { els.cursorCoords.hidden = !els.cursorToggle.checked; });
+    els.navigationToggle.addEventListener('change', () => { if (els.navigationToggle.checked) { map.dragging.enable(); map.scrollWheelZoom.enable(); map.doubleClickZoom.enable(); } else { map.dragging.disable(); map.scrollWheelZoom.disable(); map.doubleClickZoom.disable(); } });
+    els.swipeToggle.addEventListener('change', () => { state.swipeEnabled = els.swipeToggle.checked; applyCartoSwipe(); });
+    els.swipeLayer.addEventListener('change', () => { state.swipeLayerId = els.swipeLayer.value; applyCartoSwipe(); });
+    els.swipeRange.addEventListener('input', () => { state.swipePosition = Number(els.swipeRange.value); els.swipeOutput.textContent = `${state.swipePosition}%`; applyCartoSwipe(); });
+    [els.brightnessRange, els.contrastRange, els.saturationRange, els.hueRange].forEach((input) => input.addEventListener('input', updateMapFilter));
+    els.resetImageBtn.addEventListener('click', resetImage);
+    els.northBtn.addEventListener('click', () => map.setView(map.getCenter(), map.getZoom()));
+    els.customLayerType.addEventListener('change', () => { const wms = els.customLayerType.value === 'wms'; els.customLayerNameField.hidden = !wms; els.customLayerName.required = wms; els.customLayerUrl.placeholder = wms ? 'https://servidor.example/wms' : 'https://servidor.example/{z}/{x}/{y}.png'; });
+    els.customLayerBtn.addEventListener('click', () => { const url = normaliseUrl(els.customLayerUrl.value.trim()); const type = els.customLayerType.value; if (!url) { setStatus('Escribe una URL http:// o https:// válida para la capa.', 'error'); return; } if (type === 'wms' && !els.customLayerName.value.trim()) { setStatus('Para un WMS indica también el nombre de la capa.', 'error'); return; } const label = els.customLayerLabel.value.trim() || els.customLayerName.value.trim() || 'Capa personalizada'; addCartoLayer(type === 'wms' ? cartoWms(`custom-${Date.now()}`, 'Capas personalizadas', label, url, els.customLayerName.value.trim(), { attribution: 'WMS indicado por el usuario' }) : cartoXyz(`custom-${Date.now()}`, 'Capas personalizadas', label, url, { attribution: 'XYZ indicado por el usuario' })); els.customLayerUrl.value = ''; els.customLayerName.value = ''; els.customLayerLabel.value = ''; });
+    els.fullscreenBtn.addEventListener('click', () => { const panel = document.querySelector('.map-panel'); if (document.fullscreenElement) document.exitFullscreen?.(); else if (panel.classList.contains('is-fullscreen-fallback')) { panel.classList.remove('is-fullscreen-fallback'); document.body.style.overflow = ''; setTimeout(() => map.invalidateSize(), 150); } else if (panel.requestFullscreen) { const request = panel.requestFullscreen(); request?.catch?.(() => { panel.classList.add('is-fullscreen-fallback'); document.body.style.overflow = 'hidden'; setTimeout(() => map.invalidateSize(), 150); }); } else { panel.classList.add('is-fullscreen-fallback'); document.body.style.overflow = 'hidden'; setTimeout(() => map.invalidateSize(), 150); } });
+    document.addEventListener('fullscreenchange', () => setTimeout(() => map.invalidateSize(), 150));
+    document.addEventListener('keydown', (event) => { if (event.key === 'Escape') { const panel = document.querySelector('.map-panel'); if (panel.classList.contains('is-fullscreen-fallback')) { panel.classList.remove('is-fullscreen-fallback'); document.body.style.overflow = ''; setTimeout(() => map.invalidateSize(), 150); } } });
+    els.measureDistanceBtn.addEventListener('click', () => startMeasure('distance')); els.measureAreaBtn.addEventListener('click', () => startMeasure('area')); els.clearMeasureBtn.addEventListener('click', clearMeasure);
     [els.filterText, els.periodFilter, els.loadedSourceFilter].forEach((element) => element.addEventListener('input', render));
     els.resultTable.addEventListener('click', (event) => { const button = event.target.closest('[data-record-id]'); if (button) selectRecord(button.dataset.recordId, true); });
     els.closeDetailBtn.addEventListener('click', () => { els.detailPanel.hidden = true; state.selectedId = null; });
     els.photoBtn.addEventListener('click', searchPhotos);
     els.exportGeoBtn.addEventListener('click', exportFeatures); els.exportCsvBtn.addEventListener('click', exportCsv); els.exportReportBtn.addEventListener('click', exportReport); els.clearBtn.addEventListener('click', clearAll);
     initMap();
+    map.on('locationfound', (event) => { L.circleMarker(event.latlng, { radius: 7, color: '#72dfba', fillColor: '#72dfba', fillOpacity: .9 }).addTo(map).bindPopup('Tu ubicación aproximada').openPopup(); });
+    map.on('locationerror', () => { els.measureStatus.textContent = 'El navegador no ha permitido obtener la ubicación.'; });
     renderReferenceCatalog();
     renderImageryCatalog();
+    renderCartoState();
+    resetImage();
     render();
     discoverImageryLayers();
   }
