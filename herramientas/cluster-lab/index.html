@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Detección local de agrupaciones espaciales DBSCAN para capas GeoJSON.">
+  <title>Cluster Lab · Cartografía Web Tools</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <a class="back" href="../">← Catálogo</a>
+    <p class="eyebrow">37 · agrupación espacial · cliente · local</p>
+    <h1>Cluster Lab</h1>
+    <p class="lead">Encuentra agrupaciones espaciales y puntos aislados con DBSCAN, sin fijar de antemano cuántos grupos existen.</p>
+  </header>
+
+  <main class="layout">
+    <section class="panel controls" aria-labelledby="data-title">
+      <div class="section-heading"><div><p class="eyebrow">01 · entrada</p><h2 id="data-title">Una capa de observaciones</h2></div><span class="local-badge">sin backend propio</span></div>
+      <label class="file-card" for="fileInput">
+        <span class="file-title">Cargar GeoJSON de puntos</span>
+        <span class="file-help">Puntos y otras geometrías se representan por el promedio de sus vértices válidos.</span>
+        <input id="fileInput" type="file" accept=".json,.geojson,application/geo+json,application/json">
+        <span id="fileName" class="file-name">Ningún archivo seleccionado</span>
+      </label>
+      <div class="form-grid">
+        <label>Distancia de vecindad (metros)
+          <input id="epsilon" type="number" min="1" max="100000" step="10" value="1200">
+          <small>Dos observaciones se consideran vecinas si están dentro de esta distancia.</small>
+        </label>
+        <label>Mínimo de puntos por grupo
+          <input id="minPoints" type="number" min="1" max="100" step="1" value="3">
+          <small>Controla cuándo una vecindad se convierte en núcleo de agrupación.</small>
+        </label>
+      </div>
+      <div class="inline-actions"><button id="exampleBtn" class="button secondary" type="button">Cargar ejemplo</button><button id="clearBtn" class="button ghost" type="button">Limpiar</button></div>
+      <button id="runBtn" class="button primary" type="button" disabled>Detectar agrupaciones</button>
+      <p id="status" class="status" role="status" aria-live="polite">Carga una capa o usa el ejemplo.</p>
+    </section>
+
+    <section class="panel metrics" aria-labelledby="metrics-title">
+      <div class="section-heading"><div><p class="eyebrow">02 · resultado</p><h2 id="metrics-title">Resumen de agrupaciones</h2></div></div>
+      <div class="metric-grid">
+        <div class="metric"><span>Puntos válidos</span><strong id="pointCount">—</strong></div>
+        <div class="metric"><span>Grupos encontrados</span><strong id="clusterCount">—</strong></div>
+        <div class="metric"><span>Puntos aislados</span><strong id="noiseCount">—</strong></div>
+        <div class="metric"><span>Grupo mayor</span><strong id="largestCluster">—</strong></div>
+      </div>
+      <div class="download-row"><button id="geojsonBtn" class="button secondary" type="button" disabled>Descargar GeoJSON etiquetado</button><button id="csvBtn" class="button secondary" type="button" disabled>Descargar CSV de grupos</button></div>
+    </section>
+
+    <section class="panel map-panel" aria-labelledby="map-title">
+      <div class="section-heading"><div><p class="eyebrow">03 · inspección</p><h2 id="map-title">Agrupaciones y puntos aislados</h2></div></div>
+      <div id="map" class="map" aria-label="Mapa de agrupaciones espaciales DBSCAN"></div>
+      <div id="mapFallback" class="map-fallback" hidden>El mapa no ha podido cargarse. El análisis y las descargas siguen disponibles.</div>
+      <div class="legend"><span><i class="cluster-sample"></i>Grupo detectado</span><span><i class="dot noise-dot"></i>Punto aislado</span></div>
+    </section>
+
+    <section class="panel table-panel" aria-labelledby="table-title">
+      <div class="section-heading"><div><p class="eyebrow">04 · detalle</p><h2 id="table-title">Tamaño de los grupos</h2></div><span id="tableHint" class="muted">Ejecuta el análisis para ver el detalle.</span></div>
+      <div class="table-wrap"><table><thead><tr><th>Grupo</th><th>Puntos</th><th>Centro aproximado</th><th>Extensión</th></tr></thead><tbody id="resultBody"><tr><td colspan="4" class="empty">Todavía no hay resultados.</td></tr></tbody></table></div>
+    </section>
+
+    <section class="panel guide" aria-labelledby="guide-title">
+      <p class="eyebrow">Método y privacidad</p>
+      <h2 id="guide-title">Agrupa por densidad, no por número impuesto</h2>
+      <p>DBSCAN distingue puntos núcleo, frontera y ruido usando una distancia y un mínimo de vecinos. La herramienta calcula distancias en un plano local aproximado en metros, etiqueta cada entidad con <code>cluster_id</code> y conserva sus atributos originales. Para estudios extensos o densidades muy variables, contrasta los parámetros y valida el resultado con el conocimiento de campo.</p>
+      <p>Los archivos se leen y procesan en este navegador. No se envían a un servidor propio. El mapa base usa teselas de <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>; consulta sus <a href="https://operations.osmfoundation.org/policies/tiles/" target="_blank" rel="noopener">condiciones de uso</a>.</p>
+    </section>
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+  <script src="app.js"></script>
+</body>
+</html>
