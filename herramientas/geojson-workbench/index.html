@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Banco de trabajo GeoJSON local para filtrar, inspeccionar y exportar entidades.">
+  <title>GeoJSON Workbench · Cartografía Web Tools</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="app">
+    <header class="hero">
+      <a href="../">← Catálogo cartográfico</a>
+      <span class="badge">100% local</span>
+      <h1>GeoJSON Workbench</h1>
+      <p>Selecciona entidades sobre un lienzo, filtra por propiedades y crea una capa de trabajo sin subir tus datos.</p>
+    </header>
+    <section class="panel controls" aria-labelledby="controls-title">
+      <h2 id="controls-title">Capa de trabajo</h2>
+      <div class="toolbar">
+        <label class="file"><span>Importar GeoJSON</span><input id="file" type="file" accept=".json,.geojson,application/geo+json,application/json"></label>
+        <button type="button" class="secondary" id="demo">Cargar ejemplo</button>
+        <button type="button" class="ghost" id="clear">Vaciar</button>
+        <label class="search"><span>Buscar en propiedades</span><input id="search" type="search" placeholder="nombre, periodo, uso…"></label>
+      </div>
+      <p id="status" class="status" role="status" aria-live="polite">Carga una capa o prueba el ejemplo.</p>
+    </section>
+    <section class="metrics" id="metrics" aria-label="Resumen de la capa"></section>
+    <section class="workspace">
+      <section class="panel map-panel">
+        <div class="panel-heading"><div><h2>Vista de selección</h2><p class="hint">Toca o haz clic en una entidad para inspeccionarla.</p></div><span class="selection" id="selection">Sin selección</span></div>
+        <canvas id="map" aria-label="Vista de entidades GeoJSON"></canvas>
+        <div class="map-legend"><span><i class="dot point"></i>Puntos</span><span><i class="line"></i>Líneas</span><span><i class="poly"></i>Polígonos</span></div>
+      </section>
+      <aside class="panel inspector" aria-labelledby="inspector-title">
+        <div class="panel-heading"><div><h2 id="inspector-title">Entidad</h2><p class="hint">Propiedades de la entidad activa.</p></div><button type="button" id="clearSelection" class="small ghost">Quitar</button></div>
+        <div id="details" class="details"><p class="empty">Selecciona una entidad en el mapa o en la tabla.</p></div>
+      </aside>
+    </section>
+    <section class="panel table-panel">
+      <div class="panel-heading"><div><h2>Entidades filtradas</h2><p class="hint" id="tableHint">La tabla se actualiza mientras escribes.</p></div><div class="actions"><button type="button" id="exportGeo" class="primary" disabled>Exportar GeoJSON</button><button type="button" id="exportCsv" class="ghost" disabled>Exportar CSV</button></div></div>
+      <div class="table-wrap"><table><thead><tr><th>#</th><th>Tipo</th><th>Etiqueta</th><th>Propiedades</th><th></th></tr></thead><tbody id="table"></tbody></table></div>
+    </section>
+    <p class="privacy">Los archivos se leen y se transforman en este dispositivo. El visor es una ayuda de edición y control; conserva siempre el original y valida la capa en tu SIG.</p>
+  </main>
+  <script src="app.js"></script>
+</body>
+</html>

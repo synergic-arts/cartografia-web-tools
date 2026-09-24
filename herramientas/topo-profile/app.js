@@ -200,13 +200,15 @@ $('example').addEventListener('click', () => {
 $('clear').addEventListener('click', () => { points = []; basePoints = []; $('file').value = ''; $('status').textContent = 'Carga un archivo o pulsa «Usar ejemplo».'; $('csv').disabled = true; $('json').disabled = true; render(); });
 $('exaggeration').addEventListener('input', () => { $('exaggerationValue').textContent = `${$('exaggeration').value}×`; draw(); });
 $('smooth').addEventListener('input', () => { $('smoothValue').textContent = $('smooth').value; prepare(); });
-$('chart').addEventListener('mousemove', event => {
+$('chart').addEventListener('pointermove', event => {
   if (!chartPoints.length) return;
   const rect = $('chart').getBoundingClientRect(); const x = (event.clientX - rect.left) * ($('chart').width / (window.devicePixelRatio || 1)) / rect.width;
   let best = 0; chartPoints.forEach((point, index) => { if (Math.abs(point[0] - x) < Math.abs(chartPoints[best][0] - x)) best = index; });
   const point = points[best]; $('tooltip').hidden = false; $('tooltip').textContent = `Punto ${best + 1} · ${point.distance.toFixed(1)} m · ${point.elevation.toFixed(1)} m · ${point.slope.toFixed(2)}%`;
 });
-$('chart').addEventListener('mouseleave', () => { $('tooltip').hidden = true; });
+$('chart').addEventListener('pointerdown', event => $('chart').dispatchEvent(new PointerEvent('pointermove', { clientX: event.clientX, clientY: event.clientY, bubbles: true })));
+$('chart').addEventListener('pointerleave', () => { $('tooltip').hidden = true; });
+$('chart').addEventListener('pointercancel', () => { $('tooltip').hidden = true; });
 $('csv').addEventListener('click', () => download('topo-profile.csv', 'text/csv', `index,distance_m,elevation_m,slope_percent,latitude,longitude\n${points.map((point, index) => `${index + 1},${point.distance},${point.elevation},${point.slope},${point.lat ?? ''},${point.lng ?? ''}`).join('\n')}`));
 $('json').addEventListener('click', () => download('topo-profile.json', 'application/json', JSON.stringify({ source, points }, null, 2)));
 window.addEventListener('resize', draw);
