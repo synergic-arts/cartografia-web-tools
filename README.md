@@ -25,6 +25,7 @@ Colección de herramientas web abiertas para cartografía, rutas y datos geoespa
 - [Map Layout Studio](herramientas/map-layout/): composición local de mapas PNG desde GeoJSON, con título, cuadrícula, escala, flecha norte, leyenda y temas visuales.
 - [Layer Diff](herramientas/layer-diff/): comparación local de dos capas GeoJSON por clave estable, con altas, bajas, modificaciones, mapa de diferencias e informe exportable.
 - [Raster Change Lab](herramientas/raster-change-lab/): comparación local de imágenes raster renderizables, umbral de cambio, mezcla temporal, métricas y exportación PNG.
+- [Vector Generalizer](herramientas/vector-generalizer/): simplificación local de líneas y polígonos GeoJSON con Douglas–Peucker, tolerancia aproximada en metros, comparación visual y exportación.
 
 Carto Local AI funciona sin servidor: el modo rápido calcula métricas y recomendaciones en JavaScript. Si el navegador ofrece WebGPU, el usuario puede pulsar «Preparar IA local» para cargar explícitamente `Llama-3.2-1B-Instruct-q4f16_1-MLC` mediante WebLLM; el primer arranque descarga y almacena la caché del modelo en ese navegador. La aplicación no envía el GeoJSON a un backend propio.
 

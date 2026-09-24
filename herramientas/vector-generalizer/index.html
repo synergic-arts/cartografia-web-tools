@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Simplificación local de líneas y polígonos GeoJSON con tolerancia cartográfica en metros.">
+  <title>Vector Generalizer · simplificación GeoJSON</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
+  <link rel="stylesheet" href="styles.css">
+  <style>#mapFallback[hidden]{display:none!important}</style>
+</head>
+<body>
+  <header><a class="back" href="../">← Catálogo</a><div><strong>Vector Generalizer</strong><span>simplificación vectorial · local · trazable</span></div><span class="privacy">sin backend propio</span></header>
+  <main>
+    <section class="hero"><p class="eyebrow">25 · EDICIÓN VECTORIAL · CLIENTE · LOCAL</p><h1>Reduce vértices sin perder la forma esencial.</h1><p>Aplica Douglas–Peucker a líneas y polígonos GeoJSON con una tolerancia aproximada en metros. Ideal para preparar capas de campo, cartografía histórica o mapas web más ligeros antes de compartirlas o llevarlas a un SIG.</p></section>
+    <section class="layout">
+      <div class="panel controls">
+        <label class="drop" for="fileInput"><input id="fileInput" type="file" accept=".geojson,.json,application/geo+json,application/json" hidden><b>＋ Abrir GeoJSON</b><small>El archivo se lee y procesa en este navegador. No se sube.</small></label>
+        <div class="sample-row"><button id="exampleBtn" class="secondary" type="button">Cargar ejemplo</button><button id="clearBtn" class="secondary" type="button">Limpiar</button></div>
+        <p id="status" class="status" role="status">Sin capa cargada</p>
+        <div id="summary" hidden>
+          <div class="stats"><div><span>Vértices de entrada</span><b id="inputVertices">—</b></div><div><span>Vértices de salida</span><b id="outputVertices">—</b></div><div><span>Reducción</span><b id="reduction">—</b></div><div><span>Geometrías</span><b id="geometryCount">—</b></div></div>
+          <label class="field" for="tolerance"><span><b>Tolerancia</b><small>distancia aproximada en metros</small></span><input id="tolerance" type="number" min="0.1" max="100000" step="0.1" value="5" inputmode="decimal"></label>
+          <p class="hint">Los extremos de las líneas y el cierre de los anillos se conservan. La conversión usa una aproximación métrica local sobre WGS84.</p>
+          <div class="actions"><button id="processBtn" class="action" type="button">Simplificar capa</button><button id="downloadBtn" class="action secondary-action" type="button" disabled>Descargar GeoJSON simplificado</button></div>
+        </div>
+      </div>
+      <div class="panel map-panel">
+        <div id="placeSearch" class="cartografia-place-search map-place-search" role="search" aria-label="Buscar un lugar"><label for="placeQuery">Buscar lugar</label><input id="placeQuery" type="search" placeholder="Buscar lugar…" autocomplete="off"><button id="placeSearchButton" type="button">Buscar</button><div id="placeResults" class="cartografia-place-results" role="listbox" hidden></div><p id="placeStatus" class="cartografia-place-status" role="status">Busca un topónimo para centrar el mapa.</p></div>
+        <div id="map" aria-label="Comparación de la geometría original y simplificada"></div><div id="mapFallback" hidden>El mapa no está disponible, pero la simplificación local sí funciona.</div>
+        <div class="legend"><span><i class="input-swatch"></i>Entrada</span><span><i class="output-swatch"></i>Simplificada</span></div>
+      </div>
+    </section>
+    <section class="panel guide"><div><p class="eyebrow">Método y límites</p><h2>Qué hace la herramienta</h2></div><div class="guide-grid"><p><b>Douglas–Peucker</b><br>Conserva los vértices que definen la forma y elimina los que quedan dentro de la tolerancia.</p><p><b>Geometrías compatibles</b><br>Procesa LineString, MultiLineString, Polygon, MultiPolygon y colecciones; los puntos no cambian.</p><p><b>Propiedades</b><br>Conserva atributos, identificadores y la estructura de entidades; sólo cambia sus coordenadas.</p><p><b>Uso cartográfico</b><br>Prueba varias tolerancias según la escala final y valida la topología en tu SIG antes de publicar.</p></div></section>
+    <p class="note"><b>Privacidad y atribución:</b> el GeoJSON permanece en el navegador y no se envía a un servidor propio. La búsqueda opcional de lugares usa Nominatim/OpenStreetMap y sólo transmite el texto que escribas. El mapa base se sirve desde OpenStreetMap; respeta sus <a href="https://operations.osmfoundation.org/policies/tiles/" target="_blank" rel="noopener">condiciones de uso</a>.</p>
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+  <script src="../place-search.js?v=place-search-1"></script>
+  <script src="app.js?v=vector-generalizer-1"></script>
+</body>
+</html>
