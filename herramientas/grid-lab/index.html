@@ -17,10 +17,10 @@
         <div class="fields"><label>Longitud mínima<input id="minLon" type="number" step="any" value="-4.2"></label><label>Latitud mínima<input id="minLat" type="number" step="any" value="40.1"></label><label>Longitud máxima<input id="maxLon" type="number" step="any" value="-3.2"></label><label>Latitud máxima<input id="maxLat" type="number" step="any" value="40.9"></label></div>
         <div class="fields two"><label>Columnas<input id="cols" type="number" min="1" max="100" step="1" value="5"></label><label>Filas<input id="rows" type="number" min="1" max="100" step="1" value="4"></label></div>
         <label class="order">Numeración<select id="order"><option value="north">De norte a sur</option><option value="south">De sur a norte</option></select></label>
-        <div class="actions"><button class="primary" id="generateBtn">Generar cuadrícula</button><button id="clearBtn">Limpiar</button></div>
+        <div class="actions"><button type="button" class="primary" id="generateBtn">Generar cuadrícula</button><button type="button" id="clearBtn">Limpiar</button></div>
         <p class="status" id="status" role="status">Introduce una extensión y genera la cuadrícula.</p>
         <div class="stats"><div><span>Celdas</span><b id="cellCount">—</b></div><div><span>Tamaño lon</span><b id="cellWidth">—</b></div><div><span>Tamaño lat</span><b id="cellHeight">—</b></div><div><span>Centro AOI</span><b id="center">—</b></div></div>
-        <div class="exports"><button id="geoBtn" disabled>Descargar GeoJSON</button><button id="csvBtn" disabled>Descargar CSV</button></div>
+        <div class="exports"><button type="button" id="geoBtn" disabled>Descargar GeoJSON</button><button type="button" id="csvBtn" disabled>Descargar CSV</button></div>
       </aside>
       <section class="panel map-panel"><div class="map-head"><div><h2>Vista de trabajo</h2><span>Haz clic en una celda para consultar su identificador</span></div><div id="placeSearch" class="cartografia-place-search" role="search" aria-label="Buscar un lugar"><label for="placeQuery">Buscar lugar</label><input id="placeQuery" type="search" placeholder="Buscar lugar…" autocomplete="off"><button id="placeSearchButton" type="button">Buscar</button><div id="placeResults" class="cartografia-place-results" role="listbox" hidden></div><p id="placeStatus" class="cartografia-place-status" role="status">Busca un topónimo para centrar el mapa.</p></div></div><div id="map"></div></section>
     </section>

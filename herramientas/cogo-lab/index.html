@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="description" content="Calcula distancias, rumbos, perímetros y superficies con puntos WGS84 en el navegador.">
+  <title>COGO Lab · geometría de campo</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="shell">
+    <a class="back" href="../">← Catálogo</a>
+    <p class="eyebrow">24 · COGO · CLIENTE · LOCAL</p>
+    <h1>Convierte puntos en una lectura de campo.</h1>
+    <p class="lede">Calcula distancias geodésicas, rumbos, perímetro y superficie aproximada a partir de una secuencia de puntos WGS84. Útil para levantamientos, prospección, itinerarios y comprobaciones rápidas antes de pasar al SIG.</p>
+    <section class="layout">
+      <article class="panel input-panel">
+        <div class="heading"><div><h2>1 · Secuencia de puntos</h2><p class="hint">Una fila por punto: nombre, latitud, longitud.</p></div><span class="local-badge">sin servidor</span></div>
+        <textarea id="source" rows="11" spellcheck="false" aria-label="Puntos COGO">P1,40.4168,-3.7038
+P2,40.4182,-3.7001
+P3,40.4144,-3.6966
+P4,40.4120,-3.7015</textarea>
+        <div class="input-row"><label>Separador<select id="delimiter"><option value="auto">Automático</option><option value=",">Coma (,)</option><option value=";">Punto y coma (;)</option><option value="	">Tabulador</option></select></label><label class="check"><input id="closePolygon" type="checkbox" checked><span>Cerrar polígono</span></label></div>
+        <div class="actions"><button id="calculateBtn" class="primary" type="button">Calcular geometría</button><button id="sampleBtn" type="button">Cargar ejemplo</button></div>
+        <p id="status" class="status" role="status" aria-live="polite">Introduce al menos dos puntos para medir un itinerario.</p>
+      </article>
+      <article class="panel map-panel">
+        <div class="heading"><div><h2>2 · Vista espacial</h2><p class="hint">La línea sigue el orden de las filas.</p></div><span id="pointBadge" class="count-badge">0 puntos</span></div>
+        <div id="map" aria-label="Mapa de la geometría COGO"></div>
+        <div id="mapFallback" class="fallback" hidden>El mapa necesita conexión. Los cálculos locales siguen disponibles.</div>
+      </article>
+    </section>
+    <section class="panel results-panel">
+      <div class="heading"><div><h2>3 · Métricas y segmentos</h2><p class="hint">Distancias en metros, rumbos desde el norte y superficie aproximada en m².</p></div><span id="quality" class="quality muted">Sin calcular</span></div>
+      <div class="stats"><div><span>Distancia total</span><strong id="totalDistance">—</strong></div><div><span>Perímetro</span><strong id="perimeter">—</strong></div><div><span>Superficie</span><strong id="area">—</strong></div><div><span>Centro aproximado</span><strong id="centroid">—</strong></div></div>
+      <div id="segments" class="segments"><p class="empty">Los segmentos aparecerán al calcular.</p></div>
+      <div class="exports"><button id="geojsonBtn" type="button" disabled><strong>GeoJSON</strong><small>Puntos y línea/polígono</small></button><button id="csvBtn" type="button" disabled><strong>CSV de segmentos</strong><small>Distancia y rumbo</small></button></div>
+      <p class="fineprint">Usa WGS84 en grados decimales. La superficie utiliza una proyección local equirectangular: es adecuada para áreas de campo pequeñas, no para mediciones catastrales o legales.</p>
+    </section>
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script src="app.js"></script>
+</body>
+</html>

@@ -21,7 +21,7 @@
           <label>Longitud (°)<input id="lon" type="number" step="any" value="-3.7038" inputmode="decimal"></label>
           <label>Latitud (°)<input id="lat" type="number" step="any" value="40.4168" inputmode="decimal"></label>
         </div>
-        <button class="primary" id="convertBtn">Convertir</button>
+        <button type="button" class="primary" id="convertBtn">Convertir</button>
         <p class="status" id="decimalStatus" role="status">Listo para convertir.</p>
       </article>
 
@@ -35,7 +35,7 @@
           <div><dt>Norte (m)</dt><dd id="utmNorthing">—</dd></div>
           <div><dt>Hemisferio</dt><dd id="utmHemisphere">—</dd></div>
         </dl>
-        <div class="actions"><button id="copyBtn" disabled>Copiar resumen</button><button id="downloadBtn" disabled>Descargar JSON</button></div>
+        <div class="actions"><button type="button" id="copyBtn" disabled>Copiar resumen</button><button type="button" id="downloadBtn" disabled>Descargar JSON</button></div>
       </article>
     </section>
 
@@ -49,7 +49,7 @@
           <label>Este (m)<input id="easting" type="number" step="any" value="440290"></label>
           <label>Norte (m)<input id="northing" type="number" step="any" value="4474258"></label>
         </div>
-        <button id="reverseBtn">Convertir UTM</button>
+        <button type="button" id="reverseBtn">Convertir UTM</button>
         <p class="status" id="utmStatus" role="status">Puedes pegar coordenadas UTM de un SIG.</p>
         <div class="reverse-result"><span>Longitud</span><strong id="reverseLon">—</strong><span>Latitud</span><strong id="reverseLat">—</strong></div>
       </article>
