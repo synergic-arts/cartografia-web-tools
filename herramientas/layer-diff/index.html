@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Comparador local de dos capas GeoJSON para detectar altas, bajas y cambios.">
+  <title>Layer Diff · Cartografía Web Tools</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="app">
+    <header class="hero"><a href="../">← Catálogo cartográfico</a><span class="badge">comparación local</span><h1>Layer Diff</h1><p>Compara dos inventarios GeoJSON, detecta entidades nuevas, desaparecidas o modificadas y exporta un informe trazable.</p></header>
+    <section class="panel controls" aria-labelledby="inputs-title">
+      <h2 id="inputs-title">Capas de referencia</h2>
+      <div class="inputs">
+        <label class="file"><span>Capa anterior</span><input id="baseFile" type="file" accept=".json,.geojson,application/geo+json,application/json"></label>
+        <label class="file current"><span>Capa actual</span><input id="currentFile" type="file" accept=".json,.geojson,application/geo+json,application/json"></label>
+        <button type="button" id="demo" class="secondary">Cargar ejemplo</button>
+      </div>
+      <div class="filters"><label>Campo de correspondencia <select id="key"><option value="auto">Auto: id, código o nombre</option></select></label><label>Mostrar <select id="statusFilter"><option value="all">Todos los resultados</option><option value="added">Añadidos</option><option value="removed">Eliminados</option><option value="changed">Modificados</option><option value="unchanged">Sin cambios</option></select></label><label class="search">Buscar etiqueta<input id="search" type="search" placeholder="yacimiento, parcela…"></label></div>
+      <p id="status" class="status" role="status" aria-live="polite">Carga dos capas o usa el ejemplo.</p>
+    </section>
+    <section class="metrics" id="metrics" aria-label="Resumen de cambios"></section>
+    <section class="workspace">
+      <section class="panel map-panel"><div class="heading"><div><h2>Mapa de diferencias</h2><p class="hint">Verde: alta · rojo: baja · ámbar: modificación · azul: sin cambios.</p></div><span id="selection">Sin selección</span></div><canvas id="map" aria-label="Mapa de diferencias GeoJSON"></canvas><div class="legend"><span class="added">Añadido</span><span class="removed">Eliminado</span><span class="changed">Modificado</span><span class="unchanged">Sin cambios</span></div></section>
+      <aside class="panel detail"><h2>Detalle</h2><div id="details"><p class="empty">Selecciona un resultado en la tabla o el mapa.</p></div></aside>
+    </section>
+    <section class="panel table-panel"><div class="heading"><div><h2>Resultados</h2><p class="hint" id="tableHint">Aquí aparecerá el informe entidad a entidad.</p></div><div class="actions"><button type="button" id="export" class="primary" disabled>Exportar informe GeoJSON</button><button type="button" id="exportCsv" class="ghost" disabled>Exportar CSV</button></div></div><div class="table-wrap"><table><thead><tr><th>#</th><th>Cambio</th><th>Clave</th><th>Etiqueta</th><th>Origen</th><th></th></tr></thead><tbody id="table"></tbody></table></div></section>
+    <p class="privacy">Comparación local por geometría y propiedades. La clave elegida debe ser estable entre fechas; revisa manualmente los emparejamientos ambiguos antes de usar el resultado como evidencia.</p>
+  </main>
+  <script src="app.js"></script>
+</body>
+</html>
