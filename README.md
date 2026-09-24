@@ -28,6 +28,7 @@ Colección de herramientas web abiertas para cartografía, rutas y datos geoespa
 - [Vector Generalizer](herramientas/vector-generalizer/): simplificación local de líneas y polígonos GeoJSON con Douglas–Peucker, tolerancia aproximada en metros, comparación visual y exportación.
 - [GeoJSON Reproject](herramientas/geojson-reproject/): reproyección local de capas entre WGS84 lon/lat y UTM WGS84 o ETRS89, con zona, hemisferio, vista previa y exportación.
 - [Spatial Join](herramientas/spatial-join/): unión espacial local de observaciones con polígonos por contención, resumen por zona y exportación GeoJSON/CSV.
+- [Density Lab](herramientas/density-lab/): agregación local de puntos en celdas hexagonales, mapa de concentraciones, control de escala y exportación GeoJSON/CSV.
 
 Carto Local AI funciona sin servidor: el modo rápido calcula métricas y recomendaciones en JavaScript. Si el navegador ofrece WebGPU, el usuario puede pulsar «Preparar IA local» para cargar explícitamente `Llama-3.2-1B-Instruct-q4f16_1-MLC` mediante WebLLM; el primer arranque descarga y almacena la caché del modelo en ese navegador. La aplicación no envía el GeoJSON a un backend propio.
 
