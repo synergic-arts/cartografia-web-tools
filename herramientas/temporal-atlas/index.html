@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Visor temporal local para capas GeoJSON con animación y filtros por fecha o periodo.">
+  <title>Temporal Atlas · visor temporal GeoJSON</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
+  <link rel="stylesheet" href="styles.css">
+  <style>#mapFallback[hidden],#timelinePanel[hidden]{display:none!important}</style>
+</head>
+<body>
+  <header><a class="back" href="../">← Catálogo</a><div><strong>Temporal Atlas</strong><span>series históricas · animación · local</span></div><span class="privacy">sin backend propio</span></header>
+  <main>
+    <section class="hero"><p class="eyebrow">30 · TIEMPO Y CAMBIO · CLIENTE · LOCAL</p><h1>Explora cómo cambia una capa a lo largo del tiempo.</h1><p>Carga un GeoJSON con fechas, años o periodos en sus propiedades y recorre la serie sobre el mapa. Útil para yacimientos, usos del suelo, inventarios históricos, campañas de campo y cambios territoriales.</p></section>
+    <section class="layout">
+      <div class="panel controls">
+        <label class="drop" for="fileInput"><input id="fileInput" type="file" accept=".geojson,.json,application/geo+json,application/json" hidden><b>＋ Abrir GeoJSON temporal</b><small>El archivo se interpreta y anima en este navegador.</small></label>
+        <div class="sample-row"><button id="exampleBtn" class="secondary" type="button">Cargar ejemplo histórico</button><button id="clearBtn" class="secondary" type="button">Limpiar</button></div>
+        <p id="status" class="status" role="status">Sin capa cargada</p>
+        <div class="settings"><label for="timeField"><span>Campo temporal</span><input id="timeField" type="text" value="year" spellcheck="false"></label><label for="mode"><span>Modo de visualización</span><select id="mode"><option value="cumulative">Acumulado hasta la fecha</option><option value="snapshot">Sólo ese periodo</option></select></label></div>
+        <div id="timelinePanel" hidden><div class="timeline-head"><b id="timeLabel">—</b><span id="timePosition">—</span></div><input id="timeSlider" type="range" min="0" max="0" value="0"><div class="timeline-actions"><button id="playBtn" class="action" type="button">▶ Reproducir</button><button id="resetBtn" class="secondary" type="button">Volver al inicio</button></div><div class="stats"><div><span>Features temporales</span><b id="temporalCount">—</b></div><div><span>Sin fecha</span><b id="missingCount">—</b></div><div><span>Visibles</span><b id="visibleCount">—</b></div><div><span>Periodos</span><b id="periodCount">—</b></div></div><div class="actions"><button id="downloadBtn" class="action secondary-action" type="button" disabled>Descargar vista actual</button></div></div>
+      </div>
+      <div class="panel map-panel"><div id="placeSearch" class="cartografia-place-search map-place-search" role="search" aria-label="Buscar un lugar"><label for="placeQuery">Buscar lugar</label><input id="placeQuery" type="search" placeholder="Buscar lugar…" autocomplete="off"><button id="placeSearchButton" type="button">Buscar</button><div id="placeResults" class="cartografia-place-results" role="listbox" hidden></div><p id="placeStatus" class="cartografia-place-status" role="status">Busca un topónimo para centrar el mapa.</p></div><div id="map" aria-label="Mapa temporal de la capa"></div><div id="mapFallback" hidden>El mapa no está disponible, pero el análisis temporal local sí funciona.</div></div>
+    </section>
+    <section class="panel guide"><div><p class="eyebrow">Preparación de datos</p><h2>Qué entiende la herramienta</h2></div><div class="guide-grid"><p><b>Años y fechas</b><br>Acepta números, años de cuatro cifras y fechas ISO como <code>1850</code> o <code>1936-07-18</code>.</p><p><b>Dos lecturas</b><br>El modo acumulado muestra aparición hasta la fecha; el modo instantánea muestra sólo ese periodo.</p><p><b>Atributos intactos</b><br>Las propiedades originales se conservan en la descarga de la vista seleccionada.</p><p><b>Sin fecha</b><br>Las entidades sin valor temporal se contabilizan aparte y se excluyen de la animación para no inventar una fecha.</p></div></section>
+    <p class="note"><b>Privacidad y atribución:</b> el GeoJSON permanece en el navegador y no se envía a un backend propio. La búsqueda opcional usa Nominatim/OpenStreetMap y sólo transmite el texto que escribas. El mapa base se sirve desde OpenStreetMap; respeta sus <a href="https://operations.osmfoundation.org/policies/tiles/" target="_blank" rel="noopener">condiciones de uso</a>.</p>
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+  <script src="../place-search.js?v=place-search-1"></script>
+  <script src="app.js?v=temporal-atlas-1"></script>
+</body>
+</html>

@@ -30,6 +30,7 @@ Colección de herramientas web abiertas para cartografía, rutas y datos geoespa
 - [Spatial Join](herramientas/spatial-join/): unión espacial local de observaciones con polígonos por contención, resumen por zona y exportación GeoJSON/CSV.
 - [Density Lab](herramientas/density-lab/): agregación local de puntos en celdas hexagonales, mapa de concentraciones, control de escala y exportación GeoJSON/CSV.
 - [Topology Lab](herramientas/topology-lab/): revisión local de autointersecciones, anillos abiertos, áreas nulas y problemas estructurales, con informes JSON/CSV.
+- [Temporal Atlas](herramientas/temporal-atlas/): visor temporal local para GeoJSON con años/fechas, animación, modo acumulado o instantánea y exportación de la vista.
 
 Carto Local AI funciona sin servidor: el modo rápido calcula métricas y recomendaciones en JavaScript. Si el navegador ofrece WebGPU, el usuario puede pulsar «Preparar IA local» para cargar explícitamente `Llama-3.2-1B-Instruct-q4f16_1-MLC` mediante WebLLM; el primer arranque descarga y almacena la caché del modelo en ese navegador. La aplicación no envía el GeoJSON a un backend propio.
 
