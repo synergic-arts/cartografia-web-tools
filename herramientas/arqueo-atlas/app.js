@@ -85,6 +85,46 @@
       catalogUrl: 'https://datos.gob.es/es/catalogo/l01080193-carta-arqueologica-de-la-ciudad-de-barcelona',
       license: 'CC BY 4.0',
       notes: 'Copia local de la distribución pública 2022 incluida para evitar el bloqueo CORS del servidor original. Conserva geometrías y propiedades publicadas; cobertura Barcelona.'
+    },
+    {
+      id: 'andalucia-reca-puntos',
+      label: 'Andalucía · enclaves arqueológicos e históricos (puntos)',
+      publisher: 'Junta de Andalucía · DERA / IECA',
+      format: 'WFS / GeoJSON',
+      urls: ['https://www.ideandalucia.es/services/DERA_g11_patrimonio/wfs?service=WFS&version=1.0.0&request=GetFeature&outputFormat=application%2Fjson&typeName=DERA_g11_patrimonio%3Ag11_03_Reca_pun'],
+      catalogUrl: 'https://ws089.juntadeandalucia.es/institutodeestadisticaycartografia/dega/datos-espaciales-de-referencia-de-andalucia-dera/registro-de-actualizaciones',
+      license: 'CC BY 4.0 Junta de Andalucía',
+      notes: 'Capa puntual de Conjuntos Culturales y Enclaves Arqueológicos e Históricos de la RECA. Cobertura Andalucía; no equivale a todo el inventario arqueológico andaluz.'
+    },
+    {
+      id: 'andalucia-reca-poligonos',
+      label: 'Andalucía · enclaves arqueológicos e históricos (áreas)',
+      publisher: 'Junta de Andalucía · DERA / IECA',
+      format: 'WFS / GeoJSON',
+      urls: ['https://www.ideandalucia.es/services/DERA_g11_patrimonio/wfs?service=WFS&version=1.0.0&request=GetFeature&outputFormat=application%2Fjson&typeName=DERA_g11_patrimonio%3Ag11_03_Reca_pol'],
+      catalogUrl: 'https://www.juntadeandalucia.es/organismos/culturapatrimoniohistoricoydeporte/areas/cultura/bienes-culturales/catalogo-pha.html',
+      license: 'CC BY 4.0 Junta de Andalucía',
+      notes: 'Delimitaciones poligonales de Conjuntos Culturales y Enclaves Arqueológicos e Históricos de la RECA. Conserva la geometría de área publicada.'
+    },
+    {
+      id: 'andalucia-cuevas',
+      label: 'Andalucía · cuevas',
+      publisher: 'Junta de Andalucía · DERA / IECA',
+      format: 'WFS / GeoJSON',
+      urls: ['https://www.ideandalucia.es/services/DERA_g11_patrimonio/wfs?service=WFS&version=1.0.0&request=GetFeature&outputFormat=application%2Fjson&typeName=DERA_g11_patrimonio%3Ag11_05_Cavidad'],
+      catalogUrl: 'https://ws089.juntadeandalucia.es/institutodeestadisticaycartografia/dega/datos-espaciales-de-referencia-de-andalucia-dera/registro-de-actualizaciones',
+      license: 'CC BY 4.0 Junta de Andalucía',
+      notes: 'Capa de cuevas del DERA; es contexto de prospección y patrimonio natural, no todos sus registros son arqueológicos.'
+    },
+    {
+      id: 'andalucia-bienes-protegidos',
+      label: 'Andalucía · bienes protegidos (áreas)',
+      publisher: 'Junta de Andalucía · DERA / IECA',
+      format: 'WFS / GeoJSON',
+      urls: ['https://www.ideandalucia.es/services/DERA_g11_patrimonio/wfs?service=WFS&version=1.0.0&request=GetFeature&outputFormat=application%2Fjson&typeName=DERA_g11_patrimonio%3Ag11_18_BienesProtegidos_pol'],
+      catalogUrl: 'https://www.juntadeandalucia.es/organismos/culturapatrimoniohistoricoydeporte/areas/cultura/bienes-culturales/catalogo-pha.html',
+      license: 'CC BY 4.0 Junta de Andalucía',
+      notes: 'Ámbitos poligonales de bienes protegidos del Catálogo General del Patrimonio Histórico Andaluz. Incluye categorías diversas; filtra y contrasta la tipología antes de usarla como arqueología.'
     }
   ];
 
@@ -149,6 +189,14 @@
       url: 'https://datos.gob.es/es/catalogo/a13002908-patrimonio-cultural-protegido-en-la-comunidad-de-madrid',
       downloadUrl: 'https://datos.comunidad.madrid/dataset/dde86e1d-a06b-4f65-8668-920a566fa264/resource/c243eee1-2c1e-4dfc-92b8-624a5bb5ed8b/download/inmuebles_bic.json',
       license: 'CC BY 4.0'
+    },
+    {
+      group: 'Arqueología · fuentes autonómicas',
+      label: 'Andalucía · DERA patrimonio arqueológico e histórico',
+      description: 'El DERA publica las capas RECA de enclaves arqueológicos e históricos, cuevas y bienes protegidos mediante WFS; las fuentes cargables del atlas separan puntos, áreas y contexto.',
+      url: 'https://www.juntadeandalucia.es/organismos/culturapatrimoniohistoricoydeporte/areas/cultura/bienes-culturales/catalogo-pha.html',
+      downloadUrl: 'https://www.ideandalucia.es/services/DERA_g11_patrimonio/wfs?service=WFS&request=GetCapabilities',
+      license: 'CC BY 4.0 Junta de Andalucía'
     },
     {
       group: 'Arqueología · fuentes autonómicas',
