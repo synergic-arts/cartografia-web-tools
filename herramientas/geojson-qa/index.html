@@ -7,7 +7,7 @@
   <title>GeoJSON QA · control de calidad</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
     <link rel="stylesheet" href="styles.css">
-    <style>#mapFallback[hidden]{display:none!important}</style>
+    <style>#mapFallback[hidden]{display:none!important}.diagnostic{margin:12px 0 0;border:1px solid #5bd6a555;border-radius:10px;padding:10px 12px;color:#cfe3ff;font-size:.82rem;line-height:1.45;background:#16304788}</style>
 </head>
 <body>
   <header><a class="back" href="../">← Catálogo</a><div><strong>GeoJSON QA</strong><span>control de calidad · local · trazable</span></div><span class="privacy">sin backend propio</span></header>
@@ -21,6 +21,7 @@
         <div id="summary" hidden>
           <div class="stats"><div><span>Features</span><b id="featureCount">—</b></div><div><span>Vértices</span><b id="vertexCount">—</b></div><div><span>Errores</span><b id="errorCount">—</b></div><div><span>Avisos</span><b id="warningCount">—</b></div><div><span>Repetidas</span><b id="duplicateCount">—</b></div><div><span>Extensión</span><b id="bbox">—</b></div></div>
           <div id="types" class="chips"></div>
+          <p id="coordinateDiagnostics" class="diagnostic" hidden></p>
           <p class="eyebrow fix-title">COPIA REVISADA</p>
           <label class="check"><input id="closeRings" type="checkbox" checked> Cerrar anillos poligonales abiertos</label>
           <label class="check"><input id="removeEmpty" type="checkbox"> Eliminar entidades sin geometría</label>
@@ -35,11 +36,11 @@
       </div>
     </section>
     <section class="panel findings"><div class="section-head"><div><p class="eyebrow">Diagnóstico</p><h2>Hallazgos de la capa</h2></div><span id="issueCount">—</span></div><div class="table-wrap"><table><thead><tr><th>Nivel</th><th>Feature</th><th>Regla</th><th>Detalle</th></tr></thead><tbody id="issueTable"><tr><td colspan="4">Carga un GeoJSON o el ejemplo para ver los hallazgos.</td></tr></tbody></table></div></section>
-    <section class="panel guide"><div><p class="eyebrow">Criterios de revisión</p><h2>Qué comprueba</h2></div><div class="guide-grid"><p><b>Coordenadas</b><br>Longitud −180…180, latitud −90…90 y valores numéricos.</p><p><b>Geometrías</b><br>Tipos GeoJSON soportados, estructuras completas y entidades con geometría.</p><p><b>Polígonos</b><br>Anillos con al menos cuatro posiciones y cierre entre el primer y último vértice.</p><p><b>Duplicados</b><br>Geometrías idénticas y posiciones consecutivas repetidas que pueden inflar una capa.</p></div></section>
+    <section class="panel guide"><div><p class="eyebrow">Criterios de revisión</p><h2>Qué comprueba</h2></div><div class="guide-grid"><p><b>Coordenadas</b><br>Longitud −180…180, latitud −90…90 y valores numéricos.</p><p><b>CRS y orden</b><br>Señales de latitud/longitud invertidas, coordenadas proyectadas y dimensiones mixtas; son avisos, no correcciones automáticas.</p><p><b>Geometrías</b><br>Tipos GeoJSON soportados, estructuras completas y entidades con geometría.</p><p><b>Polígonos y duplicados</b><br>Anillos cerrados, vértices consecutivos repetidos y geometrías idénticas que pueden inflar una capa.</p></div></section>
     <p class="note"><b>Uso profesional:</b> este control detecta problemas estructurales frecuentes, pero no sustituye la revisión del sistema de referencia, topología entre capas, tolerancia cartográfica ni la validación temática. GeoJSON se interpreta como WGS84 lon/lat por su especificación habitual. Conserva el informe junto con la fecha y la fuente de la capa.</p>
   </main>
   <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
   <script src="../place-search.js?v=place-search-1"></script>
-  <script src="app.js?v=geojson-qa-1"></script>
+  <script src="app.js?v=geojson-qa-2"></script>
 </body>
 </html>

@@ -2,7 +2,7 @@
   'use strict';
 
   const $ = (id) => document.getElementById(id);
-  const state = { source: null, document: null, features: [], issues: [], map: null, layer: null, fileName: 'capa.geojson', vertexCount: 0, geometryCount: 0, typeCounts: {}, bbox: null, duplicateCount: 0 };
+  const state = { source: null, document: null, features: [], issues: [], map: null, layer: null, fileName: 'capa.geojson', vertexCount: 0, geometryCount: 0, typeCounts: {}, bbox: null, duplicateCount: 0, coordinateDimensions: new Map(), swapSuspectCount: 0, projectedLikeCount: 0, diagnosticKeys: new Set() };
   const geometryDepth = { Point: 0, MultiPoint: 1, LineString: 1, MultiLineString: 2, Polygon: 2, MultiPolygon: 3 };
 
   function isObject(value) { return value !== null && typeof value === 'object'; }
@@ -16,6 +16,14 @@
     state.issues.push({ severity, code, feature: feature || '—', path: path || '—', message });
   }
 
+  function addCoordinateDiagnostic(severity, code, feature, path, message, counter) {
+    const key = `${code}:${feature || '—'}`;
+    if (state.diagnosticKeys.has(key)) return;
+    state.diagnosticKeys.add(key);
+    state[counter] += 1;
+    addIssue(severity, code, feature, path, message);
+  }
+
   function updateBbox(position) {
     const lon = Number(position[0]), lat = Number(position[1]);
     if (!Number.isFinite(lon) || !Number.isFinite(lat)) return;
@@ -26,7 +34,11 @@
   function validatePosition(position, feature, path, collect) {
     if (!isPosition(position)) { addIssue('error', 'invalid-coordinate', feature, path, 'La posición no contiene al menos longitud y latitud numéricas.'); return false; }
     const lon = Number(position[0]), lat = Number(position[1]);
+    state.coordinateDimensions.set(position.length, (state.coordinateDimensions.get(position.length) || 0) + 1);
     if (lon < -180 || lon > 180 || lat < -90 || lat > 90) addIssue('error', 'out-of-range', feature, path, `Coordenada fuera de WGS84: ${lon}, ${lat}.`);
+    if (Math.abs(lon) <= 90 && Math.abs(lat) > 90 && Math.abs(lat) <= 180) addCoordinateDiagnostic('warning', 'possible-lat-lon-swap', feature, path, 'El patrón parece latitud, longitud; GeoJSON espera longitud, latitud. No se corrige automáticamente.', 'swapSuspectCount');
+    const maximum = Math.max(Math.abs(lon), Math.abs(lat));
+    if ((Math.abs(lon) > 180 || Math.abs(lat) > 90) && maximum >= 1000 && maximum <= 100000000) addCoordinateDiagnostic('warning', 'possible-projected-crs', feature, path, 'Los valores parecen coordenadas proyectadas (por ejemplo UTM/Web Mercator), no WGS84 lon/lat. Reproyecta antes de usar esta capa.', 'projectedLikeCount');
     if (position.length > 2 && !position.slice(2).every((value) => Number.isFinite(Number(value)))) addIssue('warning', 'invalid-extra-coordinate', feature, path, 'La coordenada adicional no es numérica; revisa la altitud o medidas.');
     state.vertexCount += 1; updateBbox(position); collect?.push(position); return lon >= -180 && lon <= 180 && lat >= -90 && lat <= 90;
   }
@@ -83,7 +95,7 @@
   function canonicalGeometry(feature) { try { return JSON.stringify(feature?.geometry ?? null); } catch { return ''; } }
 
   function analyse(input, fileName) {
-    const normal = normalise(input); state.source = input; state.document = normal.source; state.features = normal.features; state.issues = []; state.vertexCount = 0; state.geometryCount = 0; state.typeCounts = {}; state.bbox = null; state.duplicateCount = 0; state.fileName = fileName || 'capa.geojson';
+    const normal = normalise(input); state.source = input; state.document = normal.source; state.features = normal.features; state.issues = []; state.vertexCount = 0; state.geometryCount = 0; state.typeCounts = {}; state.bbox = null; state.duplicateCount = 0; state.coordinateDimensions = new Map(); state.swapSuspectCount = 0; state.projectedLikeCount = 0; state.diagnosticKeys = new Set(); state.fileName = fileName || 'capa.geojson';
     if (!state.features.length) addIssue('warning', 'empty-collection', '—', 'features', 'La capa no contiene entidades.');
     const seen = new Map();
     state.features.forEach((feature, index) => {
@@ -94,6 +106,7 @@
       const key = canonicalGeometry(feature);
       if (key && key !== 'null') { if (seen.has(key)) { state.duplicateCount += 1; addIssue('warning', 'duplicate-feature', number, `features[${index}].geometry`, `Geometría repetida; también aparece en la feature ${seen.get(key)}.`); } else seen.set(key, number); }
     });
+    if (state.coordinateDimensions.size > 1) addIssue('warning', 'mixed-coordinate-dimensions', '—', 'coordinates', `La capa mezcla dimensiones de coordenada: ${[...state.coordinateDimensions.keys()].sort((a, b) => a - b).join(', ')} valores.`);
     render(); drawMap();
   }
 
@@ -101,6 +114,12 @@
   function render() {
     $('summary').hidden = false; $('featureCount').textContent = state.features.length.toLocaleString('es-ES'); $('vertexCount').textContent = state.vertexCount.toLocaleString('es-ES'); $('errorCount').textContent = state.issues.filter((item) => item.severity === 'error').length; $('warningCount').textContent = state.issues.filter((item) => item.severity === 'warning').length; $('duplicateCount').textContent = state.duplicateCount; $('bbox').textContent = formatBbox(); $('issueCount').textContent = `${state.issues.length} hallazgo${state.issues.length === 1 ? '' : 's'}`;
     const types = $('types'); types.replaceChildren(); Object.entries(state.typeCounts).forEach(([type, count]) => { const chip = document.createElement('span'); chip.className = 'chip'; chip.textContent = `${type} · ${count}`; types.appendChild(chip); });
+    const dimensions = [...state.coordinateDimensions.entries()].sort((a, b) => a[0] - b[0]).map(([size, count]) => `${size}D (${count.toLocaleString('es-ES')})`).join(', ') || '—';
+    const diagnosticParts = [`Dimensiones: ${dimensions}`];
+    if (state.swapSuspectCount) diagnosticParts.push(`posible orden lat/lon en ${state.swapSuspectCount} feature${state.swapSuspectCount === 1 ? '' : 's'}`);
+    if (state.projectedLikeCount) diagnosticParts.push(`posible CRS proyectado en ${state.projectedLikeCount} feature${state.projectedLikeCount === 1 ? '' : 's'}`);
+    if (state.coordinateDimensions.size > 1) diagnosticParts.push('dimensiones mixtas');
+    $('coordinateDiagnostics').hidden = false; $('coordinateDiagnostics').textContent = diagnosticParts.join(' · ');
     const tbody = $('issueTable'); tbody.replaceChildren(); if (!state.issues.length) { const row = tbody.insertRow(); const cell = row.insertCell(); cell.colSpan = 4; cell.textContent = 'No se han encontrado problemas con estas reglas.'; } else state.issues.slice(0, 300).forEach((item) => { const row = tbody.insertRow(); const level = row.insertCell(); level.className = `severity ${item.severity}`; level.textContent = item.severity === 'error' ? 'Error' : item.severity === 'warning' ? 'Aviso' : 'Info'; row.insertCell().textContent = item.feature; row.insertCell().textContent = item.code; const detail = row.insertCell(); detail.className = 'detail'; detail.textContent = `${item.message} · ${item.path}`; });
     $('status').textContent = `${state.fileName}: ${state.features.length} features revisadas, ${state.issues.length} hallazgos.`;
     ['reportBtn', 'csvBtn', 'cleanBtn'].forEach((id) => { $(id).disabled = false; });
@@ -149,8 +168,8 @@
     { type: 'Feature', properties: { name: 'Sin geometría' }, geometry: null }
   ] };
 
-  $('fileInput').addEventListener('change', () => readFile($('fileInput').files?.[0])); $('exampleBtn').addEventListener('click', () => analyse(example, 'ejemplo-geojson-qa.geojson')); $('clearBtn').addEventListener('click', () => { state.source = null; state.features = []; state.issues = []; state.layer?.remove(); $('summary').hidden = true; $('issueTable').replaceChildren(); $('status').textContent = 'Sin capa cargada'; ['reportBtn', 'csvBtn', 'cleanBtn'].forEach((id) => { $(id).disabled = true; }); });
-  $('reportBtn').addEventListener('click', () => download(JSON.stringify({ tool: 'GeoJSON QA', file: state.fileName, checkedAt: new Date().toISOString(), summary: { features: state.features.length, vertices: state.vertexCount, errors: state.issues.filter((item) => item.severity === 'error').length, warnings: state.issues.filter((item) => item.severity === 'warning').length, bbox: state.bbox }, geometryTypes: state.typeCounts, issues: state.issues }, null, 2), `${state.fileName.replace(/\.[^.]+$/, '')}-qa.json`, 'application/json'));
+  $('fileInput').addEventListener('change', () => readFile($('fileInput').files?.[0])); $('exampleBtn').addEventListener('click', () => analyse(example, 'ejemplo-geojson-qa.geojson')); $('clearBtn').addEventListener('click', () => { state.source = null; state.features = []; state.issues = []; state.coordinateDimensions = new Map(); state.swapSuspectCount = 0; state.projectedLikeCount = 0; state.diagnosticKeys = new Set(); state.layer?.remove(); $('summary').hidden = true; $('coordinateDiagnostics').hidden = true; $('issueTable').replaceChildren(); $('status').textContent = 'Sin capa cargada'; ['reportBtn', 'csvBtn', 'cleanBtn'].forEach((id) => { $(id).disabled = true; }); });
+  $('reportBtn').addEventListener('click', () => download(JSON.stringify({ tool: 'GeoJSON QA', file: state.fileName, checkedAt: new Date().toISOString(), summary: { features: state.features.length, vertices: state.vertexCount, errors: state.issues.filter((item) => item.severity === 'error').length, warnings: state.issues.filter((item) => item.severity === 'warning').length, bbox: state.bbox }, coordinateDiagnostics: { dimensions: Object.fromEntries([...state.coordinateDimensions.entries()].map(([size, count]) => [String(size), count])), possibleLatLonSwapFeatures: state.swapSuspectCount, possibleProjectedCrsFeatures: state.projectedLikeCount, mixedDimensions: state.coordinateDimensions.size > 1 }, geometryTypes: state.typeCounts, issues: state.issues }, null, 2), `${state.fileName.replace(/\.[^.]+$/, '')}-qa.json`, 'application/json'));
   $('csvBtn').addEventListener('click', () => { const rows = [['nivel', 'regla', 'feature', 'ruta', 'detalle'], ...state.issues.map((item) => [item.severity, item.code, item.feature, item.path, item.message])]; download(rows.map((row) => row.map(escapeCsv).join(',')).join('\n'), `${state.fileName.replace(/\.[^.]+$/, '')}-hallazgos.csv`, 'text/csv;charset=utf-8'); });
   $('cleanBtn').addEventListener('click', () => download(JSON.stringify(revisedDocument(), null, 2), `${state.fileName.replace(/\.[^.]+$/, '')}-revisado.geojson`, 'application/geo+json'));
   initMap();
