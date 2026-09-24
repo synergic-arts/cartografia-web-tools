@@ -6,7 +6,7 @@
   <meta name="description" content="Atlas client-side para consultar y documentar yacimientos arqueológicos de fuentes públicas.">
   <title>Arqueo Atlas · yacimientos públicos</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
-  <link rel="stylesheet" href="styles.css?v=arqueo-atlas-2">
+  <link rel="stylesheet" href="styles.css?v=arqueo-atlas-4">
 </head>
 <body>
   <header><a class="back" href="../">← Catálogo</a><div><strong>Arqueo Atlas</strong><span>yacimientos públicos · fichas · fotos trazables</span></div><span class="privacy">cliente · sin backend propio</span></header>
@@ -16,6 +16,7 @@
       <aside class="panel controls">
         <p class="eyebrow">Fuentes públicas</p>
         <label class="drop" for="fileInput"><input id="fileInput" type="file" accept=".geojson,.json,.csv,.zip,application/geo+json,application/json,text/csv,application/zip" hidden><b>＋ Abrir capa local</b><small>GeoJSON, JSON, CSV o Shapefile ZIP. No se sube.</small></label>
+        <label class="field"><span>CRS opcional para archivo o URL</span><input id="crsOverride" type="text" placeholder="EPSG:25830, EPSG:32628, EPSG:3857…"><small class="hint">Se usa si el archivo no declara su sistema de coordenadas. Para CSV/XLS convertido, indica también que las columnas son X/Y o Este/Norte.</small></label>
         <label class="field"><span>Fuente del catálogo</span><select id="sourceSelect"></select></label>
         <div class="button-row"><button id="loadSourceBtn" class="primary" type="button">Cargar fuente</button><button id="exampleBtn" class="secondary" type="button">Ejemplo</button></div>
         <div class="source-card" id="sourceMeta">Selecciona una fuente para ver su cobertura, licencia y enlace oficial.</div>
@@ -34,7 +35,7 @@
         <div class="button-row"><button id="discoverLayersBtn" class="secondary" type="button">Descubrir capas oficiales</button><button id="removeImageryBtn" class="ghost" type="button">Quitar fotos</button></div>
         <label class="field range-field"><span>Opacidad de las capas fotográficas <output id="imageryOpacityValue">82%</output></span><input id="imageryOpacity" type="range" min="0.2" max="1" step="0.02" value="0.82"></label>
         <p id="imageryStatus" class="hint" role="status">Capas disponibles desde el servicio oficial PNOA histórico.</p>
-        <button id="loadNgbeBtn" class="secondary full" type="button">Cargar NGBE en la vista actual</button>
+                <details class="recent-imagery-tool"><summary>Imágenes recientes NASA GIBS · Sentinel-2, Landsat y VIIRS</summary><p class="hint">Capa directa desde NASA GIBS. HLS ofrece Sentinel-2 y Landsat a 30 m; VIIRS ofrece un mosaico diario de 250 m. Se consulta sólo la extensión visible y se mantienen fecha, producto y atribución.</p><label class="field"><span>Producto</span><select id="recentImageryProduct"><option value="VIIRS">VIIRS · color verdadero diario · 250 m</option><option value="S30">Sentinel-2 HLS · 30 m</option><option value="L30">Landsat 8/9 HLS · 30 m</option></select></label><div class="button-row"><button id="recentImagerySearchBtn" class="secondary" type="button">Buscar fechas disponibles</button><button id="recentImageryAddBtn" class="primary" type="button">Añadir imagen</button></div><label class="field"><span>Fecha disponible</span><select id="recentImageryDate"></select></label><p id="recentImageryStatus" class="hint" role="status">VIIRS se puede consultar para los últimos 30 días; para HLS busca primero fechas en la vista actual.</p></details><button id="loadNgbeBtn" class="secondary full" type="button">Cargar NGBE en la vista actual</button>
         <small class="hint">Añade hasta 1.000 lugares nombrados del Nomenclátor del IGN dentro de la extensión visible; sirve para contextualizar topónimos y asentamientos, no es una capa arqueológica.</small>
         <details class="custom-source"><summary>Añadir una URL pública</summary><label class="field"><span>Nombre</span><input id="customName" type="text" placeholder="Mi inventario arqueológico"></label><label class="field"><span>URL GeoJSON / JSON / ZIP</span><input id="customUrl" type="url" placeholder="https://…"></label><button id="customLoadBtn" class="secondary full" type="button">Cargar URL</button><small class="hint">El servidor debe permitir CORS. Si no, descarga el archivo y ábrelo como capa local.</small></details>
         <details class="reference-catalog"><summary>Catálogo de fuentes nacionales y regionales</summary><div id="referenceCatalog"></div></details>
@@ -45,8 +46,8 @@
         <label class="field"><span>Periodo / cronología</span><select id="periodFilter"><option value="">Todos los periodos</option></select></label>
         <label class="field"><span>Fuente cargada</span><select id="loadedSourceFilter"><option value="">Todas las fuentes</option></select></label>
         <div class="button-row"><button id="exportGeoBtn" class="secondary" type="button" disabled>GeoJSON filtrado</button><button id="exportCsvBtn" class="secondary" type="button" disabled>CSV de inventario</button></div>
-        <button id="approximateBtn" class="secondary full" type="button" disabled>Completar áreas aproximadas</button>
-        <small class="hint">Para registros sin coordenadas, busca el municipio o lugar en Nominatim y crea una envolvente visible. Se marca como aproximada y no sustituye la localización oficial.</small>
+        <button id="approximateBtn" class="secondary full" type="button" disabled>Geolocalizar por nombre / completar áreas</button>
+        <small class="hint">Para registros sin coordenadas, busca primero el nombre y después el municipio o lugar en Nominatim. Crea una envolvente visible, marcada como aproximada; no sustituye la localización oficial.</small>
         <button id="exportReportBtn" class="secondary full" type="button" disabled>Informe de procedencia</button>
         <button id="clearBtn" class="ghost full" type="button">Limpiar atlas</button>
       </aside>
@@ -59,7 +60,8 @@
   </main>
   <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
   <script src="https://cdn.jsdelivr.net/npm/shpjs@6.1.0/dist/shp.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/proj4@2.15.0/dist/proj4.js"></script>
   <script src="../place-search.js?v=place-search-1"></script>
-  <script src="app.js?v=arqueo-atlas-6"></script>
+  <script src="app.js?v=arqueo-atlas-8"></script>
 </body>
 </html>

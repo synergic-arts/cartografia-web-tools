@@ -1,5 +1,23 @@
 (() => {
-  const SOURCES = [
+  const WIKIDATA_QUERY = [
+    'SELECT DISTINCT ?item ?itemLabel ?coord WHERE {',
+    '?item wdt:P31 wd:Q839954; wdt:P625 ?coord; wdt:P17 wd:Q29.',
+    'FILTER(geof:latitude(?coord) >= 27.5 && geof:latitude(?coord) <= 44.5 && geof:longitude(?coord) >= -18.5 && geof:longitude(?coord) <= 5.5)',
+    'SERVICE wikibase:label { bd:serviceParam wikibase:language "es,en". }',
+    '} LIMIT 500'
+  ].join(' ');
+  const WIKIDATA_URL = `https://query.wikidata.org/sparql?format=json&query=${encodeURIComponent(WIKIDATA_QUERY)}`;
+  const OVERPASS_QUERY = '[out:json][timeout:120];area["ISO3166-1"="ES"]["boundary"="administrative"]->.searchArea;(nwr["historic"="archaeological_site"](area.searchArea);nwr["site_type"="archaeological_site"](area.searchArea););out center tags;';
+  const OVERPASS_URLS = [
+    `https://overpass-api.de/api/interpreter?data=${encodeURIComponent(OVERPASS_QUERY)}`,
+    `https://overpass.kumi.systems/api/interpreter?data=${encodeURIComponent(OVERPASS_QUERY)}`
+  ];
+  const NASA_CMR_ENDPOINT = 'https://cmr.earthdata.nasa.gov/search/granules.umm_json';
+  const NASA_RECENT_PRODUCTS = Object.freeze({
+    S30: Object.freeze({ label: 'Sentinel-2 HLS', sensor: 'Sentinel-2 via HLS', layer: 'HLS_S30_Nadir_BRDF_Adjusted_Reflectance', collection: 'C2021957295-LPCLOUD', level: 12, extension: 'png', resolution: '30 m' }),
+    L30: Object.freeze({ label: 'Landsat 8/9 HLS', sensor: 'Landsat 8/9 via HLS', layer: 'HLS_L30_Nadir_BRDF_Adjusted_Reflectance', collection: 'C2021957657-LPCLOUD', level: 12, extension: 'png', resolution: '30 m' }),
+    VIIRS: Object.freeze({ label: 'VIIRS NOAA-21', sensor: 'VIIRS NOAA-21', layer: 'VIIRS_NOAA21_CorrectedReflectance_TrueColor', collection: '', level: 9, extension: 'jpg', resolution: '250 m' })
+  });  const SOURCES = [
     {
       id: 'malaga-2026',
       label: 'Málaga · yacimientos arqueológicos 2026',
@@ -125,6 +143,65 @@
       catalogUrl: 'https://www.juntadeandalucia.es/organismos/culturapatrimoniohistoricoydeporte/areas/cultura/bienes-culturales/catalogo-pha.html',
       license: 'CC BY 4.0 Junta de Andalucía',
       notes: 'Ámbitos poligonales de bienes protegidos del Catálogo General del Patrimonio Histórico Andaluz. Incluye categorías diversas; filtra y contrasta la tipología antes de usarla como arqueología.'
+    },
+    {
+      id: 'usgs-earthquakes-context',
+      label: 'USGS · terremotos últimos 30 días (contexto)',
+      publisher: 'U.S. Geological Survey',
+      format: 'GeoJSON',
+      urls: ['https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_month.geojson'],
+      catalogUrl: 'https://earthquake.usgs.gov/earthquakes/feed/v1.0/geojson.php',
+      license: 'Datos públicos del Gobierno de Estados Unidos',
+      notes: 'Capa de contexto ambiental para estudios de riesgo y conservación. No es un inventario arqueológico; conserva magnitud, fecha, profundidad, lugar y enlace USGS.'
+    },    {
+      id: 'wikidata-arqueologia-espana',
+      label: 'Wikidata · yacimientos arqueológicos geolocalizados de España',
+      publisher: 'Wikidata Query Service / comunidad Wikimedia',
+      format: 'SPARQL JSON',
+      urls: [WIKIDATA_URL],
+      catalogUrl: 'https://query.wikidata.org/',
+      license: 'CC0 para datos estructurados de Wikidata; revisar licencias de imágenes y artículos',
+      notes: 'Consulta dinámica creada para Arqueo Atlas: entidades con clase yacimiento arqueológico (P31=Q839954), país España (P17=Q29) y coordenadas publicadas. Es una fuente comunitaria, no un inventario administrativo exhaustivo; puede contener duplicados, omisiones y precisiones variables.'
+    },
+    {
+      id: 'osm-arqueologia-espana',
+      label: 'OpenStreetMap · sitios arqueológicos de España',
+      publisher: 'OpenStreetMap / Overpass API',
+      format: 'Overpass JSON',
+      urls: OVERPASS_URLS,
+      catalogUrl: 'https://wiki.openstreetmap.org/wiki/Key:historic',
+      license: 'ODbL 1.0 · OpenStreetMap contributors',
+      notes: 'Consulta dinámica de nodos, vías y relaciones etiquetados historic=archaeological_site o site_type=archaeological_site dentro de España. Es cartografía colaborativa y cobertura parcial; conserva el identificador OSM y las etiquetas originales.'
+    },
+    {
+      id: 'asturias-ipca-yacimientos-areas',
+      label: 'Asturias · IPCA yacimientos arqueológicos (áreas)',
+      publisher: 'Principado de Asturias · IPCA',
+      format: 'ArcGIS REST GeoJSON',
+      urls: ['https://sig.asturias.es/servicios/rest/services/IPCA/MapServer/35/query?where=1%3D1&outFields=*&returnGeometry=true&outSR=4326&f=geojson'],
+      catalogUrl: 'https://sig.asturias.es/servicios/rest/services/IPCA/MapServer',
+      license: 'CC BY 4.0 · Administración del Principado de Asturias',
+      notes: 'Área de yacimiento del Inventario del Patrimonio Cultural de Asturias. El servicio publica atributos y geometrías; la propia fuente advierte que la única documentación con validez legal es el expediente administrativo.'
+    },
+    {
+      id: 'asturias-ipca-yacimientos-puntos',
+      label: 'Asturias · IPCA yacimientos arqueológicos (puntos)',
+      publisher: 'Principado de Asturias · IPCA',
+      format: 'ArcGIS REST GeoJSON',
+      urls: ['https://sig.asturias.es/servicios/rest/services/IPCA/MapServer/34/query?where=1%3D1&outFields=*&returnGeometry=true&outSR=4326&f=geojson'],
+      catalogUrl: 'https://sig.asturias.es/servicios/rest/services/IPCA/MapServer',
+      license: 'CC BY 4.0 · Administración del Principado de Asturias',
+      notes: 'Puntos de las áreas de yacimientos del IPCA. Se mantiene separada de la capa poligonal para poder comparar la representación puntual con el área protegida.'
+    },
+    {
+      id: 'lapalma-historico-390',
+      label: 'La Palma · lugares de interés histórico-arqueológico (390 polígonos)',
+      publisher: 'Cabildo Insular de La Palma',
+      format: 'GeoJSON EPSG:4326',
+      urls: ['https://lapalmasmart-open.lapalma.es/datosabiertos/catalogo/dataset/8e0f3928-0a73-4dbe-ad4b-3d0609043b4b/resource/f18eb39e-c8b3-414f-8e01-a1802db31dc8/download/lugares-interes-historico-la-palma-20260514.geojson'],
+      catalogUrl: 'https://lapalmasmart-open.lapalma.es/datosabiertos/catalogo/dataset/lugares-de-interes-historico-de-la-palma',
+      license: 'Creative Commons Attribution',
+      notes: 'Inventario insular con 390 elementos georreferenciados: poblados de cuevas, cabañas, cuevas funerarias, grabados rupestres y otros bienes históricos. Es una cobertura insular completa según su descripción, no una capa nacional.'
     }
   ];
 
@@ -219,6 +296,38 @@
       url: 'https://datos.gob.es/es/catalogo/a12002994-bienes-de-interes-cultural-bic1',
       downloadUrl: 'https://abertos.xunta.gal/catalogo/administracion-publica/-/dataset/0375/bens-interese-cultural-bic/001/descarga-directa-ficheiro.ods',
       license: 'CC BY-SA 4.0'
+    },
+    {
+      group: 'Arqueología · agregadores comunitarios',
+      label: 'Wikidata · consulta dinámica de yacimientos arqueológicos en España',
+      description: 'Consulta SPARQL creada para el atlas. Recupera entidades con clase yacimiento arqueológico, país España y coordenadas publicadas. Es una capa comunitaria y no sustituye los inventarios administrativos.',
+      url: 'https://query.wikidata.org/',
+      downloadUrl: WIKIDATA_URL,
+      license: 'CC0 para datos estructurados; revisar licencias enlazadas'
+    },
+    {
+      group: 'Arqueología · agregadores comunitarios',
+      label: 'OpenStreetMap · Overpass de sitios arqueológicos españoles',
+      description: 'Consulta dinámica de historic=archaeological_site y site_type=archaeological_site. Incluye nodos, vías y áreas con sus etiquetas originales, identificador OSM y enlaces al mapa de la comunidad.',
+      url: 'https://wiki.openstreetmap.org/wiki/Key:historic',
+      downloadUrl: OVERPASS_URLS[0],
+      license: 'ODbL 1.0 · OpenStreetMap contributors'
+    },
+    {
+      group: 'Arqueología · inventarios regionales',
+      label: 'Asturias · IPCA yacimientos arqueológicos',
+      description: 'Servicio ArcGIS del Inventario del Patrimonio Cultural de Asturias. Expone capas de puntos y áreas con consulta de atributos; el servicio describe 4.736 bienes cartografiados en el visor y mantiene la advertencia de validez administrativa.',
+      url: 'https://sig.asturias.es/servicios/rest/services/IPCA/MapServer',
+      downloadUrl: 'https://sig.asturias.es/servicios/rest/services/IPCA/MapServer/35/query?where=1%3D1&outFields=*&returnGeometry=true&outSR=4326&f=geojson',
+      license: 'CC BY 4.0 · Administración del Principado de Asturias'
+    },
+    {
+      group: 'Arqueología · inventarios regionales',
+      label: 'Cabildo de La Palma · 390 lugares históricos',
+      description: 'GeoJSON de 390 polígonos arqueológicos e históricos con tipo, subtipo, nombre, municipio, descripción, imagen y superficie. Publicado en mayo de 2026 con licencia Creative Commons Attribution.',
+      url: 'https://lapalmasmart-open.lapalma.es/datosabiertos/catalogo/dataset/lugares-de-interes-historico-de-la-palma',
+      downloadUrl: 'https://lapalmasmart-open.lapalma.es/datosabiertos/catalogo/dataset/8e0f3928-0a73-4dbe-ad4b-3d0609043b4b/resource/f18eb39e-c8b3-414f-8e01-a1802db31dc8/download/lugares-interes-historico-la-palma-20260514.geojson',
+      license: 'Creative Commons Attribution'
     },
     {
       group: 'Fototeca y vuelos históricos',
@@ -363,7 +472,7 @@
     ].map(([label, product]) => cartoXyz(`carto-ssec-${product}`, 'Teledetección · UW-Madison SSEC', label, `https://re.ssec.wisc.edu/api/image?products=${product}&x={x}&y={y}&z={z}`, { short: 'Imagen meteorológica · XYZ', attribution: 'UW-Madison SSEC' }))
   ];
 
-  const CARTO_REFERENCE_LAYERS = [
+  const CARTO_REFERENCE_LAYERS = [    { label: 'NASA GIBS · imágenes recientes y catálogo HLS', description: 'Imágenes browser-direct de NASA GIBS: Sentinel-2 y Landsat mediante HLS y mosaicos diarios VIIRS. Adaptación funcional del patrón de fuentes públicas de Gods Eye View; no se copian código, datos ni activos restringidos.', url: 'https://gibs.earthdata.nasa.gov/', license: 'Datos NASA de dominio público; revisar atribución ESDIS/HLS' },
     { label: 'Ruiz de Alda · Cuenca del Segura (1929–1930)', description: 'Fotogramas y fotoplanos históricos consultables en la Fototeca/CNIG; no se fuerza una capa WMS si el proveedor no la publica como ortofoto nacional.', url: 'https://centrodedescargas.cnig.es/CentroDescargas/vuelo-ruiz-alda-cuenca-segura' },
     { label: 'Ruiz de Alda · Cuenca del Ebro (1927)', description: 'Mosaicos de fotoplanos históricos; deben tratarse como referencia histórica y no como ortofoto verdadera.', url: 'https://centrodedescargas.cnig.es/CentroDescargas/novedades?codSerie=FPLEB' },
     { label: 'Fototeca digital IGN-CNIG', description: 'Huellas de vuelo, fotogramas y disponibilidad de vuelos históricos.', url: 'https://fototeca.cnig.es/' }
@@ -380,10 +489,10 @@
     ]
   };
 
-  const state = { records: [], selectedId: null, layer: null, photoCache: new Map(), loadedSources: new Map(), imageryLayers: new Map(), imageryCatalog: [], imageryOpacity: .82, baseLayers: new Map(), baseLayer: null, scaleControl: null, cartoLayers: new Map(), cartoOrder: [], cartoFilter: '', swipeEnabled: false, swipeLayerId: '', swipePosition: 50, measure: { mode: '', points: [], layer: null }, clicked: null };
+  const state = { records: [], selectedId: null, layer: null, photoCache: new Map(), loadedSources: new Map(), imageryLayers: new Map(), imageryCatalog: [], imageryOpacity: .82, recentImageryCandidates: [], baseLayers: new Map(), baseLayer: null, scaleControl: null, cartoLayers: new Map(), cartoOrder: [], cartoFilter: '', swipeEnabled: false, swipeLayerId: '', swipePosition: 50, measure: { mode: '', points: [], layer: null }, clicked: null };
   const $ = (id) => document.getElementById(id);
   const els = {
-    fileInput: $('fileInput'), sourceSelect: $('sourceSelect'), loadSourceBtn: $('loadSourceBtn'), exampleBtn: $('exampleBtn'), customName: $('customName'), customUrl: $('customUrl'), customLoadBtn: $('customLoadBtn'), sourceMeta: $('sourceMeta'), imageryLayerList: $('imageryLayerList'), discoverLayersBtn: $('discoverLayersBtn'), removeImageryBtn: $('removeImageryBtn'), imageryOpacity: $('imageryOpacity'), imageryOpacityValue: $('imageryOpacityValue'), imageryStatus: $('imageryStatus'), loadNgbeBtn: $('loadNgbeBtn'), referenceCatalog: $('referenceCatalog'), approximateBtn: $('approximateBtn'), status: $('status'), filterText: $('filterText'), periodFilter: $('periodFilter'), loadedSourceFilter: $('loadedSourceFilter'), totalCount: $('totalCount'), visibleCount: $('visibleCount'), sourceCount: $('sourceCount'), namedCount: $('namedCount'), approxCount: $('approxCount'), exportGeoBtn: $('exportGeoBtn'), exportCsvBtn: $('exportCsvBtn'), exportReportBtn: $('exportReportBtn'), clearBtn: $('clearBtn'), resultHint: $('resultHint'), resultTable: $('resultTable'), detailPanel: $('detailPanel'), detailTitle: $('detailTitle'), detailMeta: $('detailMeta'), detailProperties: $('detailProperties'), detailLinks: $('detailLinks'), closeDetailBtn: $('closeDetailBtn'), photoBtn: $('photoBtn'), photoStatus: $('photoStatus'), photoGrid: $('photoGrid'), cartoLayerFilter: $('cartoLayerFilter'), baseLayerSelect: $('baseLayerSelect'), cartoHomeBtn: $('cartoHomeBtn'), cartoLocateBtn: $('cartoLocateBtn'), cartoCatalog: $('cartoCatalog'), activeCartoLayers: $('activeCartoLayers'), cartoLayerCount: $('cartoLayerCount'), clearCartoBtn: $('clearCartoBtn'), exportCartoBtn: $('exportCartoBtn'), scaleToggle: $('scaleToggle'), cursorToggle: $('cursorToggle'), navigationToggle: $('navigationToggle'), swipeToggle: $('swipeToggle'), swipeLayer: $('swipeLayer'), swipeRange: $('swipeRange'), swipeOutput: $('swipeOutput'), brightnessRange: $('brightnessRange'), contrastRange: $('contrastRange'), saturationRange: $('saturationRange'), hueRange: $('hueRange'), brightnessOutput: $('brightnessOutput'), contrastOutput: $('contrastOutput'), saturationOutput: $('saturationOutput'), hueOutput: $('hueOutput'), resetImageBtn: $('resetImageBtn'), northBtn: $('northBtn'), customLayerType: $('customLayerType'), customLayerUrl: $('customLayerUrl'), customLayerName: $('customLayerName'), customLayerNameField: $('customLayerNameField'), customLayerLabel: $('customLayerLabel'), customLayerBtn: $('customLayerBtn'), fullscreenBtn: $('fullscreenBtn'), measureDistanceBtn: $('measureDistanceBtn'), measureAreaBtn: $('measureAreaBtn'), clearMeasureBtn: $('clearMeasureBtn'), measureStatus: $('measureStatus'), cursorCoords: $('cursorCoords'), swipeLine: $('swipeLine')
+    fileInput: $('fileInput'), crsOverride: $('crsOverride'), sourceSelect: $('sourceSelect'), loadSourceBtn: $('loadSourceBtn'), exampleBtn: $('exampleBtn'), customName: $('customName'), customUrl: $('customUrl'), customLoadBtn: $('customLoadBtn'), sourceMeta: $('sourceMeta'), imageryLayerList: $('imageryLayerList'), discoverLayersBtn: $('discoverLayersBtn'), removeImageryBtn: $('removeImageryBtn'), imageryOpacity: $('imageryOpacity'), imageryOpacityValue: $('imageryOpacityValue'), imageryStatus: imageryStatus, recentImageryProduct: recentImageryProduct, recentImagerySearchBtn: recentImagerySearchBtn, recentImageryAddBtn: recentImageryAddBtn, recentImageryDate: recentImageryDate, recentImageryStatus: recentImageryStatus, loadNgbeBtn: $('loadNgbeBtn'), referenceCatalog: $('referenceCatalog'), approximateBtn: $('approximateBtn'), status: $('status'), filterText: $('filterText'), periodFilter: $('periodFilter'), loadedSourceFilter: $('loadedSourceFilter'), totalCount: $('totalCount'), visibleCount: $('visibleCount'), sourceCount: $('sourceCount'), namedCount: $('namedCount'), approxCount: $('approxCount'), exportGeoBtn: $('exportGeoBtn'), exportCsvBtn: $('exportCsvBtn'), exportReportBtn: $('exportReportBtn'), clearBtn: $('clearBtn'), resultHint: $('resultHint'), resultTable: $('resultTable'), detailPanel: $('detailPanel'), detailTitle: $('detailTitle'), detailMeta: $('detailMeta'), detailProperties: $('detailProperties'), detailLinks: $('detailLinks'), closeDetailBtn: $('closeDetailBtn'), photoBtn: $('photoBtn'), photoStatus: $('photoStatus'), photoGrid: $('photoGrid'), cartoLayerFilter: $('cartoLayerFilter'), baseLayerSelect: $('baseLayerSelect'), cartoHomeBtn: $('cartoHomeBtn'), cartoLocateBtn: $('cartoLocateBtn'), cartoCatalog: $('cartoCatalog'), activeCartoLayers: $('activeCartoLayers'), cartoLayerCount: $('cartoLayerCount'), clearCartoBtn: $('clearCartoBtn'), exportCartoBtn: $('exportCartoBtn'), scaleToggle: $('scaleToggle'), cursorToggle: $('cursorToggle'), navigationToggle: $('navigationToggle'), swipeToggle: $('swipeToggle'), swipeLayer: $('swipeLayer'), swipeRange: $('swipeRange'), swipeOutput: $('swipeOutput'), brightnessRange: $('brightnessRange'), contrastRange: $('contrastRange'), saturationRange: $('saturationRange'), hueRange: $('hueRange'), brightnessOutput: $('brightnessOutput'), contrastOutput: $('contrastOutput'), saturationOutput: $('saturationOutput'), hueOutput: $('hueOutput'), resetImageBtn: $('resetImageBtn'), northBtn: $('northBtn'), customLayerType: $('customLayerType'), customLayerUrl: $('customLayerUrl'), customLayerName: $('customLayerName'), customLayerNameField: $('customLayerNameField'), customLayerLabel: $('customLayerLabel'), customLayerBtn: $('customLayerBtn'), fullscreenBtn: $('fullscreenBtn'), measureDistanceBtn: $('measureDistanceBtn'), measureAreaBtn: $('measureAreaBtn'), clearMeasureBtn: $('clearMeasureBtn'), measureStatus: $('measureStatus'), cursorCoords: $('cursorCoords'), swipeLine: $('swipeLine')
   };
 
   let map;
@@ -418,6 +527,76 @@
     return '';
   }
 
+  const CRS_DEFS = {
+    'EPSG:25828': '+proj=utm +zone=28 +ellps=GRS80 +units=m +no_defs',
+    'EPSG:25829': '+proj=utm +zone=29 +ellps=GRS80 +units=m +no_defs',
+    'EPSG:25830': '+proj=utm +zone=30 +ellps=GRS80 +units=m +no_defs',
+    'EPSG:25831': '+proj=utm +zone=31 +ellps=GRS80 +units=m +no_defs',
+    'EPSG:32628': '+proj=utm +zone=28 +datum=WGS84 +units=m +no_defs',
+    'EPSG:32629': '+proj=utm +zone=29 +datum=WGS84 +units=m +no_defs',
+    'EPSG:32630': '+proj=utm +zone=30 +datum=WGS84 +units=m +no_defs',
+    'EPSG:32631': '+proj=utm +zone=31 +datum=WGS84 +units=m +no_defs',
+    'EPSG:23028': '+proj=utm +zone=28 +ellps=intl +towgs84=-87,-98,-121 +units=m +no_defs',
+    'EPSG:23029': '+proj=utm +zone=29 +ellps=intl +towgs84=-87,-98,-121 +units=m +no_defs',
+    'EPSG:23030': '+proj=utm +zone=30 +ellps=intl +towgs84=-87,-98,-121 +units=m +no_defs',
+    'EPSG:23031': '+proj=utm +zone=31 +ellps=intl +towgs84=-87,-98,-121 +units=m +no_defs',
+    'EPSG:4258': '+proj=longlat +ellps=GRS80 +no_defs',
+    'EPSG:4230': '+proj=longlat +ellps=intl +towgs84=-87,-98,-121 +no_defs'
+  };
+  if (window.proj4?.defs) Object.entries(CRS_DEFS).forEach(([code, definition]) => window.proj4.defs(code, definition));
+
+  function crsCode(value) {
+    const match = String(value || '').match(/(?:EPSG[^0-9]*|urn:ogc:def:crs:EPSG::)([0-9]{4,6})/i);
+    return match ? `EPSG:${match[1]}` : (String(value || '').toUpperCase().startsWith('EPSG:') ? String(value).toUpperCase() : 'EPSG:4326');
+  }
+
+  function crsFromFeature(record, properties, source) {
+    const candidates = [record?.__arqueoCrs, record?.crs?.properties?.name, record?.crs?.name, properties?.crs, properties?.epsg, properties?.srs, source?.crs];
+    return crsCode(candidates.find((value) => value));
+  }
+
+  function transformPoint(lng, lat, fromCrs) {
+    if (!Number.isFinite(lng) || !Number.isFinite(lat)) return null;
+    const sourceCrs = crsCode(fromCrs);
+    if (sourceCrs === 'EPSG:4326' || sourceCrs === 'CRS:84') return { lat, lng };
+    if (!window.proj4 || (!CRS_DEFS[sourceCrs] && sourceCrs !== 'EPSG:3857')) return null;
+    try {
+      const projected = window.proj4(sourceCrs, 'EPSG:4326', [lng, lat]);
+      return Number.isFinite(projected[0]) && Number.isFinite(projected[1]) ? { lat: projected[1], lng: projected[0] } : null;
+    } catch { return null; }
+  }
+
+  function transformGeometry(geometry, fromCrs) {
+    if (!geometry || !Array.isArray(geometry.coordinates) || crsCode(fromCrs) === 'EPSG:4326' || crsCode(fromCrs) === 'CRS:84') return geometry;
+    const walk = (value) => Array.isArray(value) ? (value.length >= 2 && value.every((item) => typeof item === 'number') ? (() => { const point = transformPoint(value[0], value[1], fromCrs); return point ? [point.lng, point.lat, ...value.slice(2)] : value; })() : value.map(walk)) : value;
+    return { ...geometry, coordinates: walk(geometry.coordinates) };
+  }
+
+  function dmsToDecimal(value) {
+    const text = String(value || '').trim().replace(/,/g, '.');
+    const match = text.match(/(\d+(?:\.\d+)?)\D+(\d+(?:\.\d+)?)?\D*(\d+(?:\.\d+)?)?\D*([NSEW])/i);
+    if (!match) return null;
+    const decimal = Number(match[1]) + Number(match[2] || 0) / 60 + Number(match[3] || 0) / 3600;
+    return /[SW]/i.test(match[4]) ? -decimal : decimal;
+  }
+
+  function coordinatePair(value, fromCrs, order = 'lnglat') {
+    if (Array.isArray(value)) {
+      const first = parseNumber(value[0]), second = parseNumber(value[1]);
+      if (Number.isFinite(first) && Number.isFinite(second)) return order === 'latlng' ? transformPoint(second, first, fromCrs) : transformPoint(first, second, fromCrs);
+    }
+    const text = stringValue(value);
+    if (!text) return null;
+    const dmsMatches = text.match(/[^,;|]+[NSEW]/gi);
+    if (dmsMatches?.length >= 2) {
+      const lat = dmsToDecimal(dmsMatches.find((item) => /[NS]/i.test(item))), lng = dmsToDecimal(dmsMatches.find((item) => /[EW]/i.test(item)));
+      return Number.isFinite(lat) && Number.isFinite(lng) ? { lat, lng } : null;
+    }
+    const values = text.replace(/[()]/g, '').split(/[;|,\s]+/).map(parseNumber).filter((item) => Number.isFinite(item));
+    if (values.length < 2) return null;
+    return order === 'latlng' ? transformPoint(values[1], values[0], fromCrs) : transformPoint(values[0], values[1], fromCrs);
+  }
+
   function parseNumber(value) {
     if (value === null || value === undefined || (typeof value === 'string' && !value.trim())) return null;
     if (typeof value === 'number') return Number.isFinite(value) ? value : null;
@@ -426,12 +605,12 @@
     return Number.isFinite(number) ? number : null;
   }
 
-  function pointFromGeometry(geometry) {
+  function pointFromGeometry(geometry, fromCrs = 'EPSG:4326') {
     if (!geometry || !Array.isArray(geometry.coordinates)) return null;
     if (geometry.type === 'Point' && geometry.coordinates.length >= 2) {
       const lng = parseNumber(geometry.coordinates[0]);
       const lat = parseNumber(geometry.coordinates[1]);
-      return Number.isFinite(lat) && Number.isFinite(lng) ? { lat, lng } : null;
+      return transformPoint(lng, lat, fromCrs);
     }
     try {
       const points = [];
@@ -441,22 +620,23 @@
       };
       walk(geometry.coordinates);
       if (!points.length) return null;
-      const lng = points.reduce((sum, point) => sum + point[0], 0) / points.length;
-      const lat = points.reduce((sum, point) => sum + point[1], 0) / points.length;
-      return { lat, lng };
+       const lng = points.reduce((sum, point) => sum + point[0], 0) / points.length;
+       const lat = points.reduce((sum, point) => sum + point[1], 0) / points.length;
+       return transformPoint(lng, lat, fromCrs);
     } catch { return null; }
   }
 
-  function pointFromRecord(record, properties) {
+  function pointFromRecord(record, properties, source) {
+    const fromCrs = crsFromFeature(record, properties, source);
     const lat = parseNumber(pickValue(properties, ['lat', 'latitude', 'latitud', 'lat_wgs84', 'y_lat']));
     const lng = parseNumber(pickValue(properties, ['lon', 'lng', 'long', 'longitude', 'longitud', 'lon_wgs84', 'x_lon']));
-    if (Number.isFinite(lat) && Number.isFinite(lng)) return { lat, lng };
-    const coordinates = pickValue(properties, ['coordinates', 'coordenadas', 'ubicacion']);
-    if (coordinates) {
-      const values = coordinates.split(/[;|\s]+/).map(parseNumber).filter((item) => Number.isFinite(item));
-      if (values.length >= 2) return { lat: values[0], lng: values[1] };
-    }
-    return pointFromGeometry(record?.geometry);
+    if (Number.isFinite(lat) && Number.isFinite(lng)) return transformPoint(lng, lat, fromCrs);
+    const pair = coordinatePair(pickValue(properties, ['coordinates', 'coordenadas', 'ubicacion', 'xy', 'utm']), fromCrs, 'latlng');
+    if (pair) return pair;
+    const east = parseNumber(pickValue(properties, ['x', 'este', 'easting', 'coordx', 'utm_x']));
+    const north = parseNumber(pickValue(properties, ['y', 'norte', 'northing', 'coordy', 'utm_y']));
+    if (Number.isFinite(east) && Number.isFinite(north)) return transformPoint(east, north, fromCrs);
+    return pointFromGeometry(record?.geometry, fromCrs);
   }
 
   function periodFor(properties, name) {
@@ -477,15 +657,61 @@
     return match ? match[0] : (explicit || 'No indicado');
   }
 
+  function payloadCrs(payload) {
+    return payload?.crs?.properties?.name || payload?.crs?.name || payload?.spatialReference?.wkid || payload?.spatialReference?.latestWkid || '';
+  }
+
+  function carryPayloadCrs(features, payload) {
+    const crs = payloadCrs(payload);
+    return features.map((feature) => {
+      if (!crs || !feature || typeof feature !== 'object') return feature;
+      return { ...feature, __arqueoCrs: crs };
+    });
+  }
+
+  function bindingValue(binding) { return binding?.value ?? ''; }
+
+  function wikidataFeatures(payload) {
+    const bindings = payload?.results?.bindings;
+    if (!Array.isArray(bindings)) return [];
+    const seen = new Set();
+    return bindings.map((binding) => {
+      const item = bindingValue(binding.item);
+      const coord = bindingValue(binding.coord);
+      const wkt = coord.match(/Point\s*\(\s*(-?\d+(?:\.\d+)?)\s+(-?\d+(?:\.\d+)?)\s*\)/i);
+      const geometry = wkt ? { type: 'Point', coordinates: [Number(wkt[1]), Number(wkt[2])] } : null;
+      if (!item || !geometry || seen.has(item)) return null;
+      seen.add(item);
+      return { type: 'Feature', geometry, properties: { nombre: bindingValue(binding.itemLabel), wikidata: item, imagen: bindingValue(binding.image), wikipedia: bindingValue(binding.article), fuente: 'Wikidata Query Service', tipo: 'yacimiento arqueológico' } };
+    }).filter(Boolean);
+  }
+
+  function overpassFeatures(payload) {
+    if (!Array.isArray(payload?.elements)) return [];
+    return payload.elements.map((element) => {
+      const tags = { ...(element.tags || {}), osm_id: element.id, osm_type: element.type, fuente: 'OpenStreetMap / Overpass' };
+      let geometry = null;
+      if (element.type === 'node' && Number.isFinite(element.lon) && Number.isFinite(element.lat)) geometry = { type: 'Point', coordinates: [element.lon, element.lat] };
+      else if (Array.isArray(element.geometry) && element.geometry.length >= 2) {
+        const coordinates = element.geometry.map((point) => [point.lon, point.lat]).filter((point) => point.every(Number.isFinite));
+        const closed = coordinates.length > 3 && coordinates[0][0] === coordinates.at(-1)[0] && coordinates[0][1] === coordinates.at(-1)[1];
+        geometry = { type: closed ? 'Polygon' : 'LineString', coordinates: closed ? [coordinates] : coordinates };
+      } else if (element.center && Number.isFinite(element.center.lon) && Number.isFinite(element.center.lat)) geometry = { type: 'Point', coordinates: [element.center.lon, element.center.lat] };
+      return { type: 'Feature', geometry, properties: tags };
+    });
+  }
+
   function normalisePayload(payload) {
     if (!payload) return [];
-    if (payload.type === 'FeatureCollection' && Array.isArray(payload.features)) return payload.features;
+    if (payload.results?.bindings) return wikidataFeatures(payload);
+    if (Array.isArray(payload.elements)) return overpassFeatures(payload);
+    if (payload.type === 'FeatureCollection' && Array.isArray(payload.features)) return carryPayloadCrs(payload.features, payload);
     if (payload.type === 'Feature') return [payload];
     if (payload.type && payload.coordinates) return [{ type: 'Feature', geometry: payload, properties: {} }];
-    if (Array.isArray(payload)) return payload.flatMap((item) => item?.type === 'FeatureCollection' && Array.isArray(item.features) ? item.features : [item]);
+    if (Array.isArray(payload)) return payload.flatMap((item) => item?.type === 'FeatureCollection' && Array.isArray(item.features) ? carryPayloadCrs(item.features, item) : [item]);
     for (const key of ['features', 'data', 'items', 'results', 'records', 'yacimientos', 'sites']) {
-      if (Array.isArray(payload[key])) return payload[key];
-      if (payload[key]?.type === 'FeatureCollection') return payload[key].features;
+      if (Array.isArray(payload[key])) return carryPayloadCrs(payload[key], payload);
+      if (payload[key]?.type === 'FeatureCollection') return carryPayloadCrs(payload[key].features, payload[key]);
     }
     const values = Object.values(payload).filter((value) => value && typeof value === 'object' && !Array.isArray(value));
     return values.length > 1 ? values : [];
@@ -495,8 +721,9 @@
     const incoming = raw?.type === 'Feature' ? raw : (raw?.geometry ? { type: 'Feature', geometry: raw.geometry, properties: raw.properties || raw } : { type: 'Feature', geometry: null, properties: raw || {} });
     const properties = { ...(incoming.properties || {}) };
     const name = pickValue(properties, ['nombre', 'name', 'denominacion', 'denominación', 'denominacion_registral', 'denominación registral', 'yacimiento', 'sitio', 'site', 'toponimo', 'topónimo', 'title']) || `Registro ${index + 1}`;
-    const point = pointFromRecord(incoming, properties);
-    let geometry = incoming.geometry || null;
+    const sourceCrs = crsFromFeature(incoming, properties, source);
+    const point = pointFromRecord(incoming, properties, source);
+    let geometry = transformGeometry(incoming.geometry || null, sourceCrs);
     if (!geometry && point) geometry = { type: 'Point', coordinates: [point.lng, point.lat] };
     const locationMode = geometry?.type === 'Point' ? 'exacta publicada' : (geometry ? 'área publicada' : 'sin coordenadas');
     const meta = {
@@ -523,8 +750,8 @@
     return { feature, meta, point: point || pointFromGeometry(geometry) };
   }
 
-  function sourceForCustom(name, url) {
-    return { id: `custom-${Date.now()}`, label: name || 'Fuente personalizada', publisher: 'Aportada por el usuario', format: 'URL', urls: [url], catalogUrl: '', license: 'Consultar fuente', notes: 'Fuente añadida manualmente; conserva su ficha de procedencia.' };
+  function sourceForCustom(name, url, crs) {
+    return { id: `custom-${Date.now()}`, label: name || 'Fuente personalizada', publisher: 'Aportada por el usuario', format: 'URL', urls: [url], catalogUrl: '', license: 'Consultar fuente', crs: crs || 'EPSG:4326', notes: `Fuente añadida manualmente; conserva su ficha de procedencia.${crs ? ` CRS aplicado: ${crs}.` : ''}` };
   }
 
   function setStatus(message, kind = '') {
@@ -588,6 +815,7 @@
     const key = layerKey(service.id, layer.name);
     if (state.imageryLayers.has(key)) return;
     const tileLayer = L.tileLayer.wms(service.url, { layers: layer.name, format: 'image/png', transparent: true, version: '1.3.0', opacity: state.imageryOpacity, maxZoom: 22, attribution: service.attribution });
+    tileLayer.__arqueoWms = { url: service.url, layerName: layer.name, label: `${service.label} · ${layer.title || layer.name}`, attribution: service.attribution };
     tileLayer.addTo(map);
     state.imageryLayers.set(key, tileLayer);
   }
@@ -603,6 +831,7 @@
     state.imageryLayers.forEach((layer) => layer.remove());
     state.imageryLayers.clear();
     renderImageryCatalog();
+    seedViirsCandidates();
     if (els.imageryStatus) els.imageryStatus.textContent = 'Capas fotográficas retiradas del mapa.';
   }
 
@@ -622,6 +851,7 @@
       }
     }
     renderImageryCatalog();
+    seedViirsCandidates();
     els.imageryStatus.textContent = `${results.join(' · ')}. Las capas se cargan bajo demanda y permanecen en el navegador.`;
     els.discoverLayersBtn.disabled = false;
   }
@@ -638,11 +868,125 @@
     if (els.imageryStatus) els.imageryStatus.textContent = `${state.imageryLayers.size} capa${state.imageryLayers.size === 1 ? '' : 's'} fotográfica${state.imageryLayers.size === 1 ? '' : 's'} visible${state.imageryLayers.size === 1 ? '' : 's'}.`;
   }
 
+  function recentImageryDay(offset = 0) {
+    const date = new Date();
+    date.setUTCHours(0, 0, 0, 0);
+    date.setUTCDate(date.getUTCDate() - Number(offset || 0));
+    return date.toISOString().slice(0, 10);
+  }
+
+  function recentImageryTileUrl(product, day) {
+    const spec = NASA_RECENT_PRODUCTS[product];
+    if (!spec || !/^\d{4}-\d{2}-\d{2}$/.test(day)) return '';
+    return `https://gibs-{s}.earthdata.nasa.gov/wmts/epsg3857/best/${spec.layer}/default/${day}/GoogleMapsCompatible_Level${spec.level}/{z}/{y}/{x}.${spec.extension}`;
+  }
+
+  function recentImageryCandidatesFor(product) {
+    return state.recentImageryCandidates.filter((candidate) => candidate.product === product);
+  }
+
+  function renderRecentImageryCandidates() {
+    if (!els.recentImageryDate || !els.recentImageryProduct) return;
+    const product = els.recentImageryProduct.value;
+    const candidates = recentImageryCandidatesFor(product);
+    const previous = els.recentImageryDate.value;
+    els.recentImageryDate.replaceChildren();
+    candidates.forEach((candidate) => {
+      const option = document.createElement('option');
+      option.value = `${candidate.product}|${candidate.day}`;
+      const cloud = Number.isFinite(candidate.cloud) ? ` · ${candidate.cloud}% nubes` : '';
+      option.textContent = `${candidate.day} · ${NASA_RECENT_PRODUCTS[product].resolution}${cloud}`;
+      els.recentImageryDate.appendChild(option);
+    });
+    if (!candidates.length) {
+      const option = document.createElement('option');
+      option.value = '';
+      option.textContent = product === 'VIIRS' ? 'No hay fechas precargadas' : 'Busca fechas disponibles en la vista actual';
+      els.recentImageryDate.appendChild(option);
+    } else if ([...els.recentImageryDate.options].some((option) => option.value === previous)) {
+      els.recentImageryDate.value = previous;
+    }
+    els.recentImageryAddBtn.disabled = !candidates.length;
+  }
+
+  function seedViirsCandidates() {
+    state.recentImageryCandidates = Array.from({ length: 30 }, (_, index) => ({ product: 'VIIRS', day: recentImageryDay(index), cloud: null }));
+    renderRecentImageryCandidates();
+  }
+
+  function recentImageryBounds() {
+    const bounds = map.getBounds();
+    const west = Math.max(-180, bounds.getWest());
+    const east = Math.min(180, bounds.getEast());
+    const south = Math.max(-85, bounds.getSouth());
+    const north = Math.min(85, bounds.getNorth());
+    return { west, east, south, north };
+  }
+
+  function cmrRecentUrl(product, box) {
+    const spec = NASA_RECENT_PRODUCTS[product];
+    const end = new Date();
+    const start = new Date(end.getTime() - 30 * 86400000);
+    const url = new URL(NASA_CMR_ENDPOINT);
+    url.search = new URLSearchParams({ collection_concept_id: spec.collection, bounding_box: `${box.west},${box.south},${box.east},${box.north}`, temporal: `${start.toISOString()},${end.toISOString()}`, sort_key: '-start_date', page_size: '200' });
+    return url.href;
+  }
+
+  async function searchRecentImagery() {
+    const product = els.recentImageryProduct.value;
+    if (product === 'VIIRS') {
+      seedViirsCandidates();
+      els.recentImageryStatus.textContent = 'VIIRS usa un mosaico diario global; se han preparado los últimos 30 días para añadirlos como capa.';
+      return;
+    }
+    els.recentImagerySearchBtn.disabled = true;
+    els.recentImageryStatus.textContent = `Consultando el catálogo NASA CMR para ${NASA_RECENT_PRODUCTS[product].label}…`;
+    try {
+      const response = await fetchWithTimeout(cmrRecentUrl(product, recentImageryBounds()), { mode: 'cors', cache: 'no-store' }, 30000);
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      const data = await response.json();
+      const byDay = new Map();
+      (Array.isArray(data.items) ? data.items : []).forEach((item) => {
+        const range = item?.umm?.TemporalExtent?.RangeDateTime || {};
+        const time = range.BeginningDateTime || range.EndingDateTime || '';
+        const day = String(time).slice(0, 10);
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(day) || byDay.has(day)) return;
+        const attribute = Array.isArray(item?.umm?.AdditionalAttributes) ? item.umm.AdditionalAttributes.find((entry) => entry?.Name === 'CLOUD_COVERAGE') : null;
+        const cloud = Number(attribute?.Values?.[0]);
+        byDay.set(day, { product, day, cloud: Number.isFinite(cloud) ? cloud : null });
+      });
+      state.recentImageryCandidates = [...byDay.values()].sort((a, b) => b.day.localeCompare(a.day));
+      renderRecentImageryCandidates();
+      els.recentImageryStatus.textContent = state.recentImageryCandidates.length ? `${state.recentImageryCandidates.length} fechas HLS disponibles en la extensión visible. La consulta es sólo de catálogo; la tesela se solicita al añadirla.` : 'NASA CMR no devolvió escenas HLS para esta extensión y periodo. Prueba otra escala o el producto VIIRS.';
+    } catch (error) {
+      state.recentImageryCandidates = [];
+      renderRecentImageryCandidates();
+      els.recentImageryStatus.textContent = `No se pudo consultar NASA CMR: ${error.message}. VIIRS sigue disponible sin catálogo.`;
+    } finally {
+      els.recentImagerySearchBtn.disabled = false;
+    }
+  }
+
+  function addRecentImagery() {
+    const [product, day] = String(els.recentImageryDate.value || '').split('|');
+    const spec = NASA_RECENT_PRODUCTS[product];
+    const url = recentImageryTileUrl(product, day);
+    if (!spec || !url) {
+      els.recentImageryStatus.textContent = 'Selecciona una fecha de imagen válida.';
+      return;
+    }
+    const candidate = recentImageryCandidatesFor(product).find((item) => item.day === day);
+    const cloud = Number.isFinite(candidate?.cloud) ? ` · ${candidate.cloud}% nubes` : '';
+    addCartoLayer(cartoXyz(`nasa-${product.toLowerCase()}-${day}`, 'NASA · imágenes recientes', `${spec.label} · ${day}`, url, { short: `${spec.sensor} · ${spec.resolution}${cloud}`, attribution: 'NASA GIBS / ESDIS · datos NASA', maxZoom: spec.level, opacity: .86 }));
+    els.recentImageryStatus.textContent = `Añadida ${spec.label} del ${day}. La imagen queda bajo demanda en el mapa y su procedencia se conserva en la configuración.`;
+  }
   function normaliseUrl(value) { try { const url = new URL(value); return ['http:', 'https:'].includes(url.protocol) ? url.href : ''; } catch { return ''; } }
   function cartoItems() { return state.cartoOrder.map((id) => state.cartoLayers.get(id)).filter(Boolean); }
   function makeCartoLeafletLayer(config) {
     if (config.type === 'xyz') return L.tileLayer(config.url, { maxZoom: config.maxZoom || 19, opacity: config.opacity ?? .8, attribution: config.attribution || 'Teselas públicas' });
-    return L.tileLayer.wms(config.service, { layers: config.layerName, format: config.format || 'image/png', transparent: config.transparent !== false, version: '1.3.0', opacity: config.opacity ?? .8, maxZoom: 22, attribution: config.attribution || 'Servicio WMS público' });
+    const layer = L.tileLayer.wms(config.service, { layers: config.layerName, format: config.format || 'image/png', transparent: config.transparent !== false, version: '1.3.0', opacity: config.opacity ?? .8, maxZoom: 22, attribution: config.attribution || 'Servicio WMS público' });
+    layer.__arqueoWms = { url: config.service, layerName: config.layerName, label: config.label, attribution: config.attribution || 'Servicio WMS público' };
+    return layer;
   }
   function updateCartoZIndexes() { cartoItems().forEach((item, index) => item.leafletLayer.setZIndex(450 + index)); }
   function addCartoLayer(config) {
@@ -687,7 +1031,66 @@
   function startMeasure(mode) { if (state.measure.mode === mode) { finishMeasure(); return; } clearMeasure(); state.measure.mode = mode; els.measureDistanceBtn.classList.toggle('primary', mode === 'distance'); els.measureAreaBtn.classList.toggle('primary', mode === 'area'); els.measureStatus.textContent = mode === 'distance' ? 'Medición de distancia: haz clic en varios puntos y doble clic para terminar.' : 'Medición de área: marca al menos tres vértices y doble clic para terminar.'; }
   function finishMeasure() { const mode = state.measure.mode, points = state.measure.points.slice(); if (!mode) return; state.measure.mode = ''; els.measureDistanceBtn.classList.remove('primary'); els.measureAreaBtn.classList.remove('primary'); updateMeasureLayer(); if (mode === 'distance' && points.length >= 2) { const total = points.slice(1).reduce((sum, point, index) => sum + distanceBetween(points[index], point), 0); els.measureStatus.textContent = `Distancia medida: ${formatDistance(total)} · ${points.length} vértices.`; } else if (mode === 'area' && points.length >= 3) { const area = polygonArea(points); els.measureStatus.textContent = `Área medida: ${area >= 1000000 ? `${(area / 1000000).toFixed(2)} km²` : `${Math.round(area).toLocaleString('es-ES')} m²`} · ${points.length} vértices.`; } else { els.measureStatus.textContent = 'Medición cancelada: faltan vértices.'; clearMeasure(); } }
   function clearMeasure() { state.measure.layer?.remove(); state.measure = { mode: '', points: [], layer: null }; els.measureDistanceBtn.classList.remove('primary'); els.measureAreaBtn.classList.remove('primary'); els.measureStatus.textContent = 'Haz clic en el mapa para consultar coordenadas o iniciar una medida.'; }
-  function handleMapClick(event) { if (state.measure.mode) { state.measure.points.push(event.latlng); updateMeasureLayer(); if (state.measure.mode === 'distance' && state.measure.points.length > 1) { const total = state.measure.points.slice(1).reduce((sum, point, index) => sum + distanceBetween(state.measure.points[index], point), 0); els.measureStatus.textContent = `Distancia provisional: ${formatDistance(total)} · doble clic para terminar.`; } else if (state.measure.mode === 'area' && state.measure.points.length > 2) { els.measureStatus.textContent = `Área provisional: ${Math.round(polygonArea(state.measure.points)).toLocaleString('es-ES')} m² · doble clic para terminar.`; } return; } state.clicked = event.latlng; const coords = `${event.latlng.lat.toFixed(6)}, ${event.latlng.lng.toFixed(6)}`; els.measureStatus.textContent = `Coordenadas WGS84: ${coords}`; L.popup().setLatLng(event.latlng).setContent(`<b>Coordenadas WGS84</b><br>${escapeHtml(coords)}`).openOn(map); }
+  function wmsLayersAtPoint() {
+    const carto = cartoItems().filter((item) => item.visible && item.type === 'wms' && item.leafletLayer.__arqueoWms).map((item) => item.leafletLayer.__arqueoWms);
+    const imagery = [...state.imageryLayers.values()].filter((layer) => map.hasLayer(layer) && layer.__arqueoWms).map((layer) => layer.__arqueoWms);
+    return [...carto, ...imagery];
+  }
+
+  function formatWmsInfo(data, text) {
+    if (data?.features?.length) {
+      return data.features.slice(0, 8).map((feature, index) => {
+        const entries = Object.entries(feature.properties || {}).filter(([, value]) => value !== null && value !== undefined && String(value) !== '').slice(0, 18);
+        return `<section class="wms-feature"><b>Elemento ${index + 1}</b>${entries.map(([key, value]) => `<div><span>${escapeHtml(key)}</span><strong>${escapeHtml(typeof value === 'object' ? JSON.stringify(value) : value)}</strong></div>`).join('')}</section>`;
+      }).join('');
+    }
+    if (data && typeof data === 'object') {
+      const entries = Object.entries(data).filter(([, value]) => value !== null && value !== undefined && typeof value !== 'object').slice(0, 24);
+      if (entries.length) return entries.map(([key, value]) => `<div class="wms-property"><span>${escapeHtml(key)}</span><strong>${escapeHtml(value)}</strong></div>`).join('');
+    }
+    const plain = stripMarkup(text || '').replace(/&nbsp;/gi, ' ').trim();
+    return plain ? `<pre class="wms-text">${escapeHtml(plain.slice(0, 4000))}</pre>` : '';
+  }
+
+  async function fetchWithTimeout(url, options = {}, timeoutMs = 30000) {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), timeoutMs);
+    try { return await fetch(url, { ...options, signal: controller.signal }); }
+    finally { clearTimeout(timer); }
+  }
+
+  async function queryWmsFeatureInfo(item, event) {
+    const size = map.getSize();
+    const point = map.latLngToContainerPoint(event.latlng);
+    const bounds = map.getBounds();
+    const url = new URL(item.url);
+    url.search = new URLSearchParams({ service: 'WMS', version: '1.1.1', request: 'GetFeatureInfo', layers: item.layerName, query_layers: item.layerName, styles: '', format: 'image/png', info_format: 'application/json', srs: 'EPSG:4326', bbox: `${bounds.getWest()},${bounds.getSouth()},${bounds.getEast()},${bounds.getNorth()}`, width: String(Math.max(1, Math.round(size.x))), height: String(Math.max(1, Math.round(size.y))), x: String(Math.round(point.x)), y: String(Math.round(point.y)), feature_count: '10' });
+    const response = await fetchWithTimeout(url, { mode: 'cors', cache: 'no-store', headers: { Accept: 'application/json, text/html;q=0.9, */*;q=0.1' } }, 12000);
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    const text = await response.text();
+    let data = null;
+    try { data = JSON.parse(text); } catch { /* Algunos WMS responden HTML aunque se pida JSON. */ }
+    return { item, html: formatWmsInfo(data, text), hasData: Boolean(data?.features?.length || formatWmsInfo(data, text)) };
+  }
+
+  async function queryVisibleLayersAtPoint(event, { openCoordinates = true } = {}) {
+    const coords = `${event.latlng.lat.toFixed(6)}, ${event.latlng.lng.toFixed(6)}`;
+    const layers = wmsLayersAtPoint();
+    if (!layers.length) {
+      els.measureStatus.textContent = `Coordenadas WGS84: ${coords}`;
+      if (openCoordinates) L.popup().setLatLng(event.latlng).setContent(`<b>Coordenadas WGS84</b><br>${escapeHtml(coords)}<p class="hint">No hay capas WMS consultables activas en este punto.</p>`).openOn(map);
+      return;
+    }
+    els.measureStatus.textContent = `Consultando ${layers.length} capa${layers.length === 1 ? '' : 's'} en ${coords}…`;
+    const results = await Promise.all(layers.map(async (item) => { try { return await queryWmsFeatureInfo(item, event); } catch (error) { return { item, error: error.message, html: '' }; } }));
+    const blocks = results.filter((result) => result.html).map((result) => `<section class="wms-layer-result"><h4>${escapeHtml(result.item.label)}</h4>${result.html}</section>`).join('');
+    const errors = results.filter((result) => result.error).map((result) => `<li>${escapeHtml(result.item.label)}: no se pudo consultar (${escapeHtml(result.error)})</li>`).join('');
+    const content = `<div class="wms-query"><b>Consulta de capas en WGS84</b><small>${escapeHtml(coords)}</small>${blocks || '<p class="hint">Las capas activas no devolvieron atributos para este píxel.</p>'}${errors ? `<details><summary>Capas sin respuesta</summary><ul>${errors}</ul></details>` : ''}</div>`;
+    els.measureStatus.textContent = blocks ? `Consulta completada: se han recibido atributos de ${results.filter((result) => result.html).length} capa${results.filter((result) => result.html).length === 1 ? '' : 's'}.` : `Consulta completada: sin entidades en ${coords}.`;
+    if (openCoordinates || blocks) L.popup({ maxWidth: 420 }).setLatLng(event.latlng).setContent(content).openOn(map);
+  }
+
+   function handleMapClick(event) { if (state.measure.mode) { state.measure.points.push(event.latlng); updateMeasureLayer(); if (state.measure.mode === 'distance' && state.measure.points.length > 1) { const total = state.measure.points.slice(1).reduce((sum, point, index) => sum + distanceBetween(state.measure.points[index], point), 0); els.measureStatus.textContent = `Distancia provisional: ${formatDistance(total)} · doble clic para terminar.`; } else if (state.measure.mode === 'area' && state.measure.points.length > 2) { els.measureStatus.textContent = `Área provisional: ${Math.round(polygonArea(state.measure.points)).toLocaleString('es-ES')} m² · doble clic para terminar.`; } return; } state.clicked = event.latlng; queryVisibleLayersAtPoint(event); }
 
   async function loadNGBEInView() {
     const bounds = map.getBounds();
@@ -708,7 +1111,7 @@
     sourceDescription(source);
     setStatus('Consultando el NGBE del IGN para la extensión visible…');
     try {
-      const response = await fetch(url, { mode: 'cors', cache: 'no-store' });
+      const response = await fetchWithTimeout(url, { mode: 'cors', cache: 'no-store' }, 35000);
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
       addPayload(await response.json(), source);
     } catch (error) {
@@ -733,7 +1136,8 @@
 
   function locationQueryFor(record) {
     const area = [record.meta.municipality, record.meta.province, record.meta.region].filter(Boolean).join(', ');
-    return area ? `${area}, España` : `${record.meta.name}, España`;
+    const name = record.meta.name && !/^Registro \d+$/i.test(record.meta.name) ? record.meta.name : '';
+    return [name, area, 'España'].filter(Boolean).join(', ');
   }
 
   async function approximateMissingLocations() {
@@ -747,7 +1151,7 @@
       try {
         const url = new URL('https://nominatim.openstreetmap.org/search');
         url.search = new URLSearchParams({ q: locationQueryFor(record), format: 'jsonv2', limit: '1', polygon_geojson: '1', addressdetails: '1' });
-        const response = await fetch(url, { mode: 'cors', headers: { Accept: 'application/json' } });
+        const response = await fetchWithTimeout(url, { mode: 'cors', headers: { Accept: 'application/json' } }, 15000);
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
         const [result] = await response.json();
         if (!result) throw new Error('sin resultado');
@@ -788,7 +1192,7 @@
     state.layer = L.geoJSON(locatedRecords.map((record) => record.feature), {
       pointToLayer: (feature, latlng) => { const record = locatedRecords.find((item) => item.feature === feature); const color = colorFor(record?.meta.period); const approximate = record?.meta.locationMode === 'área aproximada'; return L.circleMarker(latlng, { radius: approximate ? 9 : 7, color: approximate ? '#f2bd72' : '#082018', weight: approximate ? 3 : 2, dashArray: approximate ? '5 4' : undefined, fillColor: color, fillOpacity: .9 }); },
       style: (feature) => { const record = locatedRecords.find((item) => item.feature === feature); const color = colorFor(record?.meta.period); const approximate = record?.meta.locationMode === 'área aproximada'; return { color: approximate ? '#f2bd72' : color, weight: approximate ? 3 : 2, dashArray: approximate ? '7 5' : undefined, fillColor: color, fillOpacity: approximate ? .14 : .28 }; },
-      onEachFeature: (feature, layer) => { const record = locatedRecords.find((item) => item.feature === feature); if (!record) return; layer.bindTooltip(`${record.meta.name}${record.meta.locationMode === 'área aproximada' ? ' · área aproximada' : ''}`, { sticky: true }); layer.on('click', () => selectRecord(record.meta.id, true)); }
+       onEachFeature: (feature, layer) => { const record = locatedRecords.find((item) => item.feature === feature); if (!record) return; layer.bindTooltip(`${record.meta.name}${record.meta.locationMode === 'área aproximada' ? ' · área aproximada' : ''}`, { sticky: true }); layer.on('click', (event) => { L.DomEvent.stopPropagation(event); selectRecord(record.meta.id, true); queryVisibleLayersAtPoint(event, { openCoordinates: false }); }); }
     }).addTo(map);
     const bounds = state.layer.getBounds();
     if (bounds.isValid()) map.fitBounds(bounds.pad(.12), { maxZoom: 14 });
@@ -885,7 +1289,7 @@
       for (const currentQuery of queries) {
         const url = new URL('https://commons.wikimedia.org/w/api.php');
         url.search = new URLSearchParams({ action: 'query', generator: 'search', gsrsearch: currentQuery, gsrnamespace: '6', gsrlimit: '12', prop: 'imageinfo', iiprop: 'url|extmetadata', iiurlwidth: '520', format: 'json', origin: '*' });
-        const response = await fetch(url);
+        const response = await fetchWithTimeout(url, {}, 15000);
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
         const json = await response.json();
         items = Object.values(json.query?.pages || {}).map((page) => {
@@ -905,7 +1309,8 @@
 
   function sourceDescription(source) {
     if (!source) { els.sourceMeta.textContent = 'Selecciona una fuente para ver su cobertura, licencia y enlace oficial.'; return; }
-    els.sourceMeta.innerHTML = `<b>${escapeHtml(source.label)}</b><br>${escapeHtml(source.publisher)} · ${escapeHtml(source.format)}<br>${escapeHtml(source.notes || '')}<br><span>Licencia: ${escapeHtml(source.license)}</span><br><a href="${escapeHtml(source.catalogUrl || source.urls?.[0] || '#')}" target="_blank" rel="noreferrer">Abrir ficha oficial ↗</a>`;
+    const crsNote = source.crs ? `<br><span>CRS de entrada: ${escapeHtml(source.crs)}</span>` : '';
+    els.sourceMeta.innerHTML = `<b>${escapeHtml(source.label)}</b><br>${escapeHtml(source.publisher)} · ${escapeHtml(source.format)}<br>${escapeHtml(source.notes || '')}<br><span>Licencia: ${escapeHtml(source.license)}</span>${crsNote}<br><a href="${escapeHtml(source.catalogUrl || source.urls?.[0] || '#')}" target="_blank" rel="noreferrer">Abrir ficha oficial ↗</a>`;
   }
 
   function sourceById(id) { return SOURCES.find((source) => source.id === id); }
@@ -955,7 +1360,7 @@
     const errors = [];
     for (const url of source.urls || []) {
       try {
-        const response = await fetch(url, { mode: 'cors', cache: 'no-store' });
+        const response = await fetchWithTimeout(url, { mode: 'cors', cache: 'no-store' }, 35000);
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
         return await parseResponse(response, url);
       } catch (error) { errors.push(`${url}: ${error.message}`); }
@@ -987,7 +1392,7 @@
   async function loadFile(file) {
     const extension = file.name.toLowerCase();
     const format = extension.endsWith('.zip') ? 'Shapefile ZIP' : (extension.endsWith('.csv') ? 'CSV' : 'GeoJSON / JSON');
-    const source = { id: `local-${Date.now()}`, label: `Archivo local · ${file.name}`, publisher: 'Archivo aportado por el usuario', format, urls: [], catalogUrl: '', license: 'Según el archivo', notes: 'Cargado localmente; no se ha transmitido a ningún servidor.' };
+    const source = { id: `local-${Date.now()}`, label: `Archivo local · ${file.name}`, publisher: 'Archivo aportado por el usuario', format, urls: [], catalogUrl: '', license: 'Según el archivo', crs: els.crsOverride.value.trim() || 'EPSG:4326', notes: `Cargado localmente; no se ha transmitido a ningún servidor.${els.crsOverride.value.trim() ? ` CRS aplicado: ${els.crsOverride.value.trim()}.` : ''}` };
     setStatus(`Analizando ${file.name} en este navegador…`);
     try {
       let payload;
@@ -1022,7 +1427,7 @@
 
   function exportReport() {
     const records = filteredRecords();
-    const report = { generatedAt: new Date().toISOString(), tool: 'Arqueo Atlas', totalLoaded: state.records.length, totalExported: records.length, filters: { text: els.filterText.value, period: els.periodFilter.value, source: els.loadedSourceFilter.value }, sources: [...state.loadedSources.values()].map((source) => ({ id: source.id, label: source.label, publisher: source.publisher, format: source.format, urls: source.urls, catalogUrl: source.catalogUrl, license: source.license, notes: source.notes, recordsLoaded: state.records.filter((record) => record.meta.sourceId === source.id).length })) };
+    const report = { generatedAt: new Date().toISOString(), tool: 'Arqueo Atlas', totalLoaded: state.records.length, totalExported: records.length, filters: { text: els.filterText.value, period: els.periodFilter.value, source: els.loadedSourceFilter.value }, sources: [...state.loadedSources.values()].map((source) => ({ id: source.id, label: source.label, publisher: source.publisher, format: source.format, urls: source.urls, catalogUrl: source.catalogUrl, license: source.license, crs: source.crs || 'EPSG:4326', notes: source.notes, recordsLoaded: state.records.filter((record) => record.meta.sourceId === source.id).length })) };
     download('arqueo-atlas-procedencia.json', JSON.stringify(report, null, 2), 'application/json');
   }
 
@@ -1037,9 +1442,12 @@
     els.loadSourceBtn.addEventListener('click', () => loadSource(sourceById(els.sourceSelect.value)));
     els.exampleBtn.addEventListener('click', () => { addPayload(DEMO, { id: 'demo', label: 'Ejemplo didáctico local', publisher: 'Arqueo Atlas', format: 'GeoJSON', urls: [], catalogUrl: '', license: 'Datos sintéticos', notes: 'Registros ficticios para comprobar la herramienta.' }); });
     els.fileInput.addEventListener('change', () => { const [file] = els.fileInput.files || []; if (file) loadFile(file); els.fileInput.value = ''; });
-    els.customLoadBtn.addEventListener('click', () => { const url = els.customUrl.value.trim(); if (!/^https?:\/\//i.test(url)) { setStatus('Introduce una URL HTTP(S) válida.', 'error'); return; } loadSource(sourceForCustom(els.customName.value.trim(), url)); });
+    els.customLoadBtn.addEventListener('click', () => { const url = els.customUrl.value.trim(); if (!/^https?:\/\//i.test(url)) { setStatus('Introduce una URL HTTP(S) válida.', 'error'); return; } loadSource(sourceForCustom(els.customName.value.trim(), url, els.crsOverride.value.trim())); });
     els.imageryLayerList.addEventListener('change', handleImageryChange);
     els.discoverLayersBtn.addEventListener('click', discoverImageryLayers);
+    els.recentImagerySearchBtn.addEventListener('click', searchRecentImagery);
+    els.recentImageryAddBtn.addEventListener('click', addRecentImagery);
+    els.recentImageryProduct.addEventListener('change', () => { if (els.recentImageryProduct.value === 'VIIRS') seedViirsCandidates(); else { state.recentImageryCandidates = []; renderRecentImageryCandidates(); els.recentImageryStatus.textContent = 'Busca fechas disponibles para el producto HLS en la extensión visible.'; } });
     els.removeImageryBtn.addEventListener('click', clearImagery);
     els.imageryOpacity.addEventListener('input', () => { state.imageryOpacity = Number(els.imageryOpacity.value); els.imageryOpacityValue.textContent = `${Math.round(state.imageryOpacity * 100)}%`; state.imageryLayers.forEach((layer) => layer.setOpacity(state.imageryOpacity)); });
     els.loadNgbeBtn.addEventListener('click', loadNGBEInView);
@@ -1078,6 +1486,7 @@
     map.on('locationerror', () => { els.measureStatus.textContent = 'El navegador no ha permitido obtener la ubicación.'; });
     renderReferenceCatalog();
     renderImageryCatalog();
+    seedViirsCandidates();
     renderCartoState();
     resetImage();
     render();
