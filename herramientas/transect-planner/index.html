@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="description" content="Planificador local de transectos y puntos de muestreo para campañas cartográficas, arqueológicas y de teledetección.">
+  <title>Transect Planner · Cartografía Web Tools</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="topbar"><a href="../">← Catálogo</a><div><strong>Transect Planner</strong><span>muestreo · arqueología · teledetección</span></div><span class="privacy">Sin servidor</span></header>
+  <main>
+    <section class="hero"><p class="eyebrow">18 · PLANIFICACIÓN DE CAMPAÑAS</p><h1>Diseña recorridos de muestreo reproducibles.</h1><p>Genera transectos paralelos orientables, puntos de control y un itinerario de campo sobre una extensión local. Exporta el plan compatible con tu SIG sin subir los datos.</p></section>
+    <section class="layout">
+      <aside class="panel controls">
+        <div class="section-title"><div><p class="eyebrow">Parámetros</p><h2>Plan de campaña</h2></div><span id="state" class="badge">sin ruta</span></div>
+        <form id="planForm">
+          <div class="subhead">Centro del área</div>
+          <div class="fields two"><label>Latitud<input id="lat" type="number" step="any" value="40.401" min="-90" max="90" required></label><label>Longitud<input id="lng" type="number" step="any" value="-3.703" min="-180" max="180" required></label></div>
+          <div class="fields two"><label>Ancho (km)<input id="width" type="number" step="any" value="2.4" min="0.1" max="50" required></label><label>Alto (km)<input id="height" type="number" step="any" value="1.6" min="0.1" max="50" required></label></div>
+          <div class="fields two"><label>Separación (m)<input id="spacing" type="number" step="1" value="120" min="10" max="2000" required></label><label>Orientación (°)<input id="angle" type="number" step="1" value="0" min="-360" max="360" required></label></div>
+          <label class="field">Distancia entre puntos (m)<input id="pointSpacing" type="number" step="1" value="250" min="10" max="5000" required><small>Los puntos se colocan siguiendo el recorrido, incluidos los giros.</small></label>
+          <div class="actions"><button class="primary" type="submit">Generar plan</button><button id="locateBtn" type="button">◎ Mi ubicación</button><button id="clearBtn" type="button" class="danger">Limpiar</button></div>
+        </form>
+        <p id="status" class="status" role="status">Ajusta los parámetros y genera una ruta.</p>
+        <div class="stats"><div><span>Transectos</span><b id="transectCount">—</b></div><div><span>Puntos</span><b id="pointCount">—</b></div><div><span>Distancia</span><b id="distance">—</b></div><div><span>Superficie</span><b id="area">—</b></div></div>
+        <div class="exports"><button id="geoBtn" type="button" disabled>Descargar GeoJSON</button><button id="csvBtn" type="button" disabled>Descargar CSV</button></div>
+        <p class="hint">El cálculo usa una aproximación local WGS84 adecuada para áreas de campaña pequeñas. Para replanteos de precisión, valida el plan en el sistema proyectado de tu proyecto.</p>
+      </aside>
+      <section class="panel map-panel" aria-label="Mapa del plan de transectos"><div class="map-head"><div><p class="eyebrow">Vista de trabajo</p><h2>Recorrido y puntos</h2><span>Los puntos numerados siguen el sentido de avance.</span></div><div id="placeSearch" class="cartografia-place-search" role="search" aria-label="Buscar un lugar"><label for="placeQuery">Buscar lugar</label><input id="placeQuery" type="search" placeholder="Buscar lugar…" autocomplete="off"><button id="placeSearchButton" type="button">Buscar</button><div id="placeResults" class="cartografia-place-results" role="listbox" hidden></div><p id="placeStatus" class="cartografia-place-status" role="status">Busca un topónimo para centrar el plan.</p></div></div><div id="map" aria-label="Mapa interactivo del plan de transectos"></div><div class="map-footer"><span>Azul: transectos · ámbar: puntos de muestreo</span><span>© OpenStreetMap contributors</span></div><div id="routeSummary" class="route-summary" aria-live="polite"></div></section>
+    </section>
+    <p class="privacy-note"><b>Privacidad:</b> el plan se calcula en este dispositivo y solo se descarga cuando lo solicitas. El mapa base usa teselas de OpenStreetMap y el buscador consulta Nominatim; tus parámetros no se envían a un servidor propio.</p>
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script><script src="../place-search.js?v=place-search-2"></script><script src="app.js?v=transect-planner-1"></script>
+</body>
+</html>

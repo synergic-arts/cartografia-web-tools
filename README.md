@@ -21,6 +21,7 @@ Colección de herramientas web abiertas para cartografía, rutas y datos geoespa
 - [Arqueo Atlas](herramientas/arqueo-atlas/): atlas arqueológico local que agrega fuentes públicas, filtra por cronología, conserva procedencia, exporta inventarios y busca fotografías relacionadas en Wikimedia Commons.
 - [Topo Profile](herramientas/topo-profile/): perfil topográfico local desde CSV, JSON, GeoJSON o GPX, con distancia acumulada, ascensos, pendientes, gráfico interactivo y exportación.
 - [Field Notes](herramientas/field-notes/): cuaderno de campo local con GPS, observaciones, fotografías reducidas, importación y exportación GeoJSON/CSV.
+- [Transect Planner](herramientas/transect-planner/): diseño local de transectos orientables, puntos de muestreo, métricas y exportación GeoJSON/CSV para campañas de campo.
 
 Carto Local AI funciona sin servidor: el modo rápido calcula métricas y recomendaciones en JavaScript. Si el navegador ofrece WebGPU, el usuario puede pulsar «Preparar IA local» para cargar explícitamente `Llama-3.2-1B-Instruct-q4f16_1-MLC` mediante WebLLM; el primer arranque descarga y almacena la caché del modelo en ese navegador. La aplicación no envía el GeoJSON a un backend propio.
 
