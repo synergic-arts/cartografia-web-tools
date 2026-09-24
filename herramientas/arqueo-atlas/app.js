@@ -35,6 +35,122 @@
     }
   ];
 
+  const REFERENCE_SOURCES = [
+    {
+      group: 'Nacional · nombres y asentamientos',
+      label: 'IGN · Nomenclátor Geográfico Básico de España (WFS)',
+      description: 'Lugares nombrados y asentamientos con geometría oficial. Sirve para contextualizar topónimos y completar áreas, pero no clasifica por sí solo todos los despoblados.',
+      url: 'https://www.ign.es/wfs-inspire/ngbe?service=WFS&request=GetCapabilities',
+      license: 'CC BY 4.0 IGN'
+    },
+    {
+      group: 'Nacional · población',
+      label: 'INE · Nomenclátor por unidad poblacional',
+      description: 'Relación anual de entidades, núcleos y diseminados con población. Permite filtrar unidades con población cero, pero la descarga y la definición estadística deben conservarse como fuente.',
+      url: 'https://www.ine.es/dyngs/INEbase/operacion.htm?c=Estadistica_C&cid=1254736177010&idp=1254735572981',
+      license: 'Consultar condiciones INE'
+    },
+    {
+      group: 'Despoblados · geometría publicada',
+      label: 'Castilla y León · límites de entidades y despoblados',
+      description: 'Capa autonómica que declara incluir núcleos, asentamientos diseminados, despoblados y otros recintos. No se presenta como inventario nacional.',
+      url: 'https://datos.gob.es/es/catalogo/a07002862-limites-de-entidades-de-poblacion-de-castilla-y-leon-recintos',
+      downloadUrl: 'https://datosabiertos.jcyl.es/web/jcyl/risp/es/medio-ambiente/limites-entidades-poblacion-recintos/1284872029895.shp',
+      license: 'Licencia IGCyL'
+    },
+    {
+      group: 'Arqueología · fuentes autonómicas',
+      label: 'Andalucía · DERA / WFS de patrimonio',
+      description: 'Servicio oficial de datos espaciales de referencia; su grupo Patrimonio puede aportar elementos patrimoniales y topónimos relacionados.',
+      url: 'http://www.ideandalucia.es/services/DERA_g11_patrimonio/wfs?service=wfs&request=getcapabilities',
+      license: 'Consultar licencia del IECA'
+    },
+    {
+      group: 'Arqueología · fuentes autonómicas',
+      label: 'Castilla-La Mancha · Red de Patrimonio Histórico',
+      description: 'Portal oficial con yacimientos arqueológicos y monumentos puestos en valor; es una fuente parcial y orientada a visita pública.',
+      url: 'http://datosabiertos.castillalamancha.es/node/224',
+      license: 'CC BY-SA 3.0 ES'
+    },
+    {
+      group: 'Arqueología · fuentes autonómicas',
+      label: 'Galicia · Bienes de Interés Cultural',
+      description: 'Distribución oficial de BIC de Galicia. Incluye patrimonio protegido, no todos los yacimientos inventariados.',
+      url: 'https://datos.gob.es/es/catalogo/a12002994-bienes-de-interes-cultural-bic1',
+      downloadUrl: 'https://abertos.xunta.gal/catalogo/administracion-publica/-/dataset/0375/bens-interese-cultural-bic/001/descarga-directa-ficheiro.ods',
+      license: 'CC BY-SA 4.0'
+    },
+    {
+      group: 'Fototeca y vuelos históricos',
+      label: 'IGN-CNIG · Fototeca digital',
+      description: 'Consulta de fotogramas, huellas de vuelo y disponibilidad de Ruiz de Alda, Americano, Interministerial, Nacional, Costas y PNOA. Ruiz de Alda no se publica como ortofoto nacional completa.',
+      url: 'https://fototeca.cnig.es/',
+      downloadUrl: 'https://centrodedescargas.cnig.es/CentroDescargas/vuelo-ruiz-alda-cuenca-segura',
+      license: 'Consultar condiciones CNIG'
+    },
+    {
+      group: 'Fototeca y vuelos históricos',
+      label: 'Ruiz de Alda · fotoplanos Cuenca del Ebro 1927',
+      description: 'Mosaicos de fotoplanos históricos de la Cuenca del Ebro. Son pseudo-ortofotos y no deben interpretarse como ortofotos verdaderas.',
+      url: 'https://centrodedescargas.cnig.es/CentroDescargas/novedades?codSerie=FPLEB',
+      license: 'Consultar condiciones CNIG'
+    }
+  ];
+
+  const IMAGERY_SERVICES = [
+    {
+      id: 'pnoa-historico',
+      label: 'IGN · PNOA anual e histórico',
+      url: 'https://www.ign.es/wms/pnoa-historico',
+      capabilities: 'https://www.ign.es/wms/pnoa-historico?request=GetCapabilities&service=WMS',
+      attribution: '© IGN-CNIG · PNOA histórico',
+      layers: [
+        ...Array.from({ length: 21 }, (_, index) => 2024 - index).map((year) => ({ name: `PNOA${year}`, title: `PNOA anual ${year}` })),
+        { name: 'pnoa10_2018', title: 'PNOA10 · Galicia 2018' },
+        { name: 'pnoa10_2016', title: 'PNOA10 · Madrid 2016' },
+        { name: 'pnoa10_2013', title: 'PNOA10 · Madrid 2013' },
+        { name: 'pnoa10_2009', title: 'PNOA10 · Madrid 2009' },
+        { name: 'pnoa10_2007', title: 'PNOA10 · Castilla-La Mancha 2007' },
+        { name: 'pnoa10_2008', title: 'PNOA10 · Illes Balears 2008' },
+        { name: 'SIGPAC', title: 'SIGPAC · 1997-2003' },
+        { name: 'OLISTAT', title: 'OLISTAT · 1997-1998' },
+        { name: 'Nacional_1981-1986', title: 'Vuelo Nacional · 1981-1986' },
+        { name: 'Interministerial_1973-1986', title: 'Vuelo Interministerial · 1973-1986' },
+        { name: 'AMS_1956-1957', title: 'Americano Serie B · 1956-1957' }
+      ]
+    },
+    {
+      id: 'pnoa-ma',
+      label: 'IGN · PNOA máxima actualidad',
+      url: 'https://www.ign.es/wms-inspire/pnoa-ma',
+      capabilities: 'https://www.ign.es/wms-inspire/pnoa-ma?request=GetCapabilities&service=WMS',
+      attribution: '© IGN-CNIG · PNOA máxima actualidad',
+      layers: [{ name: 'OI.OrthoimageCoverage', title: 'Ortofoto PNOA máxima actualidad' }, { name: 'OI.MosaicElement', title: 'Mosaicos PNOA máxima actualidad' }]
+    },
+    {
+      id: 'ign-base',
+      label: 'IGN · cartografía base para contraste',
+      url: 'https://www.ign.es/wms-inspire/ign-base',
+      capabilities: 'https://www.ign.es/wms-inspire/ign-base?request=GetCapabilities&service=WMS',
+      attribution: '© IGN-CNIG · IGN base',
+      layers: [{ name: 'IGNBaseTodo', title: 'IGN Base' }, { name: 'IGNBaseTodo-gris', title: 'IGN Base gris' }, { name: 'IGNBaseOrto', title: 'IGN Base orto' }]
+    },
+    {
+      id: 'fototeca',
+      label: 'IGN-CNIG · Fototeca (consulta de vuelos)',
+      url: 'https://fototeca.cnig.es/wms/fototeca.dll',
+      capabilities: 'https://fototeca.cnig.es/wms/fototeca.dll?service=WMS&request=GetCapabilities',
+      attribution: '© IGN-CNIG · Fototeca',
+      layers: [],
+      referenceOnly: true,
+      referenceUrl: 'https://fototeca.cnig.es/',
+      referenceLinks: [
+        { label: 'Ruiz de Alda · Cuenca del Segura 1929-1930', url: 'https://centrodedescargas.cnig.es/CentroDescargas/vuelo-ruiz-alda-cuenca-segura' },
+        { label: 'Ruiz de Alda · fotoplanos Cuenca del Ebro 1927', url: 'https://centrodedescargas.cnig.es/CentroDescargas/novedades?codSerie=FPLEB' }
+      ]
+    }
+  ];
+
   const DEMO = {
     type: 'FeatureCollection',
     features: [
@@ -46,10 +162,10 @@
     ]
   };
 
-  const state = { records: [], selectedId: null, layer: null, photoCache: new Map(), loadedSources: new Map() };
+  const state = { records: [], selectedId: null, layer: null, photoCache: new Map(), loadedSources: new Map(), imageryLayers: new Map(), imageryCatalog: [], imageryOpacity: .82 };
   const $ = (id) => document.getElementById(id);
   const els = {
-    fileInput: $('fileInput'), sourceSelect: $('sourceSelect'), loadSourceBtn: $('loadSourceBtn'), exampleBtn: $('exampleBtn'), customName: $('customName'), customUrl: $('customUrl'), customLoadBtn: $('customLoadBtn'), sourceMeta: $('sourceMeta'), status: $('status'), filterText: $('filterText'), periodFilter: $('periodFilter'), loadedSourceFilter: $('loadedSourceFilter'), totalCount: $('totalCount'), visibleCount: $('visibleCount'), sourceCount: $('sourceCount'), namedCount: $('namedCount'), exportGeoBtn: $('exportGeoBtn'), exportCsvBtn: $('exportCsvBtn'), exportReportBtn: $('exportReportBtn'), clearBtn: $('clearBtn'), resultHint: $('resultHint'), resultTable: $('resultTable'), detailPanel: $('detailPanel'), detailTitle: $('detailTitle'), detailMeta: $('detailMeta'), detailProperties: $('detailProperties'), detailLinks: $('detailLinks'), closeDetailBtn: $('closeDetailBtn'), photoBtn: $('photoBtn'), photoStatus: $('photoStatus'), photoGrid: $('photoGrid')
+    fileInput: $('fileInput'), sourceSelect: $('sourceSelect'), loadSourceBtn: $('loadSourceBtn'), exampleBtn: $('exampleBtn'), customName: $('customName'), customUrl: $('customUrl'), customLoadBtn: $('customLoadBtn'), sourceMeta: $('sourceMeta'), imageryLayerList: $('imageryLayerList'), discoverLayersBtn: $('discoverLayersBtn'), removeImageryBtn: $('removeImageryBtn'), imageryOpacity: $('imageryOpacity'), imageryOpacityValue: $('imageryOpacityValue'), imageryStatus: $('imageryStatus'), loadNgbeBtn: $('loadNgbeBtn'), referenceCatalog: $('referenceCatalog'), approximateBtn: $('approximateBtn'), status: $('status'), filterText: $('filterText'), periodFilter: $('periodFilter'), loadedSourceFilter: $('loadedSourceFilter'), totalCount: $('totalCount'), visibleCount: $('visibleCount'), sourceCount: $('sourceCount'), namedCount: $('namedCount'), approxCount: $('approxCount'), exportGeoBtn: $('exportGeoBtn'), exportCsvBtn: $('exportCsvBtn'), exportReportBtn: $('exportReportBtn'), clearBtn: $('clearBtn'), resultHint: $('resultHint'), resultTable: $('resultTable'), detailPanel: $('detailPanel'), detailTitle: $('detailTitle'), detailMeta: $('detailMeta'), detailProperties: $('detailProperties'), detailLinks: $('detailLinks'), closeDetailBtn: $('closeDetailBtn'), photoBtn: $('photoBtn'), photoStatus: $('photoStatus'), photoGrid: $('photoGrid')
   };
 
   let map;
@@ -164,7 +280,7 @@
     const point = pointFromRecord(incoming, properties);
     let geometry = incoming.geometry || null;
     if (!geometry && point) geometry = { type: 'Point', coordinates: [point.lng, point.lat] };
-    if (!geometry) return null;
+    const locationMode = geometry?.type === 'Point' ? 'exacta publicada' : (geometry ? 'área publicada' : 'sin coordenadas');
     const meta = {
       id: `${source.id || 'source'}-${index}-${Math.random().toString(36).slice(2, 8)}`,
       name,
@@ -180,7 +296,9 @@
       region: pickValue(properties, ['comunidad', 'autonomia', 'autonomía', 'region', 'región']),
       code: pickValue(properties, ['codigo', 'código', 'code', 'id', 'referencia', 'reference', 'ref']),
       description: pickValue(properties, ['descripcion', 'descripción', 'description', 'observaciones', 'notes']),
-      photoUrl: pickValue(properties, ['foto', 'fotografia', 'fotografía', 'imagen', 'image', 'imageurl', 'urlfoto', 'urlimagen'])
+      photoUrl: pickValue(properties, ['foto', 'fotografia', 'fotografía', 'imagen', 'image', 'imageurl', 'urlfoto', 'urlimagen']),
+      locationMode,
+      locationNote: locationMode === 'sin coordenadas' ? 'La fuente aporta un registro sin geometría; puede completarse con un área aproximada a partir del municipio o topónimo.' : ''
     };
     const feature = { type: 'Feature', geometry, properties };
     Object.defineProperty(feature, '__arqueoId', { value: meta.id, enumerable: false });
@@ -203,6 +321,119 @@
     placeSearch = window.CartografiaPlaceSearch?.(map, { input: $('placeQuery'), button: $('placeSearchButton'), results: $('placeResults'), status: $('placeStatus'), zoom: 12, onLocate: ({ lat, lng, displayName }) => { map.setView([lat, lng], Math.max(map.getZoom(), 12)); L.popup().setLatLng([lat, lng]).setContent(`<strong>${escapeHtml(displayName)}</strong>`).openOn(map); } });
   }
 
+  function layerKey(serviceId, name) { return `${serviceId}::${name}`; }
+
+  function directXmlText(node, localName) {
+    const child = [...(node?.children || [])].find((item) => item.localName === localName);
+    return child?.textContent?.trim() || '';
+  }
+
+  function parseWmsLayers(xmlText) {
+    const document = new DOMParser().parseFromString(xmlText, 'text/xml');
+    if (document.querySelector('parsererror')) throw new Error('Capabilities WMS no válido');
+    return [...document.getElementsByTagNameNS('*', 'Layer')].map((node) => ({ name: directXmlText(node, 'Name'), title: directXmlText(node, 'Title') })).filter((layer) => layer.name && !/^(default|estilo|info|fondo)$/i.test(layer.name) && !/^estilo[-_]/i.test(layer.name));
+  }
+
+  function renderReferenceCatalog() {
+    if (!els.referenceCatalog) return;
+    const groups = [...new Set(REFERENCE_SOURCES.map((source) => source.group))];
+    els.referenceCatalog.innerHTML = groups.map((group) => `<section class="reference-group"><h4>${escapeHtml(group)}</h4>${REFERENCE_SOURCES.filter((source) => source.group === group).map((source) => `<article class="reference-card"><b>${escapeHtml(source.label)}</b><p>${escapeHtml(source.description)}</p><span>${escapeHtml(source.license)}</span><div><a href="${escapeHtml(source.url)}" target="_blank" rel="noreferrer">Ficha / servicio ↗</a>${source.downloadUrl ? ` <a href="${escapeHtml(source.downloadUrl)}" target="_blank" rel="noreferrer">Descarga ↗</a>` : ''}</div></article>`).join('')}</section>`).join('');
+  }
+
+  function renderImageryCatalog() {
+    if (!els.imageryLayerList) return;
+    const services = IMAGERY_SERVICES.filter((service) => service.layers.length || service.referenceOnly);
+    els.imageryLayerList.innerHTML = services.map((service) => {
+      const layers = service.layers.map((layer) => {
+        const key = layerKey(service.id, layer.name);
+        return `<label class="layer-row"><input type="checkbox" data-imagery-key="${escapeHtml(key)}" ${state.imageryLayers.has(key) ? 'checked' : ''}><span><b>${escapeHtml(layer.title || layer.name)}</b><small>${escapeHtml(layer.name)}</small></span></label>`;
+      }).join('');
+      const reference = service.referenceOnly ? `<p class="hint">Este servicio se abre en la Fototeca para consultar huellas y fotogramas; el WMS histórico del PNOA contiene las ortofotos publicadas.</p><a href="${escapeHtml(service.referenceUrl)}" target="_blank" rel="noreferrer">Abrir Fototeca digital ↗</a>${(service.referenceLinks || []).map((link) => `<a href="${escapeHtml(link.url)}" target="_blank" rel="noreferrer">${escapeHtml(link.label)} ↗</a>`).join('')}` : '';
+      return `<details class="layer-service" open><summary>${escapeHtml(service.label)} <small>${service.layers.length} capas</small></summary>${layers || reference}</details>`;
+    }).join('');
+  }
+
+  function addImageryLayer(service, layer) {
+    const key = layerKey(service.id, layer.name);
+    if (state.imageryLayers.has(key)) return;
+    const tileLayer = L.tileLayer.wms(service.url, { layers: layer.name, format: 'image/png', transparent: true, version: '1.3.0', opacity: state.imageryOpacity, maxZoom: 22, attribution: service.attribution });
+    tileLayer.addTo(map);
+    state.imageryLayers.set(key, tileLayer);
+  }
+
+  function removeImageryLayer(key) {
+    const tileLayer = state.imageryLayers.get(key);
+    if (!tileLayer) return;
+    tileLayer.remove();
+    state.imageryLayers.delete(key);
+  }
+
+  function clearImagery() {
+    state.imageryLayers.forEach((layer) => layer.remove());
+    state.imageryLayers.clear();
+    renderImageryCatalog();
+    if (els.imageryStatus) els.imageryStatus.textContent = 'Capas fotográficas retiradas del mapa.';
+  }
+
+  async function discoverImageryLayers() {
+    els.discoverLayersBtn.disabled = true;
+    els.imageryStatus.textContent = 'Consultando GetCapabilities de los servicios oficiales…';
+    const results = [];
+    for (const service of IMAGERY_SERVICES.filter((item) => item.capabilities && !item.referenceOnly)) {
+      try {
+        const response = await fetch(service.capabilities, { mode: 'cors', cache: 'no-store' });
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const layers = parseWmsLayers(await response.text());
+        if (layers.length) service.layers = layers;
+        results.push(`${service.label}: ${layers.length} capas`);
+      } catch (error) {
+        results.push(`${service.label}: catálogo no accesible desde este navegador; se mantiene el índice conocido`);
+      }
+    }
+    renderImageryCatalog();
+    els.imageryStatus.textContent = `${results.join(' · ')}. Las capas se cargan bajo demanda y permanecen en el navegador.`;
+    els.discoverLayersBtn.disabled = false;
+  }
+
+  function handleImageryChange(event) {
+    const input = event.target.closest('[data-imagery-key]');
+    if (!input) return;
+    const [serviceId, ...nameParts] = input.dataset.imageryKey.split('::');
+    const name = nameParts.join('::');
+    const service = IMAGERY_SERVICES.find((item) => item.id === serviceId);
+    const layer = service?.layers.find((item) => item.name === name);
+    if (!service || !layer) return;
+    if (input.checked) addImageryLayer(service, layer); else removeImageryLayer(input.dataset.imageryKey);
+    if (els.imageryStatus) els.imageryStatus.textContent = `${state.imageryLayers.size} capa${state.imageryLayers.size === 1 ? '' : 's'} fotográfica${state.imageryLayers.size === 1 ? '' : 's'} visible${state.imageryLayers.size === 1 ? '' : 's'}.`;
+  }
+
+  async function loadNGBEInView() {
+    const bounds = map.getBounds();
+    const source = {
+      id: `ngbe-${Date.now()}`,
+      label: 'IGN · Nomenclátor Geográfico Básico de España · vista actual',
+      publisher: 'Instituto Geográfico Nacional',
+      format: 'WFS / GeoJSON',
+      urls: [],
+      catalogUrl: 'https://www.ign.es/web/rcc-nomenclator-nacional',
+      license: 'CC BY 4.0 IGN',
+      notes: 'Consulta espacial limitada a la extensión visible; los lugares nombrados contextualizan asentamientos y topónimos, pero no equivalen a yacimientos arqueológicos.'
+    };
+    const url = new URL('https://www.ign.es/wfs-inspire/ngbe');
+    url.search = new URLSearchParams({ service: 'WFS', version: '2.0.0', request: 'GetFeature', typeNames: 'gn:NamedPlace', outputFormat: 'application/geo+json', srsName: 'EPSG:4326', count: '1000', bbox: `${bounds.getWest()},${bounds.getSouth()},${bounds.getEast()},${bounds.getNorth()},EPSG:4326` });
+    source.urls = [url.toString()];
+    els.loadNgbeBtn.disabled = true;
+    sourceDescription(source);
+    setStatus('Consultando el NGBE del IGN para la extensión visible…');
+    try {
+      const response = await fetch(url, { mode: 'cors', cache: 'no-store' });
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      addPayload(await response.json(), source);
+    } catch (error) {
+      setStatus(`No se pudo leer el NGBE desde el navegador: ${error.message}. Abre el servicio desde el catálogo de fuentes.`, 'error');
+    } finally { els.loadNgbeBtn.disabled = false; }
+  }
+
   function colorFor(period) {
     const colors = { 'Paleolítico': '#e5a65e', 'Neolítico / Calcolítico': '#f0c36c', 'Edad del Bronce': '#df8669', 'Edad del Hierro / Prerromano': '#c979c9', Romano: '#73b7e8', Tardoantiguo: '#91c783', Medieval: '#8c9bea', 'Moderno / Contemporáneo': '#d2d8df' };
     return colors[period] || '#72dfba';
@@ -210,7 +441,52 @@
 
   function recordCenter(record) {
     if (record.point && Number.isFinite(record.point.lat) && Number.isFinite(record.point.lng)) return [record.point.lat, record.point.lng];
+    if (!record.feature.geometry) return null;
     try { const bounds = L.geoJSON(record.feature).getBounds(); return bounds.isValid() ? [bounds.getCenter().lat, bounds.getCenter().lng] : null; } catch { return null; }
+  }
+
+  function approximateEnvelope(lng, lat, radiusDegrees) {
+    return { type: 'Polygon', coordinates: [[[lng - radiusDegrees, lat - radiusDegrees], [lng + radiusDegrees, lat - radiusDegrees], [lng + radiusDegrees, lat + radiusDegrees], [lng - radiusDegrees, lat + radiusDegrees], [lng - radiusDegrees, lat - radiusDegrees]]] };
+  }
+
+  function locationQueryFor(record) {
+    const area = [record.meta.municipality, record.meta.province, record.meta.region].filter(Boolean).join(', ');
+    return area ? `${area}, España` : `${record.meta.name}, España`;
+  }
+
+  async function approximateMissingLocations() {
+    const candidates = state.records.filter((record) => !record.feature.geometry && (record.meta.municipality || record.meta.province || record.meta.region || record.meta.name)).slice(0, 30);
+    if (!candidates.length) { setStatus('No hay registros sin geometría que se puedan aproximar.', 'ok'); return; }
+    els.approximateBtn.disabled = true;
+    let completed = 0;
+    let failed = 0;
+    setStatus(`Buscando áreas aproximadas para ${candidates.length} registros…`);
+    for (const record of candidates) {
+      try {
+        const url = new URL('https://nominatim.openstreetmap.org/search');
+        url.search = new URLSearchParams({ q: locationQueryFor(record), format: 'jsonv2', limit: '1', polygon_geojson: '1', addressdetails: '1' });
+        const response = await fetch(url, { mode: 'cors', headers: { Accept: 'application/json' } });
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const [result] = await response.json();
+        if (!result) throw new Error('sin resultado');
+        let geometry = result.geojson && ['Polygon', 'MultiPolygon'].includes(result.geojson.type) ? result.geojson : null;
+        const lat = parseNumber(result.lat);
+        const lng = parseNumber(result.lon);
+        if (!geometry && Number.isFinite(lat) && Number.isFinite(lng)) geometry = approximateEnvelope(lng, lat, record.meta.municipality ? .08 : .025);
+        if (!geometry) throw new Error('sin geometría');
+        record.feature.geometry = geometry;
+        record.point = pointFromGeometry(geometry);
+        record.meta.locationMode = 'área aproximada';
+        record.meta.locationNote = `Envolvente obtenida a partir de “${result.display_name || locationQueryFor(record)}” mediante Nominatim. No es la posición exacta del yacimiento.`;
+        record.meta.approximationSource = 'OpenStreetMap Nominatim';
+        completed += 1;
+      } catch { failed += 1; }
+      setStatus(`Áreas aproximadas: ${completed} completadas · ${failed} sin resultado · ${candidates.length - completed - failed} pendientes…`);
+      await new Promise((resolve) => setTimeout(resolve, 1100));
+    }
+    render();
+    setStatus(`Proceso terminado: ${completed} áreas aproximadas añadidas${failed ? ` · ${failed} registros siguen sin geometría` : ''}.`, completed ? 'ok' : 'error');
+    els.approximateBtn.disabled = false;
   }
 
   function filteredRecords() {
@@ -225,11 +501,12 @@
 
   function renderMap(records) {
     state.layer?.remove();
-    if (!records.length) { map.setView([40.25, -3.7], 5); return; }
-    state.layer = L.geoJSON(records.map((record) => record.feature), {
-      pointToLayer: (feature, latlng) => { const record = records.find((item) => item.feature === feature); const color = colorFor(record?.meta.period); return L.circleMarker(latlng, { radius: 7, color: '#082018', weight: 2, fillColor: color, fillOpacity: .9 }); },
-      style: (feature) => { const record = records.find((item) => item.feature === feature); const color = colorFor(record?.meta.period); return { color, weight: 2, fillColor: color, fillOpacity: .28 }; },
-      onEachFeature: (feature, layer) => { const record = records.find((item) => item.feature === feature); if (!record) return; layer.bindTooltip(record.meta.name, { sticky: true }); layer.on('click', () => selectRecord(record.meta.id, true)); }
+    const locatedRecords = records.filter((record) => record.feature.geometry);
+    if (!locatedRecords.length) { map.setView([40.25, -3.7], 5); return; }
+    state.layer = L.geoJSON(locatedRecords.map((record) => record.feature), {
+      pointToLayer: (feature, latlng) => { const record = locatedRecords.find((item) => item.feature === feature); const color = colorFor(record?.meta.period); const approximate = record?.meta.locationMode === 'área aproximada'; return L.circleMarker(latlng, { radius: approximate ? 9 : 7, color: approximate ? '#f2bd72' : '#082018', weight: approximate ? 3 : 2, dashArray: approximate ? '5 4' : undefined, fillColor: color, fillOpacity: .9 }); },
+      style: (feature) => { const record = locatedRecords.find((item) => item.feature === feature); const color = colorFor(record?.meta.period); const approximate = record?.meta.locationMode === 'área aproximada'; return { color: approximate ? '#f2bd72' : color, weight: approximate ? 3 : 2, dashArray: approximate ? '7 5' : undefined, fillColor: color, fillOpacity: approximate ? .14 : .28 }; },
+      onEachFeature: (feature, layer) => { const record = locatedRecords.find((item) => item.feature === feature); if (!record) return; layer.bindTooltip(`${record.meta.name}${record.meta.locationMode === 'área aproximada' ? ' · área aproximada' : ''}`, { sticky: true }); layer.on('click', () => selectRecord(record.meta.id, true)); }
     }).addTo(map);
     const bounds = state.layer.getBounds();
     if (bounds.isValid()) map.fitBounds(bounds.pad(.12), { maxZoom: 14 });
@@ -251,8 +528,10 @@
     els.visibleCount.textContent = records.length.toLocaleString('es-ES');
     els.sourceCount.textContent = state.loadedSources.size.toLocaleString('es-ES');
     els.namedCount.textContent = state.records.filter((record) => record.meta.name && !record.meta.name.startsWith('Registro ')).length.toLocaleString('es-ES');
+    els.approxCount.textContent = state.records.filter((record) => record.meta.locationMode === 'área aproximada').length.toLocaleString('es-ES');
     const enabled = state.records.length > 0;
     [els.exportGeoBtn, els.exportCsvBtn, els.exportReportBtn].forEach((button) => { button.disabled = !enabled; });
+    els.approximateBtn.disabled = !state.records.some((record) => !record.feature.geometry);
   }
 
   function renderTable(records) {
@@ -260,7 +539,7 @@
     if (!records.length) { els.resultTable.innerHTML = '<tr><td colspan="5">No hay registros con los filtros actuales.</td></tr>'; els.resultHint.textContent = '0 resultados'; return; }
     els.resultTable.innerHTML = records.slice(0, limit).map((record) => {
       const coord = recordCenter(record);
-      const location = coord ? `${coord[1].toFixed(4)}, ${coord[0].toFixed(4)}` : 'sin coordenada';
+      const location = coord ? `${coord[1].toFixed(4)}, ${coord[0].toFixed(4)} · ${record.meta.locationMode}` : 'sin coordenadas · completar área';
       return `<tr><td><button class="record-button" data-record-id="${escapeHtml(record.meta.id)}">${escapeHtml(record.meta.name)}<small>${escapeHtml(record.meta.code || record.meta.description || 'Abrir ficha')}</small></button></td><td>${escapeHtml(record.meta.period)}</td><td>${escapeHtml(record.meta.municipality || record.meta.province || '—')}</td><td>${escapeHtml(record.meta.source)}</td><td class="coord">${escapeHtml(location)}</td></tr>`;
     }).join('');
     els.resultHint.textContent = records.length > limit ? `${records.length.toLocaleString('es-ES')} resultados · mostrando ${limit}` : `${records.length.toLocaleString('es-ES')} resultados`;
@@ -284,7 +563,7 @@
     if (flyTo && coord) map.setView(coord, Math.max(map.getZoom(), 13), { animate: true });
     els.detailPanel.hidden = false;
     els.detailTitle.textContent = record.meta.name;
-    els.detailMeta.innerHTML = [record.meta.period, record.meta.municipality || record.meta.province, record.meta.source].filter(Boolean).map((value) => `<span class="chip">${escapeHtml(value)}</span>`).join('');
+    els.detailMeta.innerHTML = [record.meta.period, record.meta.municipality || record.meta.province, record.meta.source, record.meta.locationMode].filter(Boolean).map((value) => `<span class="chip">${escapeHtml(value)}</span>`).join('');
     const skip = new Set(['nombre', 'name', 'periodo', 'period', 'municipio', 'municipality', 'provincia', 'province']);
     const properties = Object.entries(record.feature.properties || {}).filter(([key, value]) => !skip.has(normaliseKey(key)) && value !== null && value !== undefined && stringValue(value));
     els.detailProperties.innerHTML = properties.slice(0, 28).map(([key, value]) => `<dl class="property"><dt>${escapeHtml(key)}</dt><dd>${escapeHtml(typeof value === 'object' ? JSON.stringify(value) : value)}</dd></dl>`).join('') || '<p class="hint">La fuente no publica más atributos descriptivos.</p>';
@@ -292,6 +571,8 @@
     if (record.meta.sourceUrl) links.push(`<a href="${escapeHtml(record.meta.sourceUrl)}" target="_blank" rel="noreferrer">Abrir descarga de la fuente ↗</a>`);
     if (record.meta.catalogUrl) links.push(`<a href="${escapeHtml(record.meta.catalogUrl)}" target="_blank" rel="noreferrer">Ver catálogo y condiciones ↗</a>`);
     if (record.meta.photoUrl) links.push(`<a href="${escapeHtml(record.meta.photoUrl)}" target="_blank" rel="noreferrer">Abrir fotografía publicada ↗</a>`);
+    if (record.meta.locationNote) links.push(`<p class="approx-warning"><b>Precisión:</b> ${escapeHtml(record.meta.locationNote)}</p>`);
+    if (record.meta.approximationSource) links.push(`<span class="hint">Fuente de la envolvente: ${escapeHtml(record.meta.approximationSource)}</span>`);
     els.detailLinks.innerHTML = links.join('');
     els.photoGrid.replaceChildren();
     els.photoStatus.textContent = 'Se buscan imágenes por nombre y municipio; revisa siempre la relación, licencia y atribución.';
@@ -372,11 +653,12 @@
   function addPayload(payload, source) {
     const incoming = normalisePayload(payload);
     const records = incoming.map((raw, index) => makeRecord(raw, source, index)).filter(Boolean);
-    if (!records.length) throw new Error('La fuente no contiene entidades con geometría o coordenadas reconocibles.');
+    if (!records.length) throw new Error('La fuente no contiene entidades reconocibles.');
     state.records.push(...records);
     state.loadedSources.set(source.id, source);
     render();
-    setStatus(`${source.label}: ${records.length.toLocaleString('es-ES')} registros añadidos al atlas.`, 'ok');
+    const located = records.filter((record) => record.feature.geometry).length;
+    setStatus(`${source.label}: ${records.length.toLocaleString('es-ES')} registros añadidos · ${located.toLocaleString('es-ES')} con geometría · ${(records.length - located).toLocaleString('es-ES')} sin coordenadas.`, 'ok');
   }
 
   async function loadSource(source) {
@@ -411,13 +693,13 @@
 
   function exportFeatures() {
     const records = filteredRecords();
-    const features = records.map((record) => ({ ...record.feature, properties: { ...record.feature.properties, _arqueo_source: record.meta.source, _arqueo_source_url: record.meta.sourceUrl || undefined, _arqueo_catalog_url: record.meta.catalogUrl || undefined, _arqueo_period: record.meta.period } }));
+    const features = records.filter((record) => record.feature.geometry).map((record) => ({ ...record.feature, properties: { ...record.feature.properties, _arqueo_source: record.meta.source, _arqueo_source_url: record.meta.sourceUrl || undefined, _arqueo_catalog_url: record.meta.catalogUrl || undefined, _arqueo_period: record.meta.period, _arqueo_location_mode: record.meta.locationMode, _arqueo_location_note: record.meta.locationNote || undefined } }));
     download('arqueo-atlas-seleccion.geojson', JSON.stringify({ type: 'FeatureCollection', features }, null, 2), 'application/geo+json');
   }
 
   function exportCsv() {
-    const rows = [['id', 'nombre', 'periodo', 'municipio', 'provincia', 'fuente', 'latitud', 'longitud', 'url_fuente']];
-    filteredRecords().forEach((record) => { const coord = recordCenter(record); rows.push([record.meta.code || record.meta.id, record.meta.name, record.meta.period, record.meta.municipality, record.meta.province, record.meta.source, coord?.[0] ?? '', coord?.[1] ?? '', record.meta.sourceUrl]); });
+    const rows = [['id', 'nombre', 'periodo', 'municipio', 'provincia', 'fuente', 'tipo_ubicacion', 'latitud', 'longitud', 'url_fuente', 'nota_ubicacion']];
+    filteredRecords().forEach((record) => { const coord = recordCenter(record); rows.push([record.meta.code || record.meta.id, record.meta.name, record.meta.period, record.meta.municipality, record.meta.province, record.meta.source, record.meta.locationMode, coord?.[0] ?? '', coord?.[1] ?? '', record.meta.sourceUrl, record.meta.locationNote]); });
     const csv = rows.map((row) => row.map((value) => `"${String(value ?? '').replace(/"/g, '""')}"`).join(';')).join('\n');
     download('arqueo-atlas-inventario.csv', `\ufeff${csv}`, 'text/csv;charset=utf-8');
   }
@@ -440,12 +722,22 @@
     els.exampleBtn.addEventListener('click', () => { addPayload(DEMO, { id: 'demo', label: 'Ejemplo didáctico local', publisher: 'Arqueo Atlas', format: 'GeoJSON', urls: [], catalogUrl: '', license: 'Datos sintéticos', notes: 'Registros ficticios para comprobar la herramienta.' }); });
     els.fileInput.addEventListener('change', () => { const [file] = els.fileInput.files || []; if (file) loadFile(file); els.fileInput.value = ''; });
     els.customLoadBtn.addEventListener('click', () => { const url = els.customUrl.value.trim(); if (!/^https?:\/\//i.test(url)) { setStatus('Introduce una URL HTTP(S) válida.', 'error'); return; } loadSource(sourceForCustom(els.customName.value.trim(), url)); });
+    els.imageryLayerList.addEventListener('change', handleImageryChange);
+    els.discoverLayersBtn.addEventListener('click', discoverImageryLayers);
+    els.removeImageryBtn.addEventListener('click', clearImagery);
+    els.imageryOpacity.addEventListener('input', () => { state.imageryOpacity = Number(els.imageryOpacity.value); els.imageryOpacityValue.textContent = `${Math.round(state.imageryOpacity * 100)}%`; state.imageryLayers.forEach((layer) => layer.setOpacity(state.imageryOpacity)); });
+    els.loadNgbeBtn.addEventListener('click', loadNGBEInView);
+    els.approximateBtn.addEventListener('click', approximateMissingLocations);
     [els.filterText, els.periodFilter, els.loadedSourceFilter].forEach((element) => element.addEventListener('input', render));
     els.resultTable.addEventListener('click', (event) => { const button = event.target.closest('[data-record-id]'); if (button) selectRecord(button.dataset.recordId, true); });
     els.closeDetailBtn.addEventListener('click', () => { els.detailPanel.hidden = true; state.selectedId = null; });
     els.photoBtn.addEventListener('click', searchPhotos);
     els.exportGeoBtn.addEventListener('click', exportFeatures); els.exportCsvBtn.addEventListener('click', exportCsv); els.exportReportBtn.addEventListener('click', exportReport); els.clearBtn.addEventListener('click', clearAll);
-    initMap(); render();
+    initMap();
+    renderReferenceCatalog();
+    renderImageryCatalog();
+    render();
+    discoverImageryLayers();
   }
 
   init();

@@ -6,12 +6,12 @@
   <meta name="description" content="Atlas client-side para consultar y documentar yacimientos arqueológicos de fuentes públicas.">
   <title>Arqueo Atlas · yacimientos públicos</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="styles.css?v=arqueo-atlas-2">
 </head>
 <body>
   <header><a class="back" href="../">← Catálogo</a><div><strong>Arqueo Atlas</strong><span>yacimientos públicos · fichas · fotos trazables</span></div><span class="privacy">cliente · sin backend propio</span></header>
   <main>
-    <section class="hero"><p class="eyebrow">15 · ARQUEOLOGÍA · DATOS ABIERTOS</p><h1>Localiza, documenta y compara patrimonio arqueológico.</h1><p>Agrega fuentes públicas, filtra por periodo y territorio, consulta fichas y busca fotografías relacionadas en Wikimedia Commons. El navegador procesa los datos; la procedencia de cada registro se conserva en la ficha y en las exportaciones.</p><div class="notice"><b>Importante:</b> no existe un inventario público único y exhaustivo de todos los yacimientos. Esta herramienta agrega fuentes publicadas por organismos distintos y permite incorporar nuevas capas GeoJSON, JSON o Shapefile ZIP.</div></section>
+    <section class="hero"><p class="eyebrow">15 · ARQUEOLOGÍA · DATOS ABIERTOS</p><h1>Localiza, documenta y compara patrimonio arqueológico.</h1><p>Agrega fuentes públicas, filtra por periodo y territorio, consulta fichas y busca fotografías relacionadas en Wikimedia Commons. El navegador procesa los datos; la procedencia de cada registro se conserva en la ficha y en las exportaciones.</p><div class="notice"><b>Alcance verificable:</b> el IGN publica las ortofotos históricas y anuales mediante servicios WMS, pero no existe un inventario público único y exhaustivo de todos los yacimientos de España. Arqueo Atlas descubre las capas oficiales disponibles, suma inventarios abiertos y etiqueta cualquier ubicación aproximada sin fabricar coordenadas.</div></section>
     <section class="layout">
       <aside class="panel controls">
         <p class="eyebrow">Fuentes públicas</p>
@@ -19,14 +19,24 @@
         <label class="field"><span>Fuente del catálogo</span><select id="sourceSelect"></select></label>
         <div class="button-row"><button id="loadSourceBtn" class="primary" type="button">Cargar fuente</button><button id="exampleBtn" class="secondary" type="button">Ejemplo</button></div>
         <div class="source-card" id="sourceMeta">Selecciona una fuente para ver su cobertura, licencia y enlace oficial.</div>
+        <p class="eyebrow filter-title">Fotografía aérea histórica y PNOA</p>
+        <div id="imageryLayerList" class="layer-list" aria-live="polite"><p class="hint">Preparando el catálogo de capas oficiales…</p></div>
+        <div class="button-row"><button id="discoverLayersBtn" class="secondary" type="button">Descubrir capas oficiales</button><button id="removeImageryBtn" class="ghost" type="button">Quitar fotos</button></div>
+        <label class="field range-field"><span>Opacidad de las capas fotográficas <output id="imageryOpacityValue">82%</output></span><input id="imageryOpacity" type="range" min="0.2" max="1" step="0.02" value="0.82"></label>
+        <p id="imageryStatus" class="hint" role="status">Capas disponibles desde el servicio oficial PNOA histórico.</p>
+        <button id="loadNgbeBtn" class="secondary full" type="button">Cargar NGBE en la vista actual</button>
+        <small class="hint">Añade hasta 1.000 lugares nombrados del Nomenclátor del IGN dentro de la extensión visible; sirve para contextualizar topónimos y asentamientos, no es una capa arqueológica.</small>
         <details class="custom-source"><summary>Añadir una URL pública</summary><label class="field"><span>Nombre</span><input id="customName" type="text" placeholder="Mi inventario arqueológico"></label><label class="field"><span>URL GeoJSON / JSON / ZIP</span><input id="customUrl" type="url" placeholder="https://…"></label><button id="customLoadBtn" class="secondary full" type="button">Cargar URL</button><small class="hint">El servidor debe permitir CORS. Si no, descarga el archivo y ábrelo como capa local.</small></details>
+        <details class="reference-catalog"><summary>Catálogo de fuentes nacionales y regionales</summary><div id="referenceCatalog"></div></details>
         <p id="status" class="status" role="status">Sin capas cargadas</p>
-        <div class="stats"><div><span>Registros</span><b id="totalCount">0</b></div><div><span>En mapa</span><b id="visibleCount">0</b></div><div><span>Fuentes</span><b id="sourceCount">0</b></div><div><span>Con ficha</span><b id="namedCount">0</b></div></div>
+        <div class="stats"><div><span>Registros</span><b id="totalCount">0</b></div><div><span>En mapa</span><b id="visibleCount">0</b></div><div><span>Fuentes</span><b id="sourceCount">0</b></div><div><span>Con ficha</span><b id="namedCount">0</b></div><div><span>Áreas aprox.</span><b id="approxCount">0</b></div></div>
         <p class="eyebrow filter-title">Filtros de trabajo</p>
         <label class="field"><span>Buscar nombre, lugar o código</span><input id="filterText" type="search" placeholder="Ej. necrópolis, municipio…"></label>
         <label class="field"><span>Periodo / cronología</span><select id="periodFilter"><option value="">Todos los periodos</option></select></label>
         <label class="field"><span>Fuente cargada</span><select id="loadedSourceFilter"><option value="">Todas las fuentes</option></select></label>
         <div class="button-row"><button id="exportGeoBtn" class="secondary" type="button" disabled>GeoJSON filtrado</button><button id="exportCsvBtn" class="secondary" type="button" disabled>CSV de inventario</button></div>
+        <button id="approximateBtn" class="secondary full" type="button" disabled>Completar áreas aproximadas</button>
+        <small class="hint">Para registros sin coordenadas, busca el municipio o lugar en Nominatim y crea una envolvente visible. Se marca como aproximada y no sustituye la localización oficial.</small>
         <button id="exportReportBtn" class="secondary full" type="button" disabled>Informe de procedencia</button>
         <button id="clearBtn" class="ghost full" type="button">Limpiar atlas</button>
       </aside>
@@ -40,6 +50,6 @@
   <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
   <script src="https://cdn.jsdelivr.net/npm/shpjs@6.1.0/dist/shp.js"></script>
   <script src="../place-search.js?v=place-search-1"></script>
-  <script src="app.js?v=arqueo-atlas-1"></script>
+  <script src="app.js?v=arqueo-atlas-2"></script>
 </body>
 </html>
