@@ -35,6 +35,7 @@ Colección de herramientas web abiertas para cartografía, rutas y datos geoespa
 - [Directional Lab](herramientas/directional-lab/): centro medio ponderado, dispersión, orientación y elipse de desviación estándar para patrones espaciales GeoJSON, con exportación analítica.
 - [Buffer Lab](herramientas/buffer-lab/): crea áreas de influencia geodésicas alrededor de entidades GeoJSON, admite radios por atributo, controla la resolución y exporta GeoJSON/CSV.
 - [Voronoi Lab](herramientas/voronoi-lab/): genera polígonos de Thiessen locales para asignar áreas de proximidad, calcula superficies y perímetros y exporta GeoJSON/CSV.
+- [Tile Index Lab](herramientas/tile-index-lab/): calcula el índice de teselas XYZ que cubren una caja o extensión GeoJSON, con conteo por zoom, límites, URLs y exportación GeoJSON/CSV.
 
 Carto Local AI funciona sin servidor: el modo rápido calcula métricas y recomendaciones en JavaScript. Si el navegador ofrece WebGPU, el usuario puede pulsar «Preparar IA local» para cargar explícitamente `Llama-3.2-1B-Instruct-q4f16_1-MLC` mediante WebLLM; el primer arranque descarga y almacena la caché del modelo en ese navegador. La aplicación no envía el GeoJSON a un backend propio.
 
