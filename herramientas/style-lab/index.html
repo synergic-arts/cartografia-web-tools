@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Clasificación y simbología local de capas GeoJSON para cartografía temática.">
+  <title>Style Lab · simbología GeoJSON</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header><a class="back" href="../">← Catálogo</a><div><strong>Style Lab</strong><span>simbología temática · local · reproducible</span></div><span class="privacy">sin backend propio</span></header>
+  <main>
+    <section class="hero"><p class="eyebrow">41 · CARTOGRAFÍA TEMÁTICA · CLIENTE</p><h1>Convierte un atributo en una leyenda cartográfica.</h1><p>Clasifica un GeoJSON por cuantiles, intervalos iguales o categorías, revisa el resultado sobre el mapa y exporta la capa estilizada junto con una especificación reutilizable.</p></section>
+    <section class="layout">
+      <aside class="panel controls">
+        <label class="drop" for="file"><input id="file" type="file" accept=".geojson,.json,application/geo+json" hidden><b>＋ Abrir GeoJSON</b><small>El archivo se analiza en este navegador y no se sube.</small></label>
+        <div class="button-row"><button id="demo" class="secondary" type="button">Cargar ejemplo</button><button id="apply" class="primary" type="button">Aplicar estilo</button></div>
+        <p id="status" class="status" role="status">Cargando ejemplo…</p>
+        <p id="sourceName" class="source-name">—</p>
+        <label class="field"><span>Atributo temático</span><select id="field"></select></label>
+        <label class="field"><span>Clasificación</span><select id="mode"><option value="quantile">Cuantiles</option><option value="equal">Intervalos iguales</option><option value="categorical">Categorías</option></select></label>
+        <label class="field"><span>Número de clases <output id="classesValue">5</output></span><input id="classes" type="range" min="3" max="7" value="5"></label>
+        <label class="field"><span>Paleta</span><select id="palette"><option value="viridis">Viridis</option><option value="blueRed">Azul → rojo</option><option value="earth">Tierra → agua</option><option value="single">Azul secuencial</option></select></label>
+        <label class="field"><span>Opacidad <output id="opacityValue">78%</output></span><input id="opacity" type="range" min="20" max="100" value="78"></label>
+        <label class="field"><span>Radio de puntos <output id="radiusValue">7</output></span><input id="radius" type="range" min="3" max="16" value="7"></label>
+        <div class="actions"><button id="exportGeo" class="primary" type="button" disabled>Descargar GeoJSON estilizado</button><button id="exportSpec" class="secondary" type="button" disabled>Descargar especificación</button></div>
+        <p class="hint">La clasificación es exploratoria: revisa unidades, distribución y valores atípicos antes de publicar una leyenda definitiva.</p>
+      </aside>
+      <section class="panel map-panel"><div id="map" aria-label="Mapa de la capa estilizada"></div><div id="legend" class="legend" aria-label="Leyenda"><span class="muted">—</span></div></section>
+    </section>
+    <section class="panel table-panel"><div class="section-head"><div><p class="eyebrow">SALIDA REPRODUCIBLE</p><h2 id="legendTitle">Leyenda</h2></div><span class="muted">La capa exportada conserva los atributos originales y añade campos _style_.</span></div><div class="table-wrap"><table><thead><tr><th>Color</th><th>Clase</th><th>Entidades</th></tr></thead><tbody id="classTable"><tr><td colspan="3">Carga una capa para comenzar.</td></tr></tbody></table></div></section>
+    <section class="guide"><p><b>Qué exporta:</b> el GeoJSON incorpora `_style_field`, `_style_class` y `_style_color`; la especificación JSON conserva método, paleta, opacidad, radio y una expresión de pintura compatible como punto de partida para MapLibre.</p><p><b>Privacidad:</b> el archivo se procesa localmente. El mapa base solicita teselas directamente a OpenStreetMap y muestra su atribución; puedes seguir usando la clasificación y las exportaciones aunque no haya conexión.</p></section>
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script><script src="app.js?v=style-lab-1"></script>
+</body>
+</html>

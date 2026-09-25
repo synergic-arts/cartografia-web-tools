@@ -41,6 +41,7 @@ Colección de herramientas web abiertas para cartografía, rutas y datos geoespa
 - [Attribute Stats Lab](herramientas/attribute-stats-lab/): resume atributos numéricos y categóricos, muestra histogramas, detecta valores ausentes, clasifica entidades por cuantiles y exporta GeoJSON/CSV/JSON.
 - [Moran Lab](herramientas/moran-lab/): calcula Moran global, explora agrupaciones y contrastes locales tipo LISA con vecindad por k vecinos o distancia y exporta una capa enriquecida.
 - [Sampling Lab](herramientas/sampling-lab/): genera puntos de muestreo reproducibles dentro de polígonos, respeta una distancia mínima y exporta GeoJSON/CSV para campañas de campo.
+- [Style Lab](herramientas/style-lab/): clasifica atributos GeoJSON por cuantiles, intervalos iguales o categorías, aplica paletas y exporta la capa estilizada junto con una especificación reutilizable.
 
 Carto Local AI funciona sin servidor: el modo rápido calcula métricas y recomendaciones en JavaScript. Si el navegador ofrece WebGPU, el usuario puede pulsar «Preparar IA local» para cargar explícitamente `Llama-3.2-1B-Instruct-q4f16_1-MLC` mediante WebLLM; el primer arranque descarga y almacena la caché del modelo en ese navegador. La aplicación no envía el GeoJSON a un backend propio.
 
