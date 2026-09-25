@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="description" content="Minimiza y redacciona GeoJSON localmente antes de compartirlo.">
+  <title>Privacy Redactor · Cartografía Web Tools</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="shell">
+    <a class="back" href="../">← Catálogo cartográfico</a>
+    <header class="hero">
+      <p class="eyebrow">46 · GOBERNANZA · PRIVACIDAD · LOCAL</p>
+      <h1>Comparte solo lo que necesitas.</h1>
+      <p class="lede">Minimiza un GeoJSON antes de enviarlo o publicarlo: redondea coordenadas, elimina propiedades, quita la geometría si hace falta y exporta una copia auditable sin subir el original.</p>
+      <div class="privacy"><span class="dot"></span><strong>Procesamiento local</strong><span>El archivo permanece en este navegador.</span></div>
+    </header>
+    <section class="panel controls">
+      <div class="heading"><div><p class="eyebrow">1 · Entrada</p><h2>Carga una capa</h2></div><span class="badge">sin backend</span></div>
+      <div class="control-row">
+        <label class="file-control">Abrir GeoJSON<input id="fileInput" type="file" accept=".geojson,.json,application/geo+json,application/json"><span id="fileName">Selecciona un archivo local</span></label>
+        <button id="demoBtn" class="secondary" type="button">Usar demo</button>
+      </div>
+      <p id="status" class="status" role="status" aria-live="polite">Carga un GeoJSON o pulsa «Usar demo» para empezar.</p>
+    </section>
+    <section class="metrics" aria-label="Resumen de la capa">
+      <article><span>Entidades</span><strong id="featureCount">—</strong><small>en la capa original</small></article>
+      <article><span>Campos detectados</span><strong id="fieldCount">—</strong><small>propiedades disponibles</small></article>
+      <article><span>Precisión actual</span><strong id="precisionMetric">—</strong><small>decimales en coordenadas</small></article>
+      <article><span>Geometría</span><strong id="geometryMetric">—</strong><small>se conserva o se elimina</small></article>
+    </section>
+    <section class="workspace">
+      <article class="panel options">
+        <div class="heading"><div><p class="eyebrow">2 · Minimización</p><h2>Define la copia pública</h2></div></div>
+        <label class="range-label" for="precision">Decimales de coordenadas <output id="precisionOut" for="precision">5</output></label>
+        <input id="precision" type="range" min="0" max="8" value="5" step="1">
+        <p class="hint">0–2 decimales ocultan bastante la localización; 5–6 suelen conservar una posición detallada. Elige según el riesgo y el propósito.</p>
+        <label class="switch"><input id="removeGeometry" type="checkbox"><span></span><em>Quitar geometría y conservar solo atributos</em></label>
+        <label class="switch"><input id="stripZ" type="checkbox" checked><span></span><em>Eliminar coordenada Z / altitud</em></label>
+        <div class="field-heading"><div><p class="eyebrow">Propiedades</p><strong>Campos a conservar</strong></div><div class="field-actions"><button id="allFields" class="link" type="button">Todos</button><button id="noFields" class="link" type="button">Ninguno</button></div></div>
+        <div id="fieldList" class="field-list"><p class="muted">Carga una capa para ver sus campos.</p></div>
+      </article>
+      <article class="panel preview">
+        <div class="heading"><div><p class="eyebrow">3 · Previsualización</p><h2>Resultado redactado</h2></div><span id="previewNote" class="muted">Sin capa</span></div>
+        <div class="compare"><div><span>Original</span><strong id="beforeSize">—</strong></div><div><span>Redactado</span><strong id="afterSize">—</strong></div><div><span>Campos eliminados</span><strong id="removedFields">—</strong></div></div>
+        <div class="table-wrap"><table><thead><tr><th>#</th><th>Tipo</th><th>Propiedades</th><th>Coordenadas</th></tr></thead><tbody id="previewRows"></tbody></table></div>
+        <p class="fineprint">La vista previa muestra hasta 12 entidades. La redacción se aplica de nuevo al exportar para mantener el resultado reproducible.</p>
+      </article>
+    </section>
+    <section class="panel export-panel">
+      <div class="heading"><div><p class="eyebrow">4 · Exportación</p><h2>Guarda una copia trazable</h2></div><div class="actions"><button id="geojsonBtn" class="primary" type="button" disabled>Exportar GeoJSON redactado</button><button id="auditBtn" class="secondary" type="button" disabled>Exportar auditoría JSON</button></div></div>
+      <div class="audit-note"><strong>Privacidad por diseño</strong><span>Este proceso no puede garantizar anonimato absoluto: una geometría generalizada puede seguir siendo identificable si se combina con otras fuentes. Revisa la copia y su contexto antes de publicarla.</span></div>
+    </section>
+    <footer>Privacy Redactor · minimización reproducible de GeoJSON en el navegador. No se envían los datos a un servidor propio.</footer>
+  </main>
+  <script src="app.js"></script>
+</body>
+</html>
