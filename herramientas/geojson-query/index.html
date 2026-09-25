@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#08121f">
+  <title>GeoJSON Query Lab · Cartografía Web Tools</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="../../index.html"><span class="brand-mark">CW</span><span>Cartografía Web Tools</span></a>
+    <div class="topbar-actions">
+      <button class="button button-quiet" id="loadDemo" type="button">Cargar demo</button>
+      <label class="button button-primary file-button">Abrir GeoJSON <input id="fileInput" type="file" accept=".geojson,.json,application/geo+json,application/json"></label>
+    </div>
+  </header>
+
+  <main class="page-shell">
+    <section class="hero">
+      <div>
+        <p class="eyebrow">42 · Consulta reproducible en cliente</p>
+        <h1>GeoJSON Query Lab</h1>
+        <p class="lede">Selecciona entidades por atributos y geometría, revisa el resultado en el mapa y exporta solo el subconjunto que necesitas. La capa no sale del navegador.</p>
+      </div>
+      <div class="privacy-note"><span class="status-dot"></span><strong>Privacidad local</strong><span>El archivo se procesa en tu dispositivo.</span></div>
+    </section>
+
+    <section class="dropzone" id="dropzone" tabindex="0" role="button" aria-label="Cargar un archivo GeoJSON">
+      <div class="dropzone-icon">⌁</div>
+      <div><strong>Suelta aquí un GeoJSON</strong><span>o pulsa para seleccionar un archivo .geojson / .json</span></div>
+      <span class="dropzone-hint">WGS84 · FeatureCollection</span>
+    </section>
+
+    <section class="metrics" aria-label="Resumen de la capa">
+      <div class="metric"><span>Total de entidades</span><strong id="metricTotal">0</strong></div>
+      <div class="metric metric-accent"><span>Entidades seleccionadas</span><strong id="metricSelected">0</strong></div>
+      <div class="metric"><span>Excluidas por filtro</span><strong id="metricExcluded">0</strong></div>
+      <div class="metric"><span>Campos disponibles</span><strong id="metricFields">0</strong></div>
+    </section>
+
+    <div class="workspace">
+      <aside class="panel controls-panel">
+        <div class="panel-heading"><div><p class="eyebrow">Consulta</p><h2>Construir filtro</h2></div><span class="query-badge" id="queryBadge">Sin filtro</span></div>
+        <div class="control-group">
+          <label for="geometryType">Tipo de geometría</label>
+          <select id="geometryType">
+            <option value="all">Todos</option>
+            <option value="Point">Point</option>
+            <option value="MultiPoint">MultiPoint</option>
+            <option value="LineString">LineString</option>
+            <option value="MultiLineString">MultiLineString</option>
+            <option value="Polygon">Polygon</option>
+            <option value="MultiPolygon">MultiPolygon</option>
+          </select>
+        </div>
+        <div class="control-group">
+          <div class="label-row"><label for="combineMode">Combinar reglas</label><button class="text-button" id="clearRules" type="button">Limpiar</button></div>
+          <select id="combineMode"><option value="all">Todas (AND)</option><option value="any">Cualquiera (OR)</option></select>
+        </div>
+        <div class="rules" id="rules"></div>
+        <button class="button button-outline add-rule" id="addRule" type="button">＋ Añadir regla</button>
+        <button class="button button-primary apply-button" id="applyFilter" type="button">Aplicar filtro</button>
+        <div class="hint-box"><strong>Consejo</strong><p>Los campos numéricos aceptan ≥ y ≤. Para buscar texto usa “contiene”, sin distinguir mayúsculas y minúsculas.</p></div>
+      </aside>
+
+      <section class="content-column">
+        <div class="panel map-panel">
+          <div class="panel-heading compact"><div><p class="eyebrow">Vista espacial</p><h2>Resultado en el mapa</h2></div><span id="mapStatus" class="muted">Carga una capa para empezar</span></div>
+          <div class="map-wrap"><div id="map" aria-label="Mapa del resultado filtrado"></div><div class="map-empty" id="mapEmpty"><span>⌖</span><strong>Aún no hay datos cargados</strong><small>Carga un archivo o abre la capa de demostración.</small></div></div>
+        </div>
+
+        <div class="panel results-panel">
+          <div class="panel-heading compact"><div><p class="eyebrow">Inspección</p><h2>Entidades seleccionadas</h2></div><div class="export-actions"><button class="button button-quiet" id="exportCsv" type="button" disabled>Exportar CSV</button><button class="button button-primary" id="exportGeojson" type="button" disabled>Exportar GeoJSON</button></div></div>
+          <div class="table-wrap"><table><thead><tr><th>#</th><th>Geometría</th><th>Identificación</th><th>Atributos</th></tr></thead><tbody id="resultsBody"><tr><td colspan="4" class="empty-cell">Carga una capa para ver las entidades.</td></tr></tbody></table></div>
+          <div class="table-footer"><span id="resultSummary">0 entidades visibles</span><span class="muted">Los índices mantienen la posición original de la capa.</span></div>
+        </div>
+      </section>
+    </div>
+
+    <footer class="footer"><span>GeoJSON Query Lab · procesa los datos localmente</span><span>Mapa © OpenStreetMap contributors · Leaflet</span></footer>
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+  <script src="app.js"></script>
+</body>
+</html>
