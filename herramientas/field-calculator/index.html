@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#08121f">
+  <title>GeoJSON Field Calculator · Cartografía Web Tools</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="../../index.html"><span class="brand-mark">CW</span><span>Cartografía Web Tools</span></a>
+    <div class="topbar-actions"><button class="button button-quiet" id="loadDemo" type="button">Cargar demo</button><label class="button button-primary file-button">Abrir GeoJSON <input id="fileInput" type="file" accept=".geojson,.json,application/geo+json,application/json"></label></div>
+  </header>
+  <main class="page-shell">
+    <section class="hero"><div><p class="eyebrow">43 · Tratamiento de atributos</p><h1>GeoJSON Field Calculator</h1><p class="lede">Crea atributos derivados sin subir la capa: calcula métricas, combina campos, normaliza valores y exporta una nueva versión del GeoJSON.</p></div><div class="privacy-note"><span class="status-dot"></span><strong>Procesamiento local</strong><span>La capa permanece en tu dispositivo.</span></div></section>
+    <section class="dropzone" id="dropzone" tabindex="0" role="button" aria-label="Cargar un archivo GeoJSON"><div class="dropzone-icon">ƒx</div><div><strong>Suelta aquí un GeoJSON</strong><span>o pulsa para seleccionar un archivo .geojson / .json</span></div><span class="dropzone-hint">Atributos · geometría · exportación</span></section>
+    <section class="metrics" aria-label="Resumen de la capa"><div class="metric"><span>Entidades</span><strong id="metricFeatures">0</strong></div><div class="metric metric-accent"><span>Campos disponibles</span><strong id="metricFields">0</strong></div><div class="metric"><span>Última operación</span><strong id="metricOperation">—</strong></div><div class="metric"><span>Historial</span><strong id="metricHistory">0</strong></div></section>
+    <div class="workspace">
+      <aside class="panel controls-panel">
+        <div class="panel-heading"><div><p class="eyebrow">Calculadora</p><h2>Crear atributo</h2></div><span class="query-badge" id="layerBadge">Sin capa</span></div>
+        <div class="control-group"><label for="outputField">Nombre del campo de salida</label><input id="outputField" type="text" value="calculo" placeholder="ej. densidad_m2"></div>
+        <div class="control-group"><label for="operation">Operación</label><select id="operation"><option value="copy">Copiar un campo</option><option value="constant">Valor constante</option><option value="sum">Sumar campos</option><option value="difference">Restar campos</option><option value="product">Multiplicar campos</option><option value="ratio">Dividir campos</option><option value="concat">Concatenar campos</option><option value="geometry-type">Tipo de geometría</option><option value="centroid-lon">Centroide · longitud</option><option value="centroid-lat">Centroide · latitud</option><option value="vertex-count">Número de vértices</option><option value="length-km">Longitud aproximada (km)</option><option value="area-ha">Área aproximada (ha)</option></select></div>
+        <div class="control-group" id="fieldAGroup"><label for="fieldA">Campo principal</label><select id="fieldA"><option value="">Carga una capa</option></select></div>
+        <div class="control-group hidden" id="fieldBGroup"><label for="fieldB">Segundo campo</label><select id="fieldB"><option value="">Carga una capa</option></select></div>
+        <div class="control-group hidden" id="valueGroup"><label for="valueInput">Valor / separador</label><input id="valueInput" type="text" placeholder="ej. 100 o · "></div>
+        <label class="check-row"><input id="overwrite" type="checkbox"><span>Reemplazar si ya existe</span></label>
+        <button class="button button-primary apply-button" id="applyOperation" type="button">Aplicar a la capa</button>
+        <div class="secondary-actions"><button class="button button-outline" id="undo" type="button" disabled>Deshacer</button><button class="button button-quiet" id="reset" type="button" disabled>Restablecer</button></div>
+        <div class="hint-box"><strong>Operaciones espaciales</strong><p>Las longitudes y áreas son aproximaciones geodésicas en WGS84. Para resultados técnicos finales, valida el CRS y la proyección de trabajo.</p></div>
+      </aside>
+      <section class="content-column">
+        <div class="panel map-panel"><div class="panel-heading compact"><div><p class="eyebrow">Vista espacial</p><h2>Capa calculada</h2></div><span id="mapStatus" class="muted">Carga una capa para empezar</span></div><div class="map-wrap"><div id="map" aria-label="Mapa de la capa calculada"></div><div class="map-empty" id="mapEmpty"><span>ƒx</span><strong>Aún no hay datos cargados</strong><small>Carga un archivo o abre la capa de demostración.</small></div></div></div>
+        <div class="panel results-panel"><div class="panel-heading compact"><div><p class="eyebrow">Previsualización</p><h2>Atributos resultantes</h2></div><div class="export-actions"><button class="button button-quiet" id="exportCsv" type="button" disabled>Exportar CSV</button><button class="button button-primary" id="exportGeojson" type="button" disabled>Exportar GeoJSON</button></div></div><div class="table-wrap"><table><thead><tr><th>#</th><th>Identificación</th><th>Nuevo atributo</th><th>Geometría</th><th>Estado</th></tr></thead><tbody id="resultsBody"><tr><td colspan="5" class="empty-cell">Carga una capa para ver la previsualización.</td></tr></tbody></table></div><div class="table-footer"><span id="resultSummary">0 entidades</span><span class="muted">Se muestran las primeras 50 filas.</span></div></div>
+      </section>
+    </div>
+    <footer class="footer"><span>GeoJSON Field Calculator · datos locales por diseño</span><span>Mapa © OpenStreetMap contributors · Leaflet</span></footer>
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script><script src="app.js"></script>
+</body>
+</html>
