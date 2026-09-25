@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#08121f">
+  <title>AOI Extract Lab · Cartografía Web Tools</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="topbar"><a class="brand" href="../../index.html"><span class="brand-mark">CW</span><span>Cartografía Web Tools</span></a><div class="topbar-actions"><button class="button button-quiet" id="loadDemo" type="button">Cargar demo</button><label class="button button-primary file-button">Abrir GeoJSON <input id="fileInput" type="file" accept=".geojson,.json,application/geo+json,application/json"></label></div></header>
+  <main class="page-shell">
+    <section class="hero"><div><p class="eyebrow">44 · Extracción espacial</p><h1>AOI Extract Lab</h1><p class="lede">Extrae entidades de una capa GeoJSON por un área de interés, usando una caja definida por coordenadas o dibujada sobre el mapa. Todo se procesa localmente.</p></div><div class="privacy-note"><span class="status-dot"></span><strong>Datos locales</strong><span>La capa no se sube a ningún servidor.</span></div></section>
+    <section class="dropzone" id="dropzone" tabindex="0" role="button" aria-label="Cargar un archivo GeoJSON"><div class="dropzone-icon">AOI</div><div><strong>Suelta aquí un GeoJSON</strong><span>o pulsa para seleccionar un archivo .geojson / .json</span></div><span class="dropzone-hint">WGS84 · extracción reproducible</span></section>
+    <section class="metrics" aria-label="Resumen de extracción"><div class="metric"><span>Entidades de entrada</span><strong id="metricTotal">0</strong></div><div class="metric metric-accent"><span>Incluidas en el AOI</span><strong id="metricIncluded">0</strong></div><div class="metric"><span>Excluidas</span><strong id="metricExcluded">0</strong></div><div class="metric"><span>Extensión del AOI</span><strong id="metricExtent">—</strong></div></section>
+    <div class="workspace">
+      <aside class="panel controls-panel"><div class="panel-heading"><div><p class="eyebrow">Área de interés</p><h2>Definir extracción</h2></div><span class="query-badge" id="aoiBadge">Sin capa</span></div>
+        <div class="coordinate-grid"><div class="control-group"><label for="minLon">Oeste / mín. lon.</label><input id="minLon" type="number" step="any" placeholder="-5.00"></div><div class="control-group"><label for="minLat">Sur / mín. lat.</label><input id="minLat" type="number" step="any" placeholder="39.00"></div><div class="control-group"><label for="maxLon">Este / máx. lon.</label><input id="maxLon" type="number" step="any" placeholder="-3.00"></div><div class="control-group"><label for="maxLat">Norte / máx. lat.</label><input id="maxLat" type="number" step="any" placeholder="41.00"></div></div>
+        <div class="quick-actions"><button class="button button-outline" id="useMapExtent" type="button">Usar extensión visible</button><button class="button button-quiet" id="drawAoi" type="button">Dibujar en mapa</button></div>
+        <div class="control-group"><label for="selectionMode">Criterio espacial</label><select id="selectionMode"><option value="intersects">Intersección de extensión</option><option value="centroid">Centroide dentro del AOI</option></select></div>
+        <div class="draw-hint" id="drawHint">La intersección incluye puntos dentro y líneas/polígonos cuya extensión alcanza el AOI.</div>
+        <button class="button button-primary apply-button" id="applyAoi" type="button">Aplicar extracción</button><button class="button button-quiet reset-button" id="resetAoi" type="button" disabled>Restablecer a toda la capa</button>
+        <div class="hint-box"><strong>Importante</strong><p>La extracción por intersección selecciona entidades completas; no recorta sus geometrías. Usa el resultado como selección de trabajo o exporta y continúa el tratamiento en otra herramienta.</p></div>
+      </aside>
+      <section class="content-column"><div class="panel map-panel"><div class="panel-heading compact"><div><p class="eyebrow">Vista espacial</p><h2>Área y selección</h2></div><span class="muted" id="mapStatus">Carga una capa para empezar</span></div><div class="map-wrap"><div id="map" aria-label="Mapa de la extracción espacial"></div><div class="map-empty" id="mapEmpty"><span>AOI</span><strong>Aún no hay datos cargados</strong><small>Carga un archivo o abre la capa de demostración.</small></div></div></div>
+        <div class="panel results-panel"><div class="panel-heading compact"><div><p class="eyebrow">Resultado</p><h2>Entidades incluidas</h2></div><div class="export-actions"><button class="button button-quiet" id="exportCsv" type="button" disabled>Exportar CSV</button><button class="button button-primary" id="exportGeojson" type="button" disabled>Exportar GeoJSON</button></div></div><div class="table-wrap"><table><thead><tr><th># original</th><th>Identificación</th><th>Geometría</th><th>Atributos</th></tr></thead><tbody id="resultsBody"><tr><td colspan="4" class="empty-cell">Carga una capa para ver el resultado.</td></tr></tbody></table></div><div class="table-footer"><span id="resultSummary">0 entidades incluidas</span><span class="muted">El índice permite volver a la posición original.</span></div></div></section>
+    </div>
+    <footer class="footer"><span>AOI Extract Lab · selección local por extensión espacial</span><span>Mapa © OpenStreetMap contributors · Leaflet</span></footer>
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script><script src="app.js"></script>
+</body>
+</html>

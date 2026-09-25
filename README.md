@@ -44,6 +44,7 @@ Colección de herramientas web abiertas para cartografía, rutas y datos geoespa
 - [Style Lab](herramientas/style-lab/): clasifica atributos GeoJSON por cuantiles, intervalos iguales o categorías, aplica paletas y exporta la capa estilizada junto con una especificación reutilizable.
 - [GeoJSON Query Lab](herramientas/geojson-query/): filtra entidades por atributos, geometría y reglas combinadas, revisa el resultado en mapa y tabla y exporta el subconjunto a GeoJSON o CSV sin subir los datos.
 - [GeoJSON Field Calculator](herramientas/field-calculator/): crea o reemplaza atributos derivados con operaciones numéricas, concatenaciones, coordenadas, vértices, longitudes y áreas aproximadas; permite deshacer y exportar GeoJSON/CSV.
+- [AOI Extract Lab](herramientas/aoi-extract/): extrae entidades GeoJSON por una caja WGS84, extensión visible o selección dibujada en el mapa, usando intersección o centroide y exportando el subconjunto a GeoJSON/CSV.
 
 Carto Local AI funciona sin servidor: el modo rápido calcula métricas y recomendaciones en JavaScript. Si el navegador ofrece WebGPU, el usuario puede pulsar «Preparar IA local» para cargar explícitamente `Llama-3.2-1B-Instruct-q4f16_1-MLC` mediante WebLLM; el primer arranque descarga y almacena la caché del modelo en ese navegador. La aplicación no envía el GeoJSON a un backend propio.
 

@@ -1,0 +1,67 @@
+(() => {
+  'use strict';
+
+  const $ = (id) => document.getElementById(id);
+  const els = { file: $('fileInput'), dropzone: $('dropzone'), loadDemo: $('loadDemo'), minLon: $('minLon'), minLat: $('minLat'), maxLon: $('maxLon'), maxLat: $('maxLat'), useMapExtent: $('useMapExtent'), drawAoi: $('drawAoi'), selectionMode: $('selectionMode'), drawHint: $('drawHint'), apply: $('applyAoi'), reset: $('resetAoi'), total: $('metricTotal'), included: $('metricIncluded'), excluded: $('metricExcluded'), extent: $('metricExtent'), badge: $('aoiBadge'), map: $('map'), mapStatus: $('mapStatus'), mapEmpty: $('mapEmpty'), body: $('resultsBody'), summary: $('resultSummary'), exportCsv: $('exportCsv'), exportGeojson: $('exportGeojson') };
+  let source = { type: 'FeatureCollection', features: [] };
+  let selected = [];
+  let sourceBounds = null;
+  let currentBounds = null;
+  let map = null;
+  let allLayer = null;
+  let resultLayer = null;
+  let aoiLayer = null;
+  let drawing = false;
+  let firstCorner = null;
+
+  const demo = { type: 'FeatureCollection', features: [
+    point('Toledo', -4.027, 39.862, { type: 'ciudad', period: 'medieval' }),
+    point('Segovia', -4.118, 40.949, { type: 'ciudad', period: 'romano' }),
+    point('Cástulo', -3.633, 38.055, { type: 'yacimiento', period: 'ibero' }),
+    point('Clunia', -3.356, 41.762, { type: 'yacimiento', period: 'romano' }),
+    line('Transecto norte', [[-4.8, 40.2], [-4.0, 40.55], [-3.1, 40.25]], { type: 'transecto', period: '2026' }),
+    polygon('Área de estudio', [[-4.35, 39.35], [-3.8, 39.35], [-3.8, 39.75], [-4.35, 39.75], [-4.35, 39.35]], { type: 'zona', period: '2025' })
+  ] };
+  function point(name, lon, lat, props) { return { type: 'Feature', properties: { name, ...props }, geometry: { type: 'Point', coordinates: [lon, lat] } }; }
+  function line(name, coords, props) { return { type: 'Feature', properties: { name, ...props }, geometry: { type: 'LineString', coordinates: coords } }; }
+  function polygon(name, ring, props) { return { type: 'Feature', properties: { name, ...props }, geometry: { type: 'Polygon', coordinates: [ring] } }; }
+  function esc(value) { return String(value ?? '').replace(/[&<>"']/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char])); }
+  function clone(value) { return JSON.parse(JSON.stringify(value)); }
+  function normalise(input) { if (!input || typeof input !== 'object') throw new Error('El JSON no contiene una capa reconocible.'); if (input.type === 'FeatureCollection') return { type: 'FeatureCollection', features: (input.features || []).filter((item) => item && item.type === 'Feature' && item.geometry).map(clone) }; if (input.type === 'Feature' && input.geometry) return { type: 'FeatureCollection', features: [clone(input)] }; if (input.type && input.coordinates) return { type: 'FeatureCollection', features: [{ type: 'Feature', properties: {}, geometry: clone(input) }] }; throw new Error('Se esperaba un FeatureCollection, Feature o geometría GeoJSON.'); }
+  function positions(value) { if (!Array.isArray(value)) return []; return typeof value[0] === 'number' ? [value] : value.flatMap(positions); }
+  function geometryPositions(geometry) { if (!geometry) return []; if (geometry.type === 'GeometryCollection') return (geometry.geometries || []).flatMap(geometryPositions); return positions(geometry.coordinates); }
+  function bboxOf(geometry) { const values = geometryPositions(geometry); if (!values.length) return null; const lons = values.map((point) => point[0]); const lats = values.map((point) => point[1]); return [Math.min(...lons), Math.min(...lats), Math.max(...lons), Math.max(...lats)]; }
+  function mergeBbox(a, b) { if (!a) return b ? [...b] : null; if (!b) return [...a]; return [Math.min(a[0], b[0]), Math.min(a[1], b[1]), Math.max(a[2], b[2]), Math.max(a[3], b[3])]; }
+  function centroid(geometry) { const values = geometryPositions(geometry); if (!values.length) return null; return [values.reduce((sum, point) => sum + point[0], 0) / values.length, values.reduce((sum, point) => sum + point[1], 0) / values.length]; }
+  function overlap(a, b) { return Boolean(a && b && a[0] <= b[2] && a[2] >= b[0] && a[1] <= b[3] && a[3] >= b[1]); }
+  function inside(pointValue, bbox) { return Boolean(pointValue && bbox && pointValue[0] >= bbox[0] && pointValue[0] <= bbox[2] && pointValue[1] >= bbox[1] && pointValue[1] <= bbox[3]); }
+  function readBbox() { const values = [els.minLon, els.minLat, els.maxLon, els.maxLat].map((input) => Number(input.value)); if (values.some((value) => !Number.isFinite(value))) throw new Error('Completa las cuatro coordenadas del AOI.'); return [Math.min(values[0], values[2]), Math.min(values[1], values[3]), Math.max(values[0], values[2]), Math.max(values[1], values[3])]; }
+  function setBbox(bbox) { if (!bbox) return; [els.minLon, els.minLat, els.maxLon, els.maxLat].forEach((input, index) => { input.value = Number(bbox[index].toFixed(6)); }); }
+  function bboxText(bbox) { return bbox ? `${bbox[0].toFixed(2)}, ${bbox[1].toFixed(2)} → ${bbox[2].toFixed(2)}, ${bbox[3].toFixed(2)}` : '—'; }
+
+  function createMap() {
+    if (!window.L) { els.mapStatus.textContent = 'Mapa no disponible; la extracción sigue funcionando.'; return; }
+    map = L.map(els.map, { preferCanvas: true }).setView([40.2, -3.8], 6);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '&copy; OpenStreetMap contributors' }).addTo(map);
+    allLayer = L.geoJSON(null, { style: () => ({ color: '#8093a4', weight: 1.5, fillColor: '#8093a4', fillOpacity: .08, opacity: .55 }), pointToLayer: (_, latlng) => L.circleMarker(latlng, { radius: 6, color: '#8093a4', weight: 1, fillColor: '#8093a4', fillOpacity: .38 }), onEachFeature: (item, leafletLayer) => leafletLayer.bindPopup(`<div class="popup-title">${esc(item.properties?.name || 'Entidad')}</div><div class="popup-attrs">${esc(JSON.stringify(item.properties || {}, null, 2))}</div>`) }).addTo(map);
+    resultLayer = L.geoJSON(null, { style: () => ({ color: '#5be0d8', weight: 2.5, fillColor: '#5be0d8', fillOpacity: .28 }), pointToLayer: (_, latlng) => L.circleMarker(latlng, { radius: 7, color: '#061b25', weight: 2, fillColor: '#5be0d8', fillOpacity: .95 }), onEachFeature: (item, leafletLayer) => leafletLayer.bindPopup(`<div class="popup-title">${esc(item.properties?.name || 'Entidad')}</div><div class="popup-attrs">${esc(JSON.stringify(item.properties || {}, null, 2))}</div>`) }).addTo(map);
+    aoiLayer = L.rectangle([[0, 0], [0, 0]], { color: '#f6c56e', weight: 2, dashArray: '6 5', fillColor: '#f6c56e', fillOpacity: .08, interactive: false }).addTo(map);
+    aoiLayer.setStyle({ opacity: 0 });
+    map.on('click', (event) => { if (!drawing) return; if (!firstCorner) { firstCorner = [event.latlng.lng, event.latlng.lat]; els.drawHint.textContent = 'Primer vértice fijado; pulsa en la esquina opuesta.'; return; } const second = [event.latlng.lng, event.latlng.lat]; const bbox = [Math.min(firstCorner[0], second[0]), Math.min(firstCorner[1], second[1]), Math.max(firstCorner[0], second[0]), Math.max(firstCorner[1], second[1])]; setBbox(bbox); stopDrawing(); applyAoi(); });
+  }
+  function stopDrawing() { drawing = false; firstCorner = null; els.drawAoi.textContent = 'Dibujar en mapa'; els.drawHint.classList.remove('active'); }
+  function renderMap() { if (!map || !allLayer || !resultLayer) return; allLayer.clearLayers(); allLayer.addData(source); resultLayer.clearLayers(); resultLayer.addData({ type: 'FeatureCollection', features: selected.map((item) => item.feature) }); if (currentBounds) { aoiLayer.setBounds([[currentBounds[1], currentBounds[0]], [currentBounds[3], currentBounds[2]]]); aoiLayer.setStyle({ opacity: 1 }); } else { aoiLayer.setStyle({ opacity: 0 }); } if (source.features.length) { const bounds = allLayer.getBounds(); if (bounds.isValid() && !currentBounds) map.fitBounds(bounds.pad(.12), { maxZoom: 12 }); els.mapEmpty.classList.add('hidden'); els.mapStatus.textContent = `${selected.length} incluidas · ${source.features.length} en entrada`; } else { els.mapEmpty.classList.remove('hidden'); els.mapStatus.textContent = 'Sin entidades'; } }
+  function renderTable() { if (!selected.length) { els.body.innerHTML = '<tr><td colspan="4" class="empty-cell">Ninguna entidad intersecta el AOI.</td></tr>'; } else { els.body.innerHTML = selected.map(({ feature, index }) => `<tr><td>${index + 1}</td><td><span class="entity-name">${esc(feature.properties?.name || feature.properties?.nombre || `Entidad ${index + 1}`)}</span></td><td><span class="geometry-pill">${esc(feature.geometry?.type || 'Sin geometría')}</span></td><td><code class="attribute-code">${esc(JSON.stringify(feature.properties || {}, null, 2))}</code></td></tr>`).join(''); } els.summary.textContent = `${selected.length} ${selected.length === 1 ? 'entidad incluida' : 'entidades incluidas'}`; }
+  function renderMetrics() { els.total.textContent = source.features.length; els.included.textContent = selected.length; els.excluded.textContent = Math.max(0, source.features.length - selected.length); els.extent.textContent = bboxText(currentBounds); els.badge.textContent = source.features.length ? `${selected.length}/${source.features.length} incluidas` : 'Sin capa'; els.exportCsv.disabled = !selected.length; els.exportGeojson.disabled = !selected.length; els.reset.disabled = !source.features.length; }
+  function renderAll() { renderMetrics(); renderTable(); renderMap(); }
+  function applyAoi() { try { currentBounds = readBbox(); selected = source.features.map((feature, index) => ({ feature, index })).filter(({ feature }) => { const box = bboxOf(feature.geometry); return els.selectionMode.value === 'centroid' ? inside(centroid(feature.geometry), currentBounds) : overlap(box, currentBounds); }); renderAll(); } catch (error) { window.alert(error.message); } }
+  function loadData(input, label) { try { source = normalise(input); sourceBounds = source.features.reduce((result, feature) => mergeBbox(result, bboxOf(feature.geometry)), null); currentBounds = sourceBounds; setBbox(currentBounds); els.mapStatus.textContent = `${source.features.length} entidades · ${label}`; if (map && source.features.length) map.fitBounds([[sourceBounds[1], sourceBounds[0]], [sourceBounds[3], sourceBounds[2]]], { maxZoom: 12 }); applyAoi(); } catch (error) { window.alert(error.message); } }
+  function readFile(file) { if (!file) return; const reader = new FileReader(); reader.onload = () => { try { loadData(JSON.parse(reader.result), file.name); } catch { window.alert('No se ha podido leer el JSON del archivo.'); } }; reader.readAsText(file); }
+  function download(filename, content, mime) { const url = URL.createObjectURL(new Blob([content], { type: mime })); const anchor = document.createElement('a'); anchor.href = url; anchor.download = filename; document.body.appendChild(anchor); anchor.click(); anchor.remove(); setTimeout(() => URL.revokeObjectURL(url), 1000); }
+  function csvCell(value) { const text = value === null || value === undefined ? '' : typeof value === 'object' ? JSON.stringify(value) : String(value); return `"${text.replace(/"/g, '""')}"`; }
+  function exportGeoJSON() { download('aoi-extract-selection.geojson', JSON.stringify({ type: 'FeatureCollection', features: selected.map((item) => item.feature) }, null, 2), 'application/geo+json;charset=utf-8'); }
+  function exportCSV() { const fields = Array.from(new Set(selected.flatMap(({ feature }) => Object.keys(feature.properties || {})))); const rows = [['feature_index', 'geometry_type', ...fields], ...selected.map(({ feature, index }) => [index + 1, feature.geometry?.type || '', ...fields.map((field) => feature.properties?.[field] ?? '')])]; download('aoi-extract-selection.csv', '\ufeff' + rows.map((row) => row.map(csvCell).join(',')).join('\n'), 'text/csv;charset=utf-8'); }
+
+  els.file.addEventListener('change', (event) => readFile(event.target.files[0])); els.dropzone.addEventListener('click', () => els.file.click()); els.dropzone.addEventListener('keydown', (event) => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); els.file.click(); } }); ['dragenter', 'dragover'].forEach((name) => els.dropzone.addEventListener(name, (event) => { event.preventDefault(); els.dropzone.classList.add('dragover'); })); ['dragleave', 'drop'].forEach((name) => els.dropzone.addEventListener(name, (event) => { event.preventDefault(); els.dropzone.classList.remove('dragover'); })); els.dropzone.addEventListener('drop', (event) => readFile(event.dataTransfer.files[0])); els.loadDemo.addEventListener('click', () => loadData(demo, 'capa de demostración')); els.apply.addEventListener('click', applyAoi); els.selectionMode.addEventListener('change', applyAoi); els.useMapExtent.addEventListener('click', () => { if (!map) return; const bounds = map.getBounds(); setBbox([bounds.getWest(), bounds.getSouth(), bounds.getEast(), bounds.getNorth()]); applyAoi(); }); els.drawAoi.addEventListener('click', () => { if (!map) return; drawing = true; firstCorner = null; els.drawAoi.textContent = 'Cancelar dibujo'; els.drawHint.textContent = 'Pulsa en una esquina del mapa y después en la esquina opuesta.'; els.drawHint.classList.add('active'); }); els.reset.addEventListener('click', () => { if (!sourceBounds) return; currentBounds = sourceBounds; setBbox(sourceBounds); applyAoi(); }); els.exportCsv.addEventListener('click', exportCSV); els.exportGeojson.addEventListener('click', exportGeoJSON);
+  createMap(); renderAll();
+})();
