@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="description" content="Inspección local de imágenes ráster con estadísticas, histogramas y control de píxeles.">
+  <title>Raster Inspector · Cartografía Web Tools</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="shell">
+    <a class="back" href="../">← Catálogo cartográfico</a>
+    <header class="hero">
+      <p class="eyebrow">45 · TELEDETECCIÓN · CONTROL RÁSTER · LOCAL</p>
+      <h1>Conoce tu imagen antes de simbolizarla.</h1>
+      <p class="lede">Inspecciona imágenes PNG, JPEG y WebP en el navegador: dimensiones, transparencia, rangos, medias, percentiles, histogramas y valores de píxel. Útil para comprobar una exportación antes de aplicar una rampa o incorporarla a un informe.</p>
+      <div class="privacy"><span class="dot"></span><strong>Procesamiento local</strong><span>La imagen no se sube a ningún servidor.</span></div>
+    </header>
+    <section class="panel controls">
+      <div class="heading"><div><p class="eyebrow">1 · Entrada</p><h2>Carga una imagen ráster</h2></div><span class="badge">sin backend</span></div>
+      <div class="control-row">
+        <label class="file-control">Abrir PNG, JPEG o WebP<input id="fileInput" type="file" accept="image/png,image/jpeg,image/webp,image/*"><span id="fileName">Selecciona un archivo local</span></label>
+        <button id="demoBtn" class="secondary" type="button">Usar demo</button>
+        <label>Canal del histograma<select id="channel"><option value="luma">Luminancia</option><option value="red">Rojo</option><option value="green">Verde</option><option value="blue">Azul</option><option value="alpha">Alfa</option></select></label>
+      </div>
+      <p id="status" class="status" role="status" aria-live="polite">Carga una imagen o usa la demostración para empezar.</p>
+    </section>
+    <section class="metrics" aria-label="Estadísticas de la imagen">
+      <article><span>Dimensiones</span><strong id="dimensions">—</strong><small id="pixelCount">—</small></article>
+      <article><span>Canal seleccionado</span><strong id="channelMean">—</strong><small>media · mediana</small></article>
+      <article><span>Rango observado</span><strong id="channelRange">—</strong><small>mínimo · máximo</small></article>
+      <article><span>Transparencia</span><strong id="transparent">—</strong><small>píxeles con alfa 0</small></article>
+    </section>
+    <section class="workspace">
+      <article class="panel preview-panel">
+        <div class="heading"><div><p class="eyebrow">2 · Imagen</p><h2>Vista de píxeles</h2></div><span id="previewNote" class="muted">Sin imagen</span></div>
+        <div class="canvas-wrap"><canvas id="preview" aria-label="Vista previa de la imagen ráster"></canvas><p id="empty">La imagen aparecerá aquí.</p></div>
+        <div class="pixel-readout" aria-live="polite"><span id="pixelLabel">Píxel</span><strong id="pixelValue">Haz clic en la imagen para leer RGB, alfa y luminancia.</strong></div>
+      </article>
+      <article class="panel histogram-panel">
+        <div class="heading"><div><p class="eyebrow">3 · Distribución</p><h2>Histograma del canal</h2></div><span class="muted">32 intervalos</span></div>
+        <canvas id="histogram" width="760" height="320" aria-label="Histograma del canal seleccionado"></canvas>
+        <div class="histogram-axis"><span>0</span><span>Valores del canal seleccionado</span><span>255</span></div>
+        <div id="channelStats" class="stats-list"></div>
+      </article>
+    </section>
+    <section class="panel report-panel">
+      <div class="heading"><div><p class="eyebrow">4 · Auditoría</p><h2>Lectura responsable</h2></div><div class="actions"><button id="reportBtn" class="primary" type="button" disabled>Exportar informe JSON</button><button id="csvBtn" class="secondary" type="button" disabled>Exportar histograma CSV</button></div></div>
+      <div class="report-grid"><p><strong id="reportTitle">Sin informe</strong><br><span id="reportText">La decodificación de una imagen permite revisar sus píxeles, pero no demuestra que conserve CRS, resolución de terreno, fecha de captura o valores radiométricos originales.</span></p><p class="warning"><strong>Limitación cartográfica</strong><br>PNG, JPEG y WebP no contienen necesariamente georreferenciación utilizable. Para análisis cuantitativo conserva el GeoTIFF o los metadatos originales.</p></div>
+    </section>
+    <footer>Raster Inspector · estadísticas calculadas sobre los píxeles decodificados por este navegador.</footer>
+  </main>
+  <script src="app.js"></script>
+</body>
+</html>

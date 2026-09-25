@@ -11,6 +11,7 @@ Colección de herramientas web abiertas para cartografía, rutas y datos geoespa
 - [GeoRef Lite](herramientas/georef-lite/): puntos de control, transformación afín y exportación para mapas escaneados.
 - [Coord Converter](herramientas/coord-converter/): conversión local entre WGS84 decimal, DMS y UTM.
 - [Raster Color Lab](herramientas/raster-color-lab/): rampas de color, rango y gamma para imágenes ráster locales.
+- [Raster Inspector](herramientas/raster-inspector/): control local de imágenes PNG, JPEG y WebP con dimensiones, estadísticas por canal, percentiles, histogramas, transparencia, lectura de píxel e informe JSON/CSV. No inventa CRS ni sustituye al dato GeoTIFF.
 - [Grid Lab](herramientas/grid-lab/): cuadrícula AOI numerada con exportación GeoJSON y CSV para muestreo y teselas.
 - [Carto Local AI](herramientas/carto-local-ai/): diagnóstico local de GeoJSON con modo rápido determinista y WebLLM opcional sobre WebGPU.
 - [Layer Mixer](herramientas/layer-mixer/): mezcla capas WMS públicas, incluida cartografía histórica del SCUAM y fuentes del IGN, con opacidad, orden, cortina y exportación de configuración.
