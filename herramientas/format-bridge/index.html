@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="description" content="Convierte GeoJSON, KML y CSV de puntos localmente en el navegador.">
+  <title>Geo Format Bridge · conversor local</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="shell">
+    <a class="back" href="../">← Catálogo</a>
+    <p class="eyebrow">48 · INTERCAMBIO DE FORMATOS · CLIENTE · LOCAL</p>
+    <h1>Convierte capas sin pasar por un servidor.</h1>
+    <p class="lede">Abre GeoJSON, KML o CSV de puntos, revisa la capa sobre un mapa y exporta el resultado al formato que necesites. Los atributos se conservan siempre que el formato de destino lo permita.</p>
+    <section class="layout">
+      <article class="panel input-panel">
+        <div class="heading"><div><h2>1 · Capa de entrada</h2><p class="hint">Admite archivos locales o texto pegado.</p></div><span class="local-badge">sin servidor</span></div>
+        <div class="input-row"><label class="file-label" for="file">Abrir archivo<input id="file" type="file" accept=".geojson,.json,.kml,.xml,.csv,.tsv,application/geo+json,application/vnd.google-earth.kml+xml,text/csv"></label><label>Interpretar como<select id="format"><option value="auto">Automático</option><option value="geojson">GeoJSON</option><option value="kml">KML</option><option value="csv">CSV / TSV de puntos</option></select></label></div>
+        <textarea id="source" rows="14" spellcheck="false" aria-label="Capa de entrada"><Placemark><name>Ruta KML de ejemplo</name><ExtendedData><Data name="tipo"><value>itinerario</value></Data></ExtendedData><LineString><coordinates>-3.71,40.416 -3.70,40.418 -3.69,40.415</coordinates></LineString></Placemark></Document></kml></textarea>
+        <div class="actions"><button id="convertBtn" class="primary" type="button">Convertir y revisar</button><button id="sampleBtn" type="button">Cargar ejemplo</button></div>
+        <p id="status" class="status" role="status" aria-live="polite">GeoJSON, KML y CSV se procesan localmente.</p>
+      </article>
+      <article class="panel map-panel">
+        <div class="heading"><div><h2>2 · Previsualización</h2><p class="hint">Haz clic en una entidad para consultar sus atributos.</p></div><span id="countBadge" class="count-badge">0 entidades</span></div>
+        <div id="map" aria-label="Mapa de la capa convertida"></div>
+        <div id="mapFallback" class="fallback" hidden>El mapa necesita conexión para descargar las teselas. La conversión local y las exportaciones siguen disponibles.</div>
+      </article>
+    </section>
+    <section class="panel results-panel">
+      <div class="heading"><div><h2>3 · Control de la capa</h2><p class="hint">Busca atributos antes de exportar.</p></div><span id="formatBadge" class="quality muted">Sin convertir</span></div>
+      <div class="stats"><div><span>Entidades</span><strong id="featureCount">—</strong></div><div><span>Tipos geométricos</span><strong id="geometryCount">—</strong></div><div><span>Atributos</span><strong id="fieldCount">—</strong></div><div><span>Formato de origen</span><strong id="sourceFormat">—</strong></div></div>
+      <label class="search-label">Buscar por nombre o atributo<input id="search" type="search" placeholder="Ej. yacimiento, camino…"></label>
+      <div id="tableWrap" class="table-wrap"><p class="empty">Convierte una capa para ver sus entidades.</p></div>
+      <div class="exports"><button id="geojsonBtn" type="button" disabled><strong>Exportar GeoJSON</strong><small>Formato interoperable</small></button><button id="kmlBtn" type="button" disabled><strong>Exportar KML</strong><small>Para visores y Google Earth</small></button><button id="csvBtn" type="button" disabled><strong>Exportar CSV</strong><small>Una fila por entidad</small></button></div>
+      <p class="fineprint">La lectura de CSV busca columnas habituales como <code>lat</code>/<code>latitude</code> y <code>lon</code>/<code>longitude</code>. KML se convierte con coordenadas WGS84; estilos visuales complejos pueden no conservarse.</p>
+    </section>
+    <footer class="credits">Mapa base © <a href="https://www.openstreetmap.org/copyright" rel="noreferrer">OpenStreetMap contributors</a> · datos procesados localmente.</footer>
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script src="app.js"></script>
+</body>
+</html>
