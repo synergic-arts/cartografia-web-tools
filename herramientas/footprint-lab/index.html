@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="description" content="Calcula huella convexa y extensión de capas GeoJSON localmente.">
+  <title>Footprint Lab · huella espacial</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+  <link rel="stylesheet" href="styles.css?v=20260926-1">
+</head>
+<body>
+  <main class="shell">
+    <a class="back" href="../">← Catálogo</a>
+    <p class="eyebrow">50 · EXTENSIÓN ESPACIAL · CLIENTE · LOCAL</p>
+    <h1>Resume la huella de una capa.</h1>
+    <p class="lede">Genera una envolvente convexa y una caja de extensión a partir de los vértices o de los centros aproximados de tus entidades GeoJSON. Útil para AOI, índices de teselas, control de cobertura y planificación de campañas.</p>
+    <section class="layout">
+      <article class="panel input-panel">
+        <div class="heading"><div><h2>1 · Capa de entrada</h2><p class="hint">El cálculo se realiza en WGS84 lon/lat.</p></div><span class="local-badge">sin servidor</span></div>
+        <label class="file-label" for="file">Abrir GeoJSON local<input id="file" type="file" accept=".geojson,.json,application/geo+json,application/json"></label>
+        <textarea id="source" rows="12" spellcheck="false" aria-label="GeoJSON de entrada">{"type":"FeatureCollection","features":[{"type":"Feature","properties":{"nombre":"A"},"geometry":{"type":"Point","coordinates":[-3.71,40.416]}},{"type":"Feature","properties":{"nombre":"B"},"geometry":{"type":"Point","coordinates":[-3.69,40.418]}},{"type":"Feature","properties":{"nombre":"C"},"geometry":{"type":"Point","coordinates":[-3.70,40.405]}},{"type":"Feature","properties":{"nombre":"D"},"geometry":{"type":"Point","coordinates":[-3.72,40.408]}}]}</textarea>
+        <div class="options"><label>Puntos para la huella<select id="pointMode"><option value="vertices">Todos los vértices</option><option value="centroids">Centro de cada entidad</option></select></label><label class="check"><input id="showPoints" type="checkbox" checked><span>Mostrar puntos usados</span></label></div>
+        <div class="actions"><button id="calculateBtn" class="primary" type="button">Calcular huella</button><button id="sampleBtn" type="button">Cargar ejemplo</button></div>
+        <p id="status" class="status" role="status" aria-live="polite">Introduce una capa con al menos tres posiciones válidas.</p>
+      </article>
+      <article class="panel map-panel">
+        <div class="heading"><div><h2>2 · Extensión espacial</h2><p class="hint">La envolvente y la caja se dibujan juntas.</p></div><span id="quality" class="quality muted">Sin calcular</span></div>
+        <div id="map" aria-label="Mapa de la huella espacial"></div>
+        <div id="mapFallback" class="fallback" hidden>El mapa necesita conexión para descargar las teselas. El cálculo y la exportación local siguen disponibles.</div>
+      </article>
+    </section>
+    <section class="panel results-panel">
+      <div class="heading"><div><h2>3 · Métricas y exportación</h2><p class="hint">Superficie aproximada en un plano local; valida el CRS antes de usarla en documentación oficial.</p></div><span id="pointBadge" class="count-badge">0 puntos</span></div>
+      <div class="stats"><div><span>Entidades de entrada</span><strong id="featureCount">—</strong></div><div><span>Puntos usados</span><strong id="usedCount">—</strong></div><div><span>Vértices de la huella</span><strong id="hullCount">—</strong></div><div><span>Área de la huella</span><strong id="area">—</strong></div></div>
+      <div class="metrics-row"><div><span>Extensión oeste–este</span><strong id="width">—</strong></div><div><span>Extensión sur–norte</span><strong id="height">—</strong></div><div><span>Perímetro convexo</span><strong id="perimeter">—</strong></div></div>
+      <div class="exports"><button id="geojsonBtn" type="button" disabled><strong>Exportar huella GeoJSON</strong><small>Huella, caja y puntos</small></button><button id="csvBtn" type="button" disabled><strong>Exportar puntos CSV</strong><small>Posiciones usadas en el cálculo</small></button></div>
+      <p class="fineprint">La envolvente convexa usa el algoritmo monotónico de Andrew. No cruza correctamente el antimeridiano y no sustituye una envolvente geodésica o una validación topológica de producción.</p>
+    </section>
+    <footer class="credits">Mapa base © <a href="https://www.openstreetmap.org/copyright" rel="noreferrer">OpenStreetMap contributors</a> · geometrías procesadas localmente.</footer>
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script src="app.js?v=20260926-1"></script>
+</body>
+</html>
