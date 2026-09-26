@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="description" content="Mide longitudes, superficies y geometrías GeoJSON localmente en el navegador.">
+  <title>Measure Lab · métricas GeoJSON</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="shell">
+    <a class="back" href="../">← Catálogo</a>
+    <p class="eyebrow">47 · MÉTRICAS GEOJSON · CLIENTE · LOCAL</p>
+    <h1>Mide las geometrías que ya tienes.</h1>
+    <p class="lede">Calcula longitudes geodésicas, superficies aproximadas, perímetros, vértices y extensiones para cada entidad GeoJSON. El resultado conserva tus atributos, añade métricas auditables y nunca sube el archivo a un servidor propio.</p>
+    <section class="layout">
+      <article class="panel input-panel">
+        <div class="heading"><div><h2>1 · Fuente GeoJSON</h2><p class="hint">Carga un archivo o pega una FeatureCollection.</p></div><span class="local-badge">sin servidor</span></div>
+        <label class="file-label" for="file">Abrir GeoJSON local<input id="file" type="file" accept=".geojson,.json,application/geo+json,application/json"></label>
+        <textarea id="source" rows="12" spellcheck="false" aria-label="GeoJSON de entrada">{
+  "type": "FeatureCollection",
+  "features": [
+    {"type":"Feature","properties":{"nombre":"Ruta de ejemplo"},"geometry":{"type":"LineString","coordinates":[[-3.71,40.416],[-3.70,40.418],[-3.69,40.415]]}},
+    {"type":"Feature","properties":{"nombre":"Área de ejemplo"},"geometry":{"type":"Polygon","coordinates":[[[-3.715,40.412],[-3.702,40.412],[-3.702,40.420],[-3.715,40.420],[-3.715,40.412]]]}}
+  ]
+}</textarea>
+        <div class="actions"><button id="calculateBtn" class="primary" type="button">Calcular métricas</button><button id="sampleBtn" type="button">Cargar ejemplo</button></div>
+        <p id="status" class="status" role="status" aria-live="polite">Los cálculos se ejecutan localmente en este navegador.</p>
+      </article>
+      <article class="panel map-panel">
+        <div class="heading"><div><h2>2 · Vista espacial</h2><p class="hint">Pulsa una entidad para ver sus métricas.</p></div><span id="countBadge" class="count-badge">0 entidades</span></div>
+        <div id="map" aria-label="Mapa de las geometrías medidas"></div>
+        <div id="mapFallback" class="fallback" hidden>El mapa necesita conexión para descargar las teselas. Las métricas y exportaciones locales siguen disponibles.</div>
+      </article>
+    </section>
+    <section class="panel results-panel">
+      <div class="heading"><div><h2>3 · Resumen medido</h2><p class="hint">Las áreas usan una aproximación esférica; no sustituyen una medición catastral o legal.</p></div><span id="quality" class="quality muted">Sin calcular</span></div>
+      <div class="stats"><div><span>Entidades</span><strong id="featureCount">—</strong></div><div><span>Longitud total</span><strong id="lengthTotal">—</strong></div><div><span>Superficie total</span><strong id="areaTotal">—</strong></div><div><span>Vértices válidos</span><strong id="vertexTotal">—</strong></div></div>
+      <div class="filters"><label>Buscar atributo o nombre<input id="search" type="search" placeholder="Ej. camino, parcela…"></label><label>Tipo de geometría<select id="geometryFilter"><option value="all">Todos</option><option value="Point">Puntos</option><option value="LineString">Líneas</option><option value="Polygon">Polígonos</option><option value="MultiLineString">MultiLíneas</option><option value="MultiPolygon">MultiPolígonos</option></select></label><label>Ordenar por<select id="sort"><option value="index">Orden de entrada</option><option value="length">Longitud descendente</option><option value="area">Superficie descendente</option><option value="vertices">Vértices descendente</option></select></label></div>
+      <div id="tableWrap" class="table-wrap"><p class="empty">Carga una capa para ver el informe.</p></div>
+      <div class="exports"><button id="geojsonBtn" type="button" disabled><strong>GeoJSON enriquecido</strong><small>Añade longitud, área y vértices</small></button><button id="csvBtn" type="button" disabled><strong>CSV de métricas</strong><small>Una fila por entidad</small></button><button id="jsonBtn" type="button" disabled><strong>Informe JSON</strong><small>Metadatos y resumen</small></button></div>
+      <p class="fineprint">Longitudes y perímetros son geodésicos sobre una esfera. Las superficies se calculan sobre la esfera y se expresan en m²; revisa CRS, escala y precisión antes de usar el resultado en documentación oficial.</p>
+    </section>
+    <footer class="credits">Mapa base © <a href="https://www.openstreetmap.org/copyright" rel="noreferrer">OpenStreetMap contributors</a> · cálculo local sin telemetría.</footer>
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script src="app.js"></script>
+</body>
+</html>
