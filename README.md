@@ -57,7 +57,9 @@ Colección de herramientas web abiertas para cartografía, rutas y datos geoespa
 - [Geometry Repair Lab](herramientas/geometry-repair-lab/): detecta y repara anillos abiertos, vértices consecutivos repetidos, geometrías vacías y líneas cortas conservando propiedades y trazabilidad.
 - [Georeference Lab](herramientas/georeference-lab/): calcula una transformación afín desde puntos píxel–destino, revisa residuos y exporta transformación JSON, world file y puntos ajustados.
 - [Land Cover Change Lab](herramientas/landcover-change-lab/): compara dos clases o fechas de cobertura, calcula transiciones, persistencias y cambio espacial y exporta matrices y datos anotados.
+@@
 - [Time Series Lab](herramientas/time-series-lab/): explora mediciones temporales, calcula mínimos, máximos, cambios y tendencias por serie, grafica la evolución y localiza entidades.
+- [Positional Accuracy Lab](herramientas/positional-accuracy-lab/): compara posiciones observadas y de referencia en WGS84, calcula RMSE, CEP50, P95, sesgo y rumbo, muestra vectores y exporta un control trazable.
 - [Grid Lab](herramientas/grid-lab/): cuadrícula AOI numerada con exportación GeoJSON y CSV para muestreo y teselas.
 - [Carto Local AI](herramientas/carto-local-ai/): diagnóstico local de GeoJSON con modo rápido determinista y WebLLM opcional sobre WebGPU.
 - [Layer Mixer](herramientas/layer-mixer/): mezcla capas WMS públicas, incluida cartografía histórica del SCUAM y fuentes del IGN, con opacidad, orden, cortina y exportación de configuración.
