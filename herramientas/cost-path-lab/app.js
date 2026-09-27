@@ -35,5 +35,5 @@
   $('runBtn').addEventListener('click', () => { try { calculate(); } catch (error) { setStatus(error.message || 'No se pudo calcular la ruta.', true); } });
   $('fileInput').addEventListener('change', async () => { const file = $('fileInput').files?.[0]; if (!file) return; if (file.size > 30 * 1024 * 1024) { setStatus('El archivo supera 30 MB; no se abre en esta herramienta local.', true); return; } try { loadGrid(parseText(await file.text())); } catch (error) { setStatus(error.message || 'No se pudo leer la malla.', true); } });
   $('geojsonBtn').addEventListener('click', exportGeoJSON); $('csvBtn').addEventListener('click', exportCsv);
-  $('source').value = JSON.stringify(example, null, 2); initMap();
+  $('source').value = JSON.stringify({ ...example, values: correctedExampleValues }, null, 2); initMap();
 })();
