@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Evalúa clasificaciones de teledetección con matriz de confusión y métricas de exactitud en el navegador.">
+  <title>Classification Accuracy Lab · Cartografía Web Tools</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
+  <link rel="stylesheet" href="styles.css?v=86">
+</head>
+<body>
+  <main>
+    <header class="hero">
+      <a class="back" href="../">← Catálogo</a>
+      <p class="eyebrow">86 · TELEDETECCIÓN · CALIDAD · CLIENTE</p>
+      <h1>Classification Accuracy Lab</h1>
+      <p class="intro">Compara una clase de referencia con una clasificación predicha y calcula la matriz de confusión, exactitud global, precisión, recall, F1 y kappa sin subir los puntos.</p>
+    </header>
+
+    <section class="panel" aria-labelledby="input-title">
+      <div class="section-heading"><div><p class="eyebrow">01 · DATOS</p><h2 id="input-title">Referencia y predicción</h2></div><span class="badge">sin servidor</span></div>
+      <label class="data-control">CSV/TSV o GeoJSON
+        <input id="fileInput" type="file" accept=".csv,.tsv,.txt,.json,.geojson,text/csv,application/json">
+        <textarea id="source" rows="7" spellcheck="false" aria-label="Datos de validación"></textarea>
+        <span>CSV: una fila por muestra. GeoJSON: se leen las propiedades de cada Feature. Los campos de coordenadas son opcionales.</span>
+      </label>
+      <div class="grid-2">
+        <label>Campo de referencia (verdad terreno)
+          <select id="referenceField"><option value="">Carga datos para detectar campos</option></select>
+        </label>
+        <label>Campo predicho (clasificación)
+          <select id="predictedField"><option value="">Carga datos para detectar campos</option></select>
+        </label>
+        <label>Longitud (opcional para mapa)
+          <select id="lonField"><option value="">Sin coordenadas tabulares</option></select>
+        </label>
+        <label>Latitud (opcional para mapa)
+          <select id="latField"><option value="">Sin coordenadas tabulares</option></select>
+        </label>
+      </div>
+      <div class="button-row"><button id="exampleBtn" class="secondary">Cargar ejemplo</button><button id="clearBtn" class="secondary">Limpiar</button><button id="runBtn">Evaluar clasificación</button></div>
+      <p id="status" class="status" role="status">Carga una tabla o un GeoJSON para detectar las columnas.</p>
+    </section>
+
+    <section id="summary" class="panel" hidden aria-labelledby="summary-title">
+      <div class="section-heading"><div><p class="eyebrow">02 · MÉTRICAS</p><h2 id="summary-title">Calidad de la clasificación</h2></div><span id="classBadge" class="badge">—</span></div>
+      <div class="metrics">
+        <div class="metric"><span>Muestras válidas</span><strong id="sampleCount">—</strong></div>
+        <div class="metric"><span>Aciertos</span><strong id="correctCount">—</strong></div>
+        <div class="metric"><span>Exactitud global</span><strong id="overallAccuracy">—</strong></div>
+        <div class="metric"><span>F1 macro</span><strong id="macroF1">—</strong></div>
+        <div class="metric"><span>Kappa</span><strong id="kappa">—</strong></div>
+        <div class="metric"><span>Errores</span><strong id="errorCount">—</strong></div>
+      </div>
+      <p id="interpretation" class="interpretation">—</p>
+    </section>
+
+    <section id="matrixPanel" class="panel" hidden aria-labelledby="matrix-title">
+      <div class="section-heading"><div><p class="eyebrow">03 · MATRIZ</p><h2 id="matrix-title">Matriz de confusión</h2></div><span class="badge">filas referencia · columnas predicción</span></div>
+      <div class="table-wrap"><table id="matrixTable"><caption class="sr-only">Matriz de confusión de clases</caption><thead id="matrixHead"></thead><tbody id="matrixBody"></tbody></table></div>
+      <div class="table-wrap metrics-table-wrap"><table><thead><tr><th>Clase</th><th>Soporte</th><th>Precisión</th><th>Recall</th><th>F1</th></tr></thead><tbody id="classBody"></tbody></table></div>
+    </section>
+
+    <section class="panel" aria-labelledby="map-title">
+      <div class="section-heading"><div><p class="eyebrow">04 · CONTROL ESPACIAL</p><h2 id="map-title">Aciertos y errores sobre mapa</h2></div><span id="mapBadge" class="badge">—</span></div>
+      <div id="map" class="map" aria-label="Mapa de muestras correctas e incorrectas">
+        <div class="map-place-search cartografia-place-search">
+          <label for="placeQuery">Buscar lugar</label>
+          <input id="placeQuery" type="search" placeholder="Buscar un lugar para centrar el mapa" autocomplete="off">
+          <button id="placeSearchButton" type="button">Buscar</button>
+          <div id="placeResults" class="cartografia-place-results" role="listbox" hidden></div>
+          <p id="placeStatus" class="cartografia-place-status">Busca un topónimo para centrar el mapa.</p>
+        </div>
+      </div>
+      <div class="legend"><span><i class="swatch correct"></i>Acierto</span><span><i class="swatch error"></i>Error</span><span class="legend-note">El mapa requiere campos lon/lat o geometrías Point en GeoJSON.</span></div>
+      <p id="mapFallback" class="status" hidden>El mapa necesita cargar Leaflet con conexión. Las métricas siguen disponibles.</p>
+    </section>
+
+    <section class="panel" aria-labelledby="export-title">
+      <div class="section-heading"><div><p class="eyebrow">05 · SALIDA</p><h2 id="export-title">Exporta el control</h2></div></div>
+      <div class="button-row"><button id="reportBtn" disabled>Descargar informe JSON</button><button id="matrixBtn" class="secondary" disabled>Descargar matriz CSV</button><button id="annotatedBtn" class="secondary" disabled>Descargar muestras anotadas</button></div>
+      <p class="note">La precisión es la proporción de predicciones de una clase que son correctas; el recall es la proporción de referencias de esa clase recuperadas. Kappa compara el acuerdo observado con el esperado por azar. No sustituye un diseño de muestreo ni una revisión de la calidad de las etiquetas.</p>
+    </section>
+
+    <section class="privacy"><p class="eyebrow">MÉTODO Y PRIVACIDAD</p><p>Los datos y las métricas se procesan en este navegador y no se envían a un backend propio. El mapa base usa teselas de <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>; la búsqueda de topónimos, si la utilizas, consulta Nominatim y queda sujeta a su política de uso.</p></section>
+  </main>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+  <script src="../place-search.js"></script>
+  <script src="app.js?v=86"></script>
+</body>
+</html>
