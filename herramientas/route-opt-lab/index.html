@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Ordena puntos de campo con una ruta local optimizada y exporta el itinerario GeoJSON o CSV.">
+  <title>Route Opt Lab · orden de visita</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIINfQ3d9wM4xL6z7N9hN7e4n2W1mQ8s0yM=" crossorigin="">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="shell">
+    <header class="hero">
+      <a class="back" href="../">← Catálogo</a>
+      <p class="eyebrow">62 · RUTAS DE CAMPO · CLIENTE · LOCAL</p>
+      <h1>Encuentra un orden razonable para visitar cada punto.</h1>
+      <p class="lede">Carga puntos de muestreo, inventario o prospección y calcula un itinerario aproximado. El algoritmo parte de la secuencia más cercana y mejora el orden con 2-opt, sin enviar tus coordenadas a ningún servidor.</p>
+    </header>
+
+    <section class="workspace">
+      <article class="panel input-panel">
+        <div class="panel-heading"><span class="step">1</span><div><h2>Puntos y reglas</h2><p>GeoJSON de puntos o CSV con nombre, latitud y longitud.</p></div></div>
+        <label class="file-button">Abrir puntos locales<input id="file" type="file" accept=".csv,.tsv,.json,.geojson, text/csv, application/geo+json"></label>
+        <label for="source">Puntos de visita</label>
+        <textarea id="source" spellcheck="false" aria-label="Puntos de visita">nombre,lat,lon
+Puerta norte,40.425,-3.710
+Archivo,40.421,-3.700
+Mercado,40.414,-3.692
+Cantera,40.407,-3.706
+Ermita,40.413,-3.723
+Fuente,40.431,-3.689</textarea>
+        <div class="form-grid">
+          <label for="startPoint">Punto inicial<select id="startPoint"></select></label>
+          <label for="endPoint">Punto final<select id="endPoint"></select></label>
+          <label for="speed">Velocidad estimada (km/h)<input id="speed" type="number" min="0" step="any" value="4"></label>
+          <label class="check"><input id="returnStart" type="checkbox"><span>Volver al inicio</span></label>
+        </div>
+        <p class="hint">El punto final «Automático» se calcula como el último de la ruta. La velocidad solo estima duración; las distancias son geodésicas, no siguen carreteras.</p>
+        <div class="actions"><button id="calculateBtn" class="primary">Optimizar ruta</button><button id="sampleBtn" class="secondary">Cargar ejemplo</button></div>
+        <p id="status" class="status" role="status">Los puntos de ejemplo están listos para ordenarse en local.</p>
+      </article>
+
+      <article class="panel map-panel">
+        <div class="panel-heading"><span class="step">2</span><div><h2>Itinerario propuesto</h2><p>Los números muestran el orden de visita calculado.</p></div><span id="pointBadge" class="badge">—</span></div>
+        <div id="map" class="map" aria-label="Mapa del itinerario optimizado"></div>
+        <div class="legend"><span class="route-swatch"></span><span>ruta propuesta</span><span class="start-swatch"></span><span>inicio</span><span id="mapNote">Mapa base © OpenStreetMap contributors</span></div>
+      </article>
+    </section>
+
+    <section class="panel report-panel">
+      <div class="panel-heading"><span class="step">3</span><div><h2>Métricas y exportación</h2><p>Compara el itinerario optimizado con el orden original de los datos.</p></div><span id="quality" class="quality">Pendiente</span></div>
+      <div class="stats">
+        <div><strong id="pointCount">—</strong><span>puntos</span></div>
+        <div><strong id="distance">—</strong><span>distancia total</span></div>
+        <div><strong id="savings">—</strong><span>ahorro frente a entrada</span></div>
+        <div><strong id="duration">—</strong><span>duración estimada</span></div>
+        <div><strong id="legCount">—</strong><span>tramos</span></div>
+      </div>
+      <div id="tableWrap" class="table-wrap"><p class="empty">Optimiza una ruta para revisar sus tramos.</p></div>
+      <div class="actions export-actions"><button id="geojsonBtn" class="secondary" disabled>Exportar GeoJSON</button><button id="csvBtn" class="secondary" disabled>Exportar CSV</button></div>
+      <p class="note">La optimización es heurística: no garantiza la solución matemática óptima y no consulta la red viaria. Para trabajo de campo, comprueba accesos, pendientes, permisos y seguridad.</p>
+    </section>
+
+    <footer>Procesamiento local por diseño. Los puntos no se envían a un backend. Leaflet y el mapa base solicitan teselas directamente a OpenStreetMap. <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">Atribución de OpenStreetMap</a>.</footer>
+  </main>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script src="app.js?v=20260927-1"></script>
+</body>
+</html>
