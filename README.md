@@ -54,6 +54,7 @@ Colección de herramientas web abiertas para cartografía, rutas y datos geoespa
 - [Cost Path Lab](herramientas/cost-path-lab/): calcula rutas de menor coste con Dijkstra sobre una malla local de fricción, elevación o dificultad, permite elegir celdas en el mapa y exporta el recorrido.
 - [Classification Accuracy Lab](herramientas/classification-accuracy-lab/): compara clases de referencia y predichas, calcula matriz de confusión, exactitud global, precisión, recall, F1, kappa y mapa de aciertos/errores.
 - [Coordinate QA Lab](herramientas/coordinate-qa-lab/): audita coordenadas de CSV/GeoJSON, detecta ausencias, rangos imposibles, duplicados y posibles ejes invertidos y exporta un control trazable.
+- [Geometry Repair Lab](herramientas/geometry-repair-lab/): detecta y repara anillos abiertos, vértices consecutivos repetidos, geometrías vacías y líneas cortas conservando propiedades y trazabilidad.
 - [Grid Lab](herramientas/grid-lab/): cuadrícula AOI numerada con exportación GeoJSON y CSV para muestreo y teselas.
 - [Carto Local AI](herramientas/carto-local-ai/): diagnóstico local de GeoJSON con modo rápido determinista y WebLLM opcional sobre WebGPU.
 - [Layer Mixer](herramientas/layer-mixer/): mezcla capas WMS públicas, incluida cartografía histórica del SCUAM y fuentes del IGN, con opacidad, orden, cortina y exportación de configuración.
