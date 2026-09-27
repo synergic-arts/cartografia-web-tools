@@ -45,6 +45,7 @@ Colección de herramientas web abiertas para cartografía, rutas y datos geoespa
 - [Hexbin Stats Lab](herramientas/hexbin-stats-lab/): agrega puntos en celdas hexagonales y calcula conteo, suma o media de un atributo para producir mapas temáticos exportables.
 - [Photo Geotag Lab](herramientas/photo-geotag-lab/): extrae coordenadas GPS EXIF de fotografías JPEG localmente, muestra la campaña en un mapa y exporta los puntos GeoJSON y el informe CSV.
 - [Kriging Lab](herramientas/kriging-lab/): interpola un campo numérico puntual con kriging ordinario exploratorio, permite ajustar alcance, nugget y modelo y exporta la superficie estimada.
+- [Hotspot Lab](herramientas/hotspot-lab/): detecta concentraciones locales de valores altos y bajos con Getis-Ord Gi*, vecindad configurable y exportación enriquecida.
 - [Grid Lab](herramientas/grid-lab/): cuadrícula AOI numerada con exportación GeoJSON y CSV para muestreo y teselas.
 - [Carto Local AI](herramientas/carto-local-ai/): diagnóstico local de GeoJSON con modo rápido determinista y WebLLM opcional sobre WebGPU.
 - [Layer Mixer](herramientas/layer-mixer/): mezcla capas WMS públicas, incluida cartografía histórica del SCUAM y fuentes del IGN, con opacidad, orden, cortina y exportación de configuración.
