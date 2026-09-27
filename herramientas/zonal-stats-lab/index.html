@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="description" content="Calcula estadísticas zonales sobre puntos y polígonos GeoJSON en el navegador.">
+  <title>Zonal Stats Lab · estadísticas zonales</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+  <link rel="stylesheet" href="styles.css?v=20260927-1">
+</head>
+<body>
+  <main class="shell">
+    <a class="back" href="../">← Catálogo</a>
+    <p class="eyebrow">75 · ANÁLISIS ZONAL · CLIENTE · LOCAL</p>
+    <h1>Resume observaciones dentro de cada zona.</h1>
+    <p class="lede">Cruza una capa de polígonos con observaciones puntuales y calcula conteo, suma, media, mínimo y máximo por zona. Ideal para inventarios arqueológicos, muestreos ambientales, incidencias, parcelas y cualquier análisis punto–polígono.</p>
+    <section class="layout">
+      <article class="panel input-panel">
+        <div class="heading"><div><h2>1 · Capas de entrada</h2><p class="hint">Ambas capas se procesan en este navegador y deben estar en WGS84.</p></div><span class="local-badge">sin servidor</span></div>
+        <label class="source-label" for="zoneFile"><span><b>Zonas poligonales</b><small>Polygon o MultiPolygon</small></span><input id="zoneFile" type="file" accept=".geojson,.json,application/geo+json,application/json"></label>
+        <textarea id="zoneSource" rows="9" spellcheck="false" aria-label="GeoJSON de zonas">{"type":"FeatureCollection","features":[{"type":"Feature","properties":{"zona":"Norte"},"geometry":{"type":"Polygon","coordinates":[[[-3.735,40.420],[-3.705,40.420],[-3.705,40.445],[-3.735,40.445],[-3.735,40.420]]]}},{"type":"Feature","properties":{"zona":"Centro"},"geometry":{"type":"Polygon","coordinates":[[[-3.705,40.420],[-3.675,40.420],[-3.675,40.445],[-3.705,40.445],[-3.705,40.420]]]}},{"type":"Feature","properties":{"zona":"Sur"},"geometry":{"type":"Polygon","coordinates":[[[-3.735,40.390],[-3.705,40.390],[-3.705,40.420],[-3.735,40.420],[-3.735,40.390]]]}}]}</textarea>
+        <label class="source-label" for="observationFile"><span><b>Observaciones puntuales</b><small>Point, MultiPoint o geometría con centro</small></span><input id="observationFile" type="file" accept=".geojson,.json,application/geo+json,application/json"></label>
+        <textarea id="observationSource" rows="9" spellcheck="false" aria-label="GeoJSON de observaciones">{"type":"FeatureCollection","features":[{"type":"Feature","properties":{"nombre":"M-01","valor":12},"geometry":{"type":"Point","coordinates":[-3.724,40.436]}},{"type":"Feature","properties":{"nombre":"M-02","valor":18},"geometry":{"type":"Point","coordinates":[-3.713,40.430]}},{"type":"Feature","properties":{"nombre":"M-03","valor":8},"geometry":{"type":"Point","coordinates":[-3.690,40.437]}},{"type":"Feature","properties":{"nombre":"M-04","valor":21},"geometry":{"type":"Point","coordinates":[-3.682,40.428]}},{"type":"Feature","properties":{"nombre":"M-05","valor":15},"geometry":{"type":"Point","coordinates":[-3.720,40.404]}},{"type":"Feature","properties":{"nombre":"M-06","valor":6},"geometry":{"type":"Point","coordinates":[-3.711,40.397]}},{"type":"Feature","properties":{"nombre":"M-07","valor":11},"geometry":{"type":"Point","coordinates":[-3.728,40.414]}},{"type":"Feature","properties":{"nombre":"M-08","valor":27},"geometry":{"type":"Point","coordinates":[-3.694,40.402]}}]}</textarea>
+        <div class="options"><label>Campo numérico<select id="valueField" aria-label="Campo numérico"></select></label><label>Resumen del campo<select id="metric" aria-label="Resumen del campo"><option value="count">Conteo de observaciones</option><option value="sum">Suma</option><option value="mean" selected>Media</option></select></label></div>
+        <div class="actions"><button id="calculateBtn" class="primary" type="button">Calcular estadísticas</button><button id="sampleBtn" type="button">Cargar ejemplo</button><button id="clearBtn" type="button">Limpiar</button></div>
+        <p id="status" class="status" role="status" aria-live="polite">Carga las capas para empezar.</p>
+      </article>
+      <article class="panel map-panel">
+        <div class="heading"><div><h2>2 · Mapa zonal</h2><p class="hint">Pulsa una zona para consultar sus estadísticas.</p></div><span id="zoneBadge" class="count-badge">0 zonas</span></div>
+        <div id="map" aria-label="Mapa de estadísticas zonales"></div>
+        <div id="mapFallback" class="fallback" hidden>El mapa necesita conexión para las teselas. El cálculo y la exportación local siguen disponibles.</div>
+        <div class="legend"><span><i class="swatch low"></i>Bajo</span><span><i class="swatch high"></i>Alto</span><span class="legend-note">La escala se recalcula con las zonas visibles.</span></div>
+      </article>
+    </section>
+    <section class="panel results-panel">
+      <div class="heading"><div><h2>3 · Control y exportación</h2><p class="hint">Las observaciones fuera de las zonas se contabilizan aparte.</p></div><span id="quality" class="quality muted">Sin calcular</span></div>
+      <div class="stats"><div><span>Zonas</span><strong id="zoneCount">—</strong></div><div><span>Observaciones</span><strong id="observationCount">—</strong></div><div><span>Asignadas</span><strong id="assignedCount">—</strong></div><div><span>Fuera de zona</span><strong id="outsideCount">—</strong></div></div>
+      <div id="tableWrap" class="table-wrap"><p class="empty">Calcula estadísticas para ver la tabla zonal.</p></div>
+      <div class="exports"><button id="geojsonBtn" type="button" disabled><strong>Exportar zonas GeoJSON</strong><small>Polígonos enriquecidos con estadísticas</small></button><button id="csvBtn" type="button" disabled><strong>Exportar tabla CSV</strong><small>Resumen por zona para SIG</small></button></div>
+      <p class="fineprint">La relación espacial se calcula con punto dentro de polígono en coordenadas lon/lat. Si las zonas se solapan, una observación puede contribuir a más de una zona; revisa la topología antes de interpretar.</p>
+    </section>
+    <footer class="credits">Mapa base © <a href="https://www.openstreetmap.org/copyright" rel="noreferrer">OpenStreetMap contributors</a> · procesamiento local sin telemetría.</footer>
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script src="app.js?v=20260927-1"></script>
+</body>
+</html>
