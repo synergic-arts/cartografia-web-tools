@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Planifica etiquetas cartográficas para GeoJSON en el navegador con prioridad, separación y exportación local.">
+  <title>Label Lab · etiquetado cartográfico</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIINfQ3d9wM4xL6z7N9hN7e4n2W1mQ8s0yM=" crossorigin="">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="shell">
+    <header class="hero">
+      <a class="back" href="../">← Catálogo</a>
+      <p class="eyebrow">59 · ETIQUETADO · CLIENTE · LOCAL</p>
+      <h1>Haz sitio para cada nombre.</h1>
+      <p class="lede">Genera una propuesta de etiquetado para puntos, líneas y polígonos GeoJSON. El algoritmo ordena por prioridad, evita solapes y deja una capa enriquecida lista para revisar en tu SIG.</p>
+    </header>
+
+    <section class="workspace">
+      <article class="panel input-panel">
+        <div class="panel-heading"><span class="step">1</span><div><h2>Datos y reglas</h2><p>Elige el campo visible y el peso de cada etiqueta.</p></div></div>
+        <label class="file-button">Abrir GeoJSON local<input id="file" type="file" accept=".geojson,.json,application/geo+json"></label>
+        <label for="source">Capa GeoJSON</label>
+        <textarea id="source" spellcheck="false" aria-label="Capa GeoJSON">{
+  "type": "FeatureCollection",
+  "features": [
+    {"type":"Feature","properties":{"nombre":"Puerta del Norte","prioridad":10},"geometry":{"type":"Point","coordinates":[-3.704,40.418]}},
+    {"type":"Feature","properties":{"nombre":"Archivo histórico","prioridad":8},"geometry":{"type":"Point","coordinates":[-3.699,40.422]}},
+    {"type":"Feature","properties":{"nombre":"Mercado viejo","prioridad":6},"geometry":{"type":"Point","coordinates":[-3.696,40.419]}},
+    {"type":"Feature","properties":{"nombre":"Camino de la ribera","prioridad":5},"geometry":{"type":"LineString","coordinates":[[-3.715,40.414],[-3.702,40.416],[-3.690,40.415]]}},
+    {"type":"Feature","properties":{"nombre":"Recinto arqueológico","prioridad":9},"geometry":{"type":"Polygon","coordinates":[[[-3.712,40.425],[-3.701,40.425],[-3.701,40.432],[-3.712,40.432],[-3.712,40.425]]]}}
+  ]
+}</textarea>
+        <div class="form-grid">
+          <label for="labelField">Campo de etiqueta<input id="labelField" value="nombre" autocomplete="off"></label>
+          <label for="priorityField">Campo de prioridad<input id="priorityField" value="prioridad" autocomplete="off"></label>
+          <label for="maxLabels">Máximo de etiquetas<input id="maxLabels" type="number" min="1" max="5000" value="40"></label>
+          <label for="minGap">Separación mínima (px)<input id="minGap" type="number" min="0" max="80" value="8"></label>
+        </div>
+        <p class="hint">Para líneas y polígonos se calcula un anclaje aproximado a partir de sus vértices. La prioridad numérica alta se coloca primero.</p>
+        <div class="actions"><button id="calculateBtn" class="primary">Calcular etiquetas</button><button id="sampleBtn" class="secondary">Cargar ejemplo</button></div>
+        <p id="status" class="status" role="status">El ejemplo está listo para calcularse en local.</p>
+      </article>
+
+      <article class="panel map-panel">
+        <div class="panel-heading"><span class="step">2</span><div><h2>Mapa y propuesta</h2><p>Verde: colocada. Rojo: ocultada por límite o conflicto.</p></div><span id="placedBadge" class="badge">—</span></div>
+        <div id="map" class="map" aria-label="Mapa de anclajes de etiquetas"></div>
+        <canvas id="preview" width="920" height="480" aria-label="Previsualización de etiquetas"></canvas>
+        <div class="legend"><span class="placed-swatch"></span><span>colocada</span><span class="hidden-swatch"></span><span>oculta</span><span id="mapNote">Mapa base © OpenStreetMap contributors</span></div>
+      </article>
+    </section>
+
+    <section class="panel report-panel">
+      <div class="panel-heading"><span class="step">3</span><div><h2>Revisión y exportación</h2><p>La exportación conserva la geometría original y añade el resultado del plan.</p></div><span id="quality" class="quality">Pendiente</span></div>
+      <div class="stats">
+        <div><strong id="featureCount">—</strong><span>entidades</span></div>
+        <div><strong id="placedCount">—</strong><span>etiquetas colocadas</span></div>
+        <div><strong id="hiddenCount">—</strong><span>etiquetas ocultas</span></div>
+        <div><strong id="priorityReadout">—</strong><span>prioridad máxima</span></div>
+        <div><strong id="sourceExtent">—</strong><span>extensión WGS84</span></div>
+      </div>
+      <div id="tableWrap" class="table-wrap"><p class="empty">Calcula una propuesta para revisar las etiquetas.</p></div>
+      <div class="actions export-actions"><button id="geojsonBtn" class="secondary" disabled>Exportar GeoJSON enriquecido</button><button id="csvBtn" class="secondary" disabled>Exportar plan CSV</button></div>
+      <p class="note">Este resultado es una propuesta cartográfica: la escala, el estilo de fuente y las reglas del mapa final pueden requerir ajustes adicionales en el software de publicación.</p>
+    </section>
+
+    <footer>Procesamiento local por diseño. El GeoJSON no se envía a un backend. Leaflet y el mapa base solicitan teselas directamente a OpenStreetMap. <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">Atribución de OpenStreetMap</a>.</footer>
+  </main>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script src="app.js?v=20260927-1"></script>
+</body>
+</html>
