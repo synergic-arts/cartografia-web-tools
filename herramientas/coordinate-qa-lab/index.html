@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Audita coordenadas de CSV y GeoJSON, detecta errores de rango, ausencias, duplicados y posibles ejes invertidos en el navegador.">
+  <title>Coordinate QA Lab · Cartografía Web Tools</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
+  <link rel="stylesheet" href="styles.css?v=87">
+</head>
+<body>
+  <main>
+    <header class="hero">
+      <a class="back" href="../">← Catálogo</a>
+      <p class="eyebrow">87 · CALIDAD DE DATOS · CLIENTE</p>
+      <h1>Coordinate QA Lab</h1>
+      <p class="intro">Audita coordenadas antes de llevarlas a un SIG: detecta ausencias, rangos imposibles, duplicados, separadores decimales y posibles ejes invertidos sin subir tus datos.</p>
+    </header>
+    <section class="panel" aria-labelledby="input-title">
+      <div class="section-heading"><div><p class="eyebrow">01 · FUENTE</p><h2 id="input-title">CSV/TSV o GeoJSON</h2></div><span class="badge">sin servidor</span></div>
+      <label class="data-control">Archivo local
+        <input id="fileInput" type="file" accept=".csv,.tsv,.txt,.json,.geojson,text/csv,application/json">
+        <textarea id="source" rows="7" spellcheck="false" aria-label="Datos con coordenadas"></textarea>
+        <span>Las coordenadas se interpretan como WGS84 lon/lat para la auditoría. Si utilizas otro CRS, reproyéctalo antes o documenta la referencia.</span>
+      </label>
+      <div class="grid-2">
+        <label>Campo longitud / X<select id="lonField"><option value="">Carga datos para detectar campos</option></select></label>
+        <label>Campo latitud / Y<select id="latField"><option value="">Carga datos para detectar campos</option></select></label>
+        <label>Precisión para detectar duplicados<select id="precision"><option value="6">6 decimales · ~0,1 m</option><option value="5">5 decimales · ~1 m</option><option value="4">4 decimales · ~10 m</option><option value="3">3 decimales · ~100 m</option></select></label>
+        <label>Orden alternativo para revisar<select id="axisMode"><option value="normal">Longitud, latitud (recomendado)</option><option value="swapped">Latitud, longitud</option></select></label>
+      </div>
+      <div class="button-row"><button id="exampleBtn" class="secondary">Cargar ejemplo</button><button id="clearBtn" class="secondary">Limpiar</button><button id="runBtn">Auditar coordenadas</button></div>
+      <p id="status" class="status" role="status">Carga una tabla o un GeoJSON para detectar los campos.</p>
+    </section>
+    <section id="summary" class="panel" hidden aria-labelledby="summary-title">
+      <div class="section-heading"><div><p class="eyebrow">02 · DIAGNÓSTICO</p><h2 id="summary-title">Calidad espacial</h2></div><span id="qualityBadge" class="badge">—</span></div>
+      <div class="metrics"><div class="metric"><span>Registros</span><strong id="rowCount">—</strong></div><div class="metric"><span>Válidos</span><strong id="validCount">—</strong></div><div class="metric"><span>Ausentes</span><strong id="missingCount">—</strong></div><div class="metric"><span>Fuera de rango</span><strong id="invalidCount">—</strong></div><div class="metric"><span>Duplicados</span><strong id="duplicateCount">—</strong></div><div class="metric"><span>Revisar ejes</span><strong id="swappedCount">—</strong></div></div>
+      <p id="interpretation" class="interpretation">—</p><div class="extent" id="extent">—</div>
+    </section>
+    <section class="panel" aria-labelledby="map-title">
+      <div class="section-heading"><div><p class="eyebrow">03 · CONTROL VISUAL</p><h2 id="map-title">Distribución y anomalías</h2></div><span id="mapBadge" class="badge">—</span></div>
+      <div id="map" class="map" aria-label="Mapa de control de coordenadas"><div class="map-place-search cartografia-place-search"><label for="placeQuery">Buscar lugar</label><input id="placeQuery" type="search" placeholder="Centrar el mapa en un lugar" autocomplete="off"><button id="placeSearchButton" type="button">Buscar</button><div id="placeResults" role="status"></div><small id="placeStatus">La búsqueda es opcional y usa Nominatim.</small></div></div>
+      <div class="legend"><span><i class="dot valid"></i>válida</span><span><i class="dot suspicious"></i>revisar</span><span><i class="dot invalid"></i>fuera de rango</span></div><p class="note">Solo se dibujan en el mapa las coordenadas numéricas dentro de lon −180…180 y lat −90…90. Un registro sin coordenadas no puede representarse.</p>
+    </section>
+    <section id="issuesPanel" class="panel" hidden aria-labelledby="issues-title">
+      <div class="section-heading"><div><p class="eyebrow">04 · REVISIÓN</p><h2 id="issues-title">Registros que requieren atención</h2></div><span id="issueBadge" class="badge">—</span></div>
+      <div class="table-wrap"><table><caption class="sr-only">Errores y advertencias de coordenadas</caption><thead><tr><th>Fila</th><th>Estado</th><th>Longitud/X</th><th>Latitud/Y</th><th>Diagnóstico</th></tr></thead><tbody id="issuesBody"></tbody></table></div>
+    </section>
+    <section class="panel" aria-labelledby="export-title">
+      <div class="section-heading"><div><p class="eyebrow">05 · SALIDA</p><h2 id="export-title">Exporta el control</h2></div></div>
+      <div class="button-row"><button id="reportBtn" class="secondary" disabled>Descargar informe JSON</button><button id="cleanBtn" class="secondary" disabled>Descargar CSV auditado</button><button id="geojsonBtn" class="secondary" disabled>Descargar puntos GeoJSON</button></div>
+      <p class="note">El CSV auditado conserva tus campos y añade <code>qa_status</code>, <code>qa_reason</code>, <code>qa_lon</code> y <code>qa_lat</code>. Los datos no salen de este navegador; solo el mapa base y la búsqueda opcional usan servicios externos.</p>
+    </section>
+    <footer class="privacy"><strong>Privacidad y trazabilidad.</strong> El archivo se procesa en memoria local. No se guarda ni se envía a un backend propio. Mapa: <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>; búsqueda opcional: Nominatim.</footer>
+  </main>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script><script src="../shared/place-search.js?v=1"></script><script src="app.js?v=87.1"></script>
+</body>
+</html>
