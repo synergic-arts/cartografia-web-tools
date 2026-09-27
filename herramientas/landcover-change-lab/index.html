@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Compara dos fechas de cobertura del suelo, calcula transiciones y visualiza el cambio espacial localmente.">
+  <title>Land Cover Change Lab · Cartografía Web Tools</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
+  <link rel="stylesheet" href="styles.css?v=90">
+</head>
+<body>
+  <main>
+    <header class="hero"><a class="back" href="../">← Catálogo</a><p class="eyebrow">90 · TELEDETECCIÓN · CAMBIO · CLIENTE</p><h1>Land Cover Change Lab</h1><p class="intro">Compara dos clasificaciones o fechas de cobertura del suelo, calcula la matriz de transición, separa cambios y persistencias y revisa su distribución en un mapa o una rejilla local.</p></header>
+    <section class="panel" aria-labelledby="input-title">
+      <div class="section-heading"><div><p class="eyebrow">01 · DATOS</p><h2 id="input-title">Observaciones emparejadas</h2></div><span class="badge">sin servidor</span></div>
+      <label class="data-control">CSV/TSV o archivo local
+        <input id="fileInput" type="file" accept=".csv,.tsv,.txt,text/csv">
+        <textarea id="source" rows="8" spellcheck="false" aria-label="Datos de cambio de cobertura"></textarea>
+        <span>Una fila por píxel, punto o celda: id,lon,lat,from,to. Las coordenadas y filas/columnas son opcionales.</span>
+      </label>
+      <div class="grid-2"><label>Clase / fecha inicial<select id="fromField"><option value="">Carga datos para detectar campos</option></select></label><label>Clase / fecha final<select id="toField"><option value="">Carga datos para detectar campos</option></select></label><label>Longitud (opcional)<select id="lonField"><option value="">Sin coordenadas</option></select></label><label>Latitud (opcional)<select id="latField"><option value="">Sin coordenadas</option></select></label><label>Fila de rejilla (opcional)<select id="rowField"><option value="">Sin rejilla</option></select></label><label>Columna de rejilla (opcional)<select id="colField"><option value="">Sin rejilla</option></select></label></div>
+      <div class="button-row"><button id="exampleBtn" class="secondary">Cargar ejemplo</button><button id="clearBtn" class="secondary">Limpiar</button><button id="runBtn">Analizar cambio</button></div><p id="status" class="status" role="status">Carga una tabla para detectar clases y analizar el cambio.</p>
+    </section>
+    <section id="summary" class="panel" hidden aria-labelledby="summary-title"><div class="section-heading"><div><p class="eyebrow">02 · INDICADORES</p><h2 id="summary-title">Balance de cambio</h2></div><span id="changeBadge" class="badge">—</span></div><div class="metrics"><div class="metric"><span>Observaciones</span><strong id="totalCount">—</strong></div><div class="metric"><span>Persistentes</span><strong id="stableCount">—</strong></div><div class="metric"><span>Cambiadas</span><strong id="changedCount">—</strong></div><div class="metric"><span>% cambio</span><strong id="changePct">—</strong></div><div class="metric"><span>Clases iniciales</span><strong id="fromClasses">—</strong></div><div class="metric"><span>Clases finales</span><strong id="toClasses">—</strong></div></div><p id="interpretation" class="interpretation">—</p></section>
+    <section id="matrixPanel" class="panel" hidden aria-labelledby="matrix-title"><div class="section-heading"><div><p class="eyebrow">03 · TRANSICIONES</p><h2 id="matrix-title">Matriz de cambio</h2></div><span id="transitionBadge" class="badge">—</span></div><div class="table-wrap"><table><caption class="sr-only">Matriz de transición entre clases</caption><thead id="matrixHead"></thead><tbody id="matrixBody"></tbody></table></div><div class="table-wrap transition-wrap"><table><thead><tr><th>De</th><th>A</th><th>Observaciones</th><th>Porcentaje del total</th></tr></thead><tbody id="transitionBody"></tbody></table></div></section>
+    <section class="panel" aria-labelledby="map-title"><div class="section-heading"><div><p class="eyebrow">04 · DISTRIBUCIÓN</p><h2 id="map-title">Persistencia y cambio espacial</h2></div><span id="mapBadge" class="badge">—</span></div><div id="map" class="map" aria-label="Mapa de persistencias y cambios"><div class="map-place-search cartografia-place-search"><label for="placeQuery">Buscar lugar</label><input id="placeQuery" type="search" placeholder="Centrar el mapa en un lugar" autocomplete="off"><button id="placeSearchButton" type="button">Buscar</button><div id="placeResults" role="status"></div><small id="placeStatus">La búsqueda es opcional y usa Nominatim.</small></div></div><div id="gridView" class="grid-view" hidden aria-label="Rejilla de persistencias y cambios"></div><div class="legend"><span><i class="dot stable"></i>persistente</span><span><i class="dot changed"></i>cambio</span></div><p id="spatialNote" class="note">El mapa usa lon/lat válidas. Si no hay coordenadas, puedes revisar una rejilla cuando existan campos de fila y columna.</p></section>
+    <section class="panel" aria-labelledby="export-title"><div class="section-heading"><div><p class="eyebrow">05 · SALIDA</p><h2 id="export-title">Exporta el análisis</h2></div></div><div class="button-row"><button id="reportBtn" class="secondary" disabled>Descargar informe JSON</button><button id="matrixBtn" class="secondary" disabled>Descargar matriz CSV</button><button id="annotatedBtn" class="secondary" disabled>Descargar datos anotados</button></div><p class="note">El cálculo no implica causalidad ni valida por sí mismo la clasificación. Documenta la leyenda, fechas, resolución y método de cada fuente.</p></section>
+    <footer class="privacy"><strong>Privacidad y trazabilidad.</strong> Los datos y métricas se procesan localmente y no se envían a un backend propio. Mapa: <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>; búsqueda opcional: Nominatim.</footer>
+  </main>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script><script src="../shared/place-search.js?v=1"></script><script src="app.js?v=90.1"></script>
+</body>
+</html>
