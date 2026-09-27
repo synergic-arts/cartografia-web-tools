@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Calcula accesibilidad sobre una red lineal GeoJSON local con distancias y tiempos de viaje.">
+  <link rel="icon" href="../../icons/icon.svg" type="image/svg+xml">
+  <title>Network Access Lab · Cartografía Web Tools</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
+  <link rel="stylesheet" href="styles.css?v=94">
+</head>
+<body>
+  <main>
+    <header class="hero"><a class="back" href="../">← Catálogo</a><p class="eyebrow">94 · ACCESIBILIDAD DE REDES · CLIENTE</p><h1>Network Access Lab</h1><p class="intro">Calcula qué tramos y nodos de una red lineal son accesibles desde un origen dentro de un límite de distancia. Útil para caminos, itinerarios arqueológicos, accesos de campo y redes cartográficas sin enviar los datos a un servidor.</p></header>
+    <section class="panel" aria-labelledby="input-title">
+      <div class="section-heading"><div><p class="eyebrow">01 · RED</p><h2 id="input-title">Carga una red GeoJSON</h2></div><span class="badge">sin servidor</span></div>
+      <label class="data-control">GeoJSON de líneas o archivo local
+        <input id="fileInput" type="file" accept=".geojson,.json,application/geo+json,application/json">
+        <textarea id="source" rows="10" spellcheck="false" aria-label="Red lineal GeoJSON"></textarea>
+        <span>Se usan LineString y MultiLineString en WGS84 lon/lat. Los vértices se convierten en nodos y cada tramo consecutivo en una arista ponderada por distancia geodésica.</span>
+      </label>
+      <div class="grid-3"><label>Origen<select id="startNode"><option value="">Carga una red para detectar nodos</option></select></label><label>Distancia máxima (km)<input id="limitInput" type="number" min="0.01" step="0.1" value="3"></label><label>Velocidad estimada (km/h)<input id="speedInput" type="number" min="0.1" step="0.1" value="4.5"></label></div>
+      <div class="button-row"><button id="exampleBtn" class="secondary">Cargar ejemplo</button><button id="clearBtn" class="secondary">Limpiar</button><button id="runBtn">Calcular accesibilidad</button></div><p id="status" class="status" role="status">Carga una red para construir el grafo.</p>
+    </section>
+    <section id="summary" class="panel" hidden aria-labelledby="summary-title"><div class="section-heading"><div><p class="eyebrow">02 · RESUMEN</p><h2 id="summary-title">Cobertura de la red</h2></div><span id="summaryBadge" class="badge">—</span></div><div class="metrics"><div class="metric"><span>Longitud total</span><strong id="totalLength">—</strong></div><div class="metric"><span>Nodos / aristas</span><strong id="graphSize">—</strong></div><div class="metric"><span>Nodos accesibles</span><strong id="reachableNodes">—</strong></div><div class="metric"><span>Tramos accesibles</span><strong id="reachableEdges">—</strong></div><div class="metric"><span>Longitud accesible</span><strong id="accessibleLength">—</strong></div><div class="metric"><span>Tiempo máximo</span><strong id="maxTime">—</strong></div></div><p id="interpretation" class="interpretation">—</p></section>
+    <section class="panel" aria-labelledby="map-title"><div class="section-heading"><div><p class="eyebrow">03 · MAPA</p><h2 id="map-title">Red y área de acceso</h2></div><span id="mapBadge" class="badge">—</span></div><div id="map" class="map" aria-label="Mapa de accesibilidad de red"><div class="map-place-search cartografia-place-search"><label for="placeQuery">Buscar lugar</label><input id="placeQuery" type="search" placeholder="Centrar el mapa en un lugar" autocomplete="off"><button id="placeSearchButton" type="button">Buscar</button><div id="placeResults" role="status"></div><small id="placeStatus">La búsqueda es opcional y usa Nominatim.</small></div></div><div class="legend"><span><i class="swatch origin"></i>Origen</span><span><i class="swatch reachable"></i>Accesible</span><span><i class="swatch network"></i>Red restante</span></div><p class="note">El cálculo usa los vértices de la red como nodos y Dijkstra sobre aristas geodésicas. Los tramos que cruzan el límite se dibujan completos, aunque la longitud accesible se estima hasta el umbral.</p></section>
+    <section id="detailPanel" class="panel" hidden aria-labelledby="detail-title"><div class="section-heading"><div><p class="eyebrow">04 · NODOS</p><h2 id="detail-title">Nodos alcanzables</h2></div><span id="detailBadge" class="badge">—</span></div><div class="table-wrap"><table><caption class="sr-only">Distancias desde el origen</caption><thead><tr><th>Nodo</th><th>Lon</th><th>Lat</th><th>Distancia</th><th>Tiempo</th><th>Grado</th></tr></thead><tbody id="detailBody"></tbody></table></div></section>
+    <section class="panel" aria-labelledby="export-title"><div class="section-heading"><div><p class="eyebrow">05 · SALIDA</p><h2 id="export-title">Exporta el análisis</h2></div></div><div class="button-row"><button id="reportBtn" class="secondary" disabled>Descargar informe JSON</button><button id="csvBtn" class="secondary" disabled>Descargar nodos CSV</button><button id="geoBtn" class="secondary" disabled>Descargar red GeoJSON</button></div><p class="note">La distancia es una medida sobre la red, no un tiempo de viaje real: no incorpora restricciones, pendientes, barreras ni tráfico. Ajusta la velocidad a tu escenario y revisa la topología antes de tomar decisiones.</p></section>
+    <footer class="privacy"><strong>Privacidad y trazabilidad.</strong> La red se procesa en memoria local y no se envía a un backend propio. Mapa: <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>; búsqueda opcional: Nominatim. El informe documenta origen, umbral, velocidad y unidades.</footer>
+  </main>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script><script src="../place-search.js?v=place-search-1"></script><script src="app.js?v=94.1"></script>
+</body>
+</html>
