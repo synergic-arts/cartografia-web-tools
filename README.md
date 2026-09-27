@@ -51,6 +51,7 @@ Colección de herramientas web abiertas para cartografía, rutas y datos geoespa
 - [Terrain Metrics Lab](herramientas/terrain-metrics-lab/): calcula pendiente, orientación, TPI y rugosidad desde una malla regular de elevaciones, con mapa temático y exportación.
 - [Raster Algebra Lab](herramientas/raster-algebra-lab/): combina hasta tres mallas regulares locales con diferencias, ratios, índices normalizados o expresiones reproducibles y exporta la superficie derivada.
 - [Rasterize Lab](herramientas/rasterize-lab/): convierte entidades GeoJSON en una malla regular por conteo, suma, media, mínimo o máximo y exporta la cuadrícula temática con los índices de origen.
+- [Cost Path Lab](herramientas/cost-path-lab/): calcula rutas de menor coste con Dijkstra sobre una malla local de fricción, elevación o dificultad, permite elegir celdas en el mapa y exporta el recorrido.
 - [Grid Lab](herramientas/grid-lab/): cuadrícula AOI numerada con exportación GeoJSON y CSV para muestreo y teselas.
 - [Carto Local AI](herramientas/carto-local-ai/): diagnóstico local de GeoJSON con modo rápido determinista y WebLLM opcional sobre WebGPU.
 - [Layer Mixer](herramientas/layer-mixer/): mezcla capas WMS públicas, incluida cartografía histórica del SCUAM y fuentes del IGN, con opacidad, orden, cortina y exportación de configuración.

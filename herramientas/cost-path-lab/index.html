@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Calcula rutas de menor coste sobre una malla local de fricción o elevación.">
+  <title>Cost Path Lab · Cartografía Web Tools</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
+  <link rel="stylesheet" href="styles.css?v=85">
+</head>
+<body>
+  <main>
+    <header class="hero">
+      <a class="back" href="../">← Catálogo</a>
+      <p class="eyebrow">85 · ANÁLISIS DE REDES · CLIENTE</p>
+      <h1>Cost Path Lab</h1>
+      <p class="intro">Calcula una ruta de menor coste sobre una malla local de fricción, pendiente o dificultad. Es útil para prospección, conectividad, accesibilidad y planificación de recorridos sin servidor.</p>
+    </header>
+
+    <section class="panel" aria-labelledby="input-title">
+      <div class="section-heading"><div><p class="eyebrow">01 · SUPERFICIE</p><h2 id="input-title">Malla de costes</h2></div><span class="badge">Dijkstra · 8 vecinos</span></div>
+      <div class="grid-2">
+        <label>Archivo CSV o JSON
+          <input id="fileInput" type="file" accept=".csv,.txt,.json,text/csv,application/json">
+          <span>JSON: <code>{"rows":5,"cols":5,"values":[…]}</code>. Valores mayores implican más coste; celdas vacías o <code>null</code> son obstáculos.</span>
+        </label>
+        <label>Tamaño de celda (m)
+          <input id="cellSize" type="number" min="1" max="100000" step="1" value="100">
+          <span>Se usa para distancia y coste acumulado.</span>
+        </label>
+      </div>
+      <label class="data-control">Malla regular de coste
+        <textarea id="source" rows="7" spellcheck="false" aria-label="Malla regular de coste"></textarea>
+        <span>La malla debe ser rectangular. Para superficies de fricción usa costes positivos; los ceros se admiten como zonas gratuitas.</span>
+      </label>
+      <div class="grid-2">
+        <label>Longitud oeste (°)
+          <input id="west" type="number" min="-180" max="180" step="0.000001" value="-3.750000">
+        </label>
+        <label>Latitud sur (°)
+          <input id="south" type="number" min="-90" max="90" step="0.000001" value="40.390000">
+        </label>
+      </div>
+      <div class="grid-4">
+        <label>Inicio · fila<input id="startRow" type="number" min="1" step="1" value="2"></label>
+        <label>Inicio · columna<input id="startCol" type="number" min="1" step="1" value="2"></label>
+        <label>Destino · fila<input id="endRow" type="number" min="1" step="1" value="9"></label>
+        <label>Destino · columna<input id="endCol" type="number" min="1" step="1" value="11"></label>
+      </div>
+      <label class="check"><input id="diagonal" type="checkbox" checked> Permitir movimientos diagonales (distancia √2)</label>
+      <div class="button-row"><button id="exampleBtn" class="secondary">Cargar ejemplo</button><button id="clearBtn" class="secondary">Limpiar</button><button id="runBtn">Calcular ruta</button></div>
+      <p id="status" class="status" role="status">Introduce una malla o usa el ejemplo. La superficie permanece en este dispositivo.</p>
+    </section>
+
+    <section id="summary" class="panel" hidden aria-labelledby="summary-title">
+      <div class="section-heading"><div><p class="eyebrow">02 · RESULTADO</p><h2 id="summary-title">Ruta de menor coste</h2></div><span id="gridLabel" class="badge">—</span></div>
+      <div class="metrics">
+        <div class="metric"><span>Pasos</span><strong id="stepCount">—</strong></div>
+        <div class="metric"><span>Distancia</span><strong id="distance">—</strong></div>
+        <div class="metric"><span>Coste acumulado</span><strong id="totalCost">—</strong></div>
+        <div class="metric"><span>Celdas exploradas</span><strong id="visitedCount">—</strong></div>
+        <div class="metric"><span>Coste medio</span><strong id="meanCost">—</strong></div>
+        <div class="metric"><span>Modo</span><strong id="movementMode">—</strong></div>
+      </div>
+      <p id="interpretation" class="interpretation">—</p>
+    </section>
+
+    <section class="panel" aria-labelledby="map-title">
+      <div class="section-heading"><div><p class="eyebrow">03 · INSPECCIÓN</p><h2 id="map-title">Superficie y recorrido</h2></div><span class="badge">clic para elegir</span></div>
+      <div class="map-toolbar">
+        <label>Modo de clic
+          <select id="pickMode"><option value="start" selected>Elegir inicio</option><option value="end">Elegir destino</option></select>
+        </label>
+        <p>Haz clic en una celda para actualizar sus coordenadas y vuelve a calcular.</p>
+      </div>
+      <div id="map" class="map" aria-label="Mapa de superficie de costes y ruta">
+        <div class="map-place-search cartografia-place-search">
+          <label for="placeQuery">Buscar lugar</label>
+          <input id="placeQuery" type="search" placeholder="Buscar un lugar para centrar el mapa" autocomplete="off">
+          <button id="placeSearchButton" type="button">Buscar</button>
+          <div id="placeResults" class="cartografia-place-results" role="listbox" hidden></div>
+          <p id="placeStatus" class="cartografia-place-status">Busca un topónimo para centrar el mapa.</p>
+        </div>
+      </div>
+      <div class="legend"><span><i class="swatch low"></i>Coste bajo</span><span><i class="swatch mid"></i>Coste medio</span><span><i class="swatch high"></i>Coste alto</span><span><i class="swatch path"></i>Ruta</span></div>
+      <p id="mapFallback" class="status" hidden>El mapa necesita cargar Leaflet con conexión. El cálculo local sigue disponible.</p>
+    </section>
+
+    <section id="pathPanel" class="panel" hidden aria-labelledby="path-title">
+      <div class="section-heading"><div><p class="eyebrow">04 · CONTROL</p><h2 id="path-title">Vértices de la ruta</h2></div><span class="badge">hasta 50 filas</span></div>
+      <div class="table-wrap"><table><thead><tr><th>Paso</th><th>Fila</th><th>Columna</th><th>Coste celda</th><th>Coste acumulado</th><th>Lon centro</th><th>Lat centro</th></tr></thead><tbody id="pathBody"></tbody></table></div>
+    </section>
+
+    <section class="panel" aria-labelledby="export-title">
+      <div class="section-heading"><div><p class="eyebrow">05 · SALIDA</p><h2 id="export-title">Exporta el recorrido</h2></div></div>
+      <div class="button-row"><button id="geojsonBtn" disabled>Descargar GeoJSON</button><button id="csvBtn" class="secondary" disabled>Descargar CSV</button></div>
+      <p class="note">Dijkstra suma el coste medio de las celdas atravesadas multiplicado por la distancia del movimiento. Es un modelo exploratorio: documenta la unidad del coste, la resolución y los obstáculos antes de usarlo en un proyecto.</p>
+    </section>
+
+    <section class="privacy"><p class="eyebrow">MÉTODO Y PRIVACIDAD</p><p>La malla y los resultados se procesan en este navegador y no se envían a un servidor propio. El mapa base usa teselas de <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>; la búsqueda de topónimos, si la utilizas, consulta Nominatim y queda sujeta a su política de uso.</p></section>
+  </main>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+  <script src="../place-search.js"></script>
+  <script src="app.js?v=85"></script>
+</body>
+</html>
