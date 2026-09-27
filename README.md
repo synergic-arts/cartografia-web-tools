@@ -31,6 +31,7 @@ Colección de herramientas web abiertas para cartografía, rutas y datos geoespa
 - [Route Opt Lab](herramientas/route-opt-lab/): ordena puntos de campo con vecino más cercano y 2-opt, compara el ahorro frente a la entrada y exporta itinerarios GeoJSON/CSV.
 - [Clip Lab](herramientas/clip-lab/): recorta puntos, líneas y polígonos GeoJSON por una caja WGS84, conserva atributos, informa entidades descartadas y exporta la capa resultante.
 - [Raster Mask Lab](herramientas/raster-mask-lab/): crea máscaras raster exploratorias desde imágenes locales por brillo, dominancia RGB, saturación o distancia a un color y exporta PNG e informes.
+- [Proportional Lab](herramientas/proportional-lab/): convierte atributos numéricos de puntos GeoJSON en símbolos proporcionales con escalas lineal, raíz o logarítmica y exporta la capa enriquecida.
 - [Grid Lab](herramientas/grid-lab/): cuadrícula AOI numerada con exportación GeoJSON y CSV para muestreo y teselas.
 - [Carto Local AI](herramientas/carto-local-ai/): diagnóstico local de GeoJSON con modo rápido determinista y WebLLM opcional sobre WebGPU.
 - [Layer Mixer](herramientas/layer-mixer/): mezcla capas WMS públicas, incluida cartografía histórica del SCUAM y fuentes del IGN, con opacidad, orden, cortina y exportación de configuración.

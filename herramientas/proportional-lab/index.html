@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Crea mapas de símbolos proporcionales a partir de atributos GeoJSON numéricos en el navegador.">
+  <title>Proportional Lab · símbolos proporcionales</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIINfQ3d9wM4xL6z7N9hN7e4n2W1mQ8s0yM=" crossorigin="">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="shell">
+    <header class="hero">
+      <a class="back" href="../">← Catálogo</a>
+      <p class="eyebrow">65 · SIMBOLOGÍA · CLIENTE · LOCAL</p>
+      <h1>Haz visible cuánto pesa cada lugar.</h1>
+      <p class="lede">Convierte un atributo numérico de puntos GeoJSON en símbolos proporcionales. Ajusta la escala, revisa los valores sobre Leaflet y exporta una capa con el tamaño calculado para documentar el mapa.</p>
+    </header>
+
+    <section class="workspace">
+      <article class="panel input-panel">
+        <div class="panel-heading"><span class="step">1</span><div><h2>Datos y símbolo</h2><p>El campo numérico se detecta automáticamente.</p></div></div>
+        <label class="file-button">Abrir GeoJSON local<input id="file" type="file" accept=".geojson,.json,application/geo+json"></label>
+        <label for="source">Capa de puntos</label>
+        <textarea id="source" spellcheck="false" aria-label="Capa GeoJSON">{
+  "type": "FeatureCollection",
+  "features": [
+    {"type":"Feature","properties":{"nombre":"Norte","habitantes":9200},"geometry":{"type":"Point","coordinates":[-3.710,40.425]}},
+    {"type":"Feature","properties":{"nombre":"Este","habitantes":6100},"geometry":{"type":"Point","coordinates":[-3.692,40.421]}},
+    {"type":"Feature","properties":{"nombre":"Sur","habitantes":2800},"geometry":{"type":"Point","coordinates":[-3.701,40.408]}},
+    {"type":"Feature","properties":{"nombre":"Oeste","habitantes":1500},"geometry":{"type":"Point","coordinates":[-3.724,40.414]}},
+    {"type":"Feature","properties":{"nombre":"Centro","habitantes":12400},"geometry":{"type":"Point","coordinates":[-3.703,40.418]}},
+    {"type":"Feature","properties":{"nombre":"Ribera","habitantes":4300},"geometry":{"type":"Point","coordinates":[-3.684,40.431]}}
+  ]
+}</textarea>
+        <div class="form-grid">
+          <label for="field">Atributo numérico<select id="field"></select></label>
+          <label for="scale">Escala visual<select id="scale"><option value="sqrt">Raíz cuadrada</option><option value="linear">Lineal</option><option value="log">Logarítmica</option></select></label>
+          <label for="minRadius">Radio mínimo (px)<input id="minRadius" type="number" min="1" max="80" value="5"></label>
+          <label for="maxRadius">Radio máximo (px)<input id="maxRadius" type="number" min="2" max="120" value="30"></label>
+          <label for="fillColor">Color de símbolos<input id="fillColor" type="color" value="#75d6c4"></label>
+        </div>
+        <p class="hint">La raíz cuadrada suele ser una lectura cartográfica más equilibrada para valores con mucho rango. El radio representa magnitud, no superficie real.</p>
+        <div class="actions"><button id="calculateBtn" class="primary">Simbolizar capa</button><button id="sampleBtn" class="secondary">Cargar ejemplo</button></div>
+        <p id="status" class="status" role="status">La capa de ejemplo está lista para simbolizarse en local.</p>
+      </article>
+
+      <article class="panel map-panel">
+        <div class="panel-heading"><span class="step">2</span><div><h2>Mapa de símbolos</h2><p>El tamaño de cada círculo usa la misma escala que la leyenda.</p></div><span id="pointBadge" class="badge">—</span></div>
+        <div id="map" class="map" aria-label="Mapa de símbolos proporcionales"></div>
+        <div id="legend" class="legend-box"><p class="empty">Simboliza la capa para ver la leyenda.</p></div>
+        <p class="map-note">Mapa base © OpenStreetMap contributors · símbolos calculados localmente.</p>
+      </article>
+    </section>
+
+    <section class="panel report-panel">
+      <div class="panel-heading"><span class="step">3</span><div><h2>Resumen y exportación</h2><p>La salida conserva la geometría y añade el valor y radio resultantes.</p></div><span id="quality" class="quality">Pendiente</span></div>
+      <div class="stats">
+        <div><strong id="pointCount">—</strong><span>puntos simbolizados</span></div>
+        <div><strong id="sumValue">—</strong><span>suma del atributo</span></div>
+        <div><strong id="meanValue">—</strong><span>media</span></div>
+        <div><strong id="minValue">—</strong><span>mínimo</span></div>
+        <div><strong id="maxValue">—</strong><span>máximo</span></div>
+      </div>
+      <div id="tableWrap" class="table-wrap"><p class="empty">Simboliza una capa para revisar los radios.</p></div>
+      <div class="actions export-actions"><button id="geojsonBtn" class="secondary" disabled>Exportar GeoJSON enriquecido</button><button id="styleBtn" class="secondary" disabled>Exportar estilo JSON</button></div>
+      <p class="note">Los símbolos proporcionales funcionan mejor con valores comparables y una escala explícita. Revisa unidades, ceros y valores extremos antes de publicar la visualización.</p>
+    </section>
+
+    <footer>Procesamiento local por diseño. El GeoJSON no se envía a un backend. Leaflet y el mapa base solicitan teselas directamente a OpenStreetMap. <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">Atribución de OpenStreetMap</a>.</footer>
+  </main>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script src="app.js?v=20260927-1"></script>
+</body>
+</html>
