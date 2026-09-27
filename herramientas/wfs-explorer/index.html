@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Explora servicios WFS públicos, consulta entidades GeoJSON y exporta resultados desde el navegador.">
+  <title>WFS Explorer · capas vectoriales públicas</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header><a href="../">← Catálogo</a><div><strong>WFS Explorer</strong><span>GetCapabilities · consulta vectorial</span></div><span class="privacy">Cliente · sin backend propio</span></header>
+  <main>
+    <section class="hero"><p class="eyebrow">69 · SERVICIOS OGC</p><h1>Descubre y consulta capas vectoriales públicas.</h1><p>Lee GetCapabilities, elige un tipo de entidad WFS, limita el número de resultados y visualiza las entidades GeoJSON que responde el servicio.</p></section>
+    <section class="workspace">
+      <aside class="panel controls">
+        <p class="eyebrow">Servicio WFS</p><h2>Elegir una fuente</h2>
+        <label class="field"><span>URL del servicio</span><input id="serviceInput" type="url" value="https://demo.mapserver.org/cgi-bin/wfs" spellcheck="false"></label>
+        <div class="button-row"><button id="inspectBtn" class="primary" type="button">Leer capacidades</button><button id="clearBtn" type="button">Limpiar</button></div>
+        <p class="quick-label">Servicio de demostración</p><button id="demoBtn" class="quick-button" type="button">MapServer · continentes y ciudades</button>
+        <p id="status" class="status" role="status">Consulta un servicio WFS para descubrir sus tipos de entidad.</p>
+        <label class="field"><span>Tipo de entidad</span><select id="layerSelect" disabled><option>Primero consulta el servicio</option></select></label>
+        <div id="layerMeta" class="layer-meta"><span class="meta-empty">La descripción y el CRS de la capa aparecerán aquí.</span></div>
+        <div class="query-grid"><label class="field"><span>Límite de entidades</span><input id="limitInput" type="number" min="1" max="5000" value="250"></label><label class="field"><span>BBOX WGS84 opcional</span><input id="bboxInput" type="text" placeholder="minLon,minLat,maxLon,maxLat"></label></div>
+        <p class="hint">La BBOX se envía como lon,lat en WGS84. Algunos servicios solo aceptan BBOX sin reproyección o requieren un límite menor.</p>
+        <button id="queryBtn" class="secondary wide" type="button" disabled>Consultar entidades GeoJSON</button>
+        <button id="downloadBtn" class="wide" type="button" disabled>Descargar GeoJSON consultado</button>
+      </aside>
+      <section class="panel map-panel" aria-label="Previsualización de entidades WFS">
+        <div class="map-head"><div><p class="eyebrow">Resultado</p><h2 id="mapTitle">Mapa base</h2></div><div id="placeSearch" class="cartografia-place-search" role="search" aria-label="Buscar un lugar"><label for="placeQuery">Buscar lugar</label><input id="placeQuery" type="search" placeholder="Buscar lugar…" autocomplete="off"><button id="placeSearchButton" type="button">Buscar</button><div id="placeResults" class="cartografia-place-results" role="listbox" hidden></div><p id="placeStatus" class="cartografia-place-status" role="status">Busca un topónimo para centrar el mapa.</p></div></div>
+        <div id="map" aria-label="Mapa de entidades WFS"></div>
+        <div class="map-footer"><span id="mapStatus">Mapa base listo.</span><span>© OpenStreetMap contributors</span></div>
+      </section>
+    </section>
+    <section class="panel report"><div class="panel-heading"><div><p class="eyebrow">Inventario consultado</p><h2>Entidades y atributos</h2></div><span id="resultBadge" class="badge">0 entidades</span></div><div class="stats"><div><strong id="featureCount">—</strong><span>entidades</span></div><div><strong id="geometryType">—</strong><span>geometría</span></div><div><strong id="fieldCount">—</strong><span>campos</span></div><div><strong id="checkedAt">—</strong><span>consulta</span></div></div><div id="tableWrap" class="table-wrap"><p class="empty">Consulta una capa para revisar sus atributos.</p></div><div class="button-row export-row"><button id="csvBtn" type="button" disabled>Descargar atributos CSV</button></div></section>
+    <section class="panel note"><b>Privacidad y trazabilidad:</b> la URL, la capa, la BBOX y el límite se envían directamente al WFS que has elegido. No hay backend propio. Conserva el servicio, el nombre exacto de la capa, el CRS declarado y la fecha de consulta; el CORS y los límites del organismo pueden impedir una consulta desde el navegador.</section>
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+  <script src="../place-search.js?v=place-search-2"></script>
+  <script src="app.js?v=wfs-explorer-1"></script>
+</body>
+</html>
