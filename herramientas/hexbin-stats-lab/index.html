@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Agrega puntos GeoJSON en hexágonos y calcula conteo, suma o media localmente.">
+  <title>Hexbin Stats Lab · agregación espacial</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
+  <link rel="stylesheet" href="styles.css?v=20260927-1">
+</head>
+<body>
+  <header><a class="back" href="../">← Catálogo</a><div><strong>Hexbin Stats Lab</strong><span>agregación espacial · cliente · local</span></div><span class="privacy">sin backend propio</span></header>
+  <main>
+    <section class="hero"><p class="eyebrow">76 · AGREGACIÓN ESPACIAL · CLIENTE · LOCAL</p><h1>Resume una nube de puntos en hexágonos temáticos.</h1><p class="lede">Calcula conteo, suma o media por celda hexagonal y crea una capa lista para mapas de calor, muestreos, inventarios, incidencias y prospecciones. Los puntos y sus atributos permanecen en tu navegador.</p></section>
+    <section class="layout">
+      <div class="panel controls">
+        <label class="drop" for="file"><input id="file" type="file" accept=".geojson,.json,application/geo+json,application/json" hidden><b>＋ Abrir puntos GeoJSON</b><small>Admite Point, MultiPoint y geometrías con centro representativo.</small></label>
+        <div class="sample-row"><button id="exampleBtn" class="secondary" type="button">Cargar ejemplo</button><button id="clearBtn" class="secondary" type="button">Limpiar</button></div>
+        <textarea id="source" rows="8" spellcheck="false" aria-label="GeoJSON de entrada">{"type":"FeatureCollection","features":[{"type":"Feature","properties":{"nombre":"M-01","valor":12},"geometry":{"type":"Point","coordinates":[-3.724,40.436]}},{"type":"Feature","properties":{"nombre":"M-02","valor":18},"geometry":{"type":"Point","coordinates":[-3.713,40.430]}},{"type":"Feature","properties":{"nombre":"M-03","valor":8},"geometry":{"type":"Point","coordinates":[-3.690,40.437]}},{"type":"Feature","properties":{"nombre":"M-04","valor":21},"geometry":{"type":"Point","coordinates":[-3.682,40.428]}},{"type":"Feature","properties":{"nombre":"M-05","valor":15},"geometry":{"type":"Point","coordinates":[-3.720,40.404]}},{"type":"Feature","properties":{"nombre":"M-06","valor":6},"geometry":{"type":"Point","coordinates":[-3.711,40.397]}},{"type":"Feature","properties":{"nombre":"M-07","valor":11},"geometry":{"type":"Point","coordinates":[-3.728,40.414]}},{"type":"Feature","properties":{"nombre":"M-08","valor":27},"geometry":{"type":"Point","coordinates":[-3.694,40.402]}}]}</textarea>
+        <p id="status" class="status" role="status" aria-live="polite">Carga una capa o usa el ejemplo.</p>
+        <div class="options"><label>Tamaño de celda<input id="cellSize" type="number" min="0.05" max="100" step="0.05" value="1" inputmode="decimal"><small>radio aproximado en kilómetros</small></label><label>Resumen<select id="metric"><option value="count">Conteo de puntos</option><option value="sum">Suma del campo</option><option value="mean" selected>Media del campo</option></select></label></div>
+        <label>Campo numérico<select id="valueField" aria-label="Campo numérico"></select></label>
+        <label class="check"><input id="onlyNonEmpty" type="checkbox" checked> Exportar sólo celdas con observaciones</label>
+        <div class="actions"><button id="runBtn" class="action" type="button">Calcular hexágonos</button><button id="downloadBtn" class="action secondary-action" type="button" disabled>Descargar GeoJSON</button><button id="csvBtn" class="action secondary-action" type="button" disabled>Descargar CSV</button></div>
+        <div id="summary" hidden><div class="stats"><div><span>Puntos válidos</span><b id="pointCount">—</b></div><div><span>Celdas</span><b id="cellCount">—</b></div><div><span>Celdas activas</span><b id="activeCount">—</b></div><div><span>Máximo</span><b id="maxValue">—</b></div></div></div>
+      </div>
+      <div class="panel map-panel"><div id="placeSearch" class="cartografia-place-search map-place-search" role="search" aria-label="Buscar un lugar"><label for="placeQuery">Buscar lugar</label><input id="placeQuery" type="search" placeholder="Buscar lugar…" autocomplete="off"><button id="placeSearchButton" type="button">Buscar</button><div id="placeResults" class="cartografia-place-results" role="listbox" hidden></div><p id="placeStatus" class="cartografia-place-status" role="status">Busca un topónimo para centrar el mapa.</p></div><div id="map" aria-label="Mapa hexagonal temático"></div><div id="mapFallback" hidden>El mapa no está disponible, pero el cálculo local sí funciona.</div><div class="legend"><span><i class="low-swatch"></i>Bajo</span><span><i class="high-swatch"></i>Alto</span><span class="legend-note">La escala se recalcula con el resultado.</span></div></div>
+    </section>
+    <section class="panel guide"><p class="eyebrow">Lectura cartográfica</p><h2>Qué representa cada celda</h2><div class="guide-grid"><p><b>Conteo</b><br>Número de entidades cuyo punto representativo cae dentro del hexágono.</p><p><b>Suma y media</b><br>Elige un campo numérico; los valores ausentes no entran en el cálculo de suma o media.</p><p><b>Escala</b><br>El radio se aproxima en kilómetros sobre WGS84; usa celdas mayores para extensiones grandes.</p><p><b>Privacidad</b><br>Los datos se procesan localmente. Sólo el mapa base y la búsqueda opcional solicitan recursos externos.</p></div></section>
+    <p class="note"><b>Atribución:</b> el mapa base usa teselas de <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>. La búsqueda opcional usa Nominatim y sólo transmite el texto que escribas.</p>
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+  <script src="../place-search.js?v=place-search-1"></script>
+  <script src="app.js?v=20260927-1"></script>
+</body>
+</html>
