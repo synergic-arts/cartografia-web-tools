@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="description" content="Genera isolíneas exploratorias a partir de puntos XYZ locales.">
+  <title>Contour Lab · isolíneas locales</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+  <link rel="stylesheet" href="styles.css?v=20260927-1">
+</head>
+<body>
+  <main class="shell">
+    <a class="back" href="../">← Catálogo</a>
+    <p class="eyebrow">53 · SUPERFICIES · CLIENTE · LOCAL</p>
+    <h1>Explora superficies con isolíneas.</h1>
+    <p class="lede">Carga puntos con longitud, latitud y un valor —altura, temperatura, concentración o cualquier variable—, interpola una malla IDW local y genera isolíneas GeoJSON para explorar patrones espaciales.</p>
+    <section class="layout">
+      <article class="panel input-panel">
+        <div class="heading"><div><h2>1 · Puntos XYZ</h2><p class="hint">CSV con lon, lat y valor; también GeoJSON de puntos.</p></div><span class="local-badge">sin servidor</span></div>
+        <label class="file-label" for="file">Abrir CSV o GeoJSON local<input id="file" type="file" accept=".csv,.tsv,.json,.geojson,text/csv,application/geo+json"></label>
+        <textarea id="source" rows="12" spellcheck="false" aria-label="Puntos XYZ">lon,lat,elevacion
+-3.715,40.412,640
+-3.705,40.412,655
+-3.695,40.412,668
+-3.715,40.420,652
+-3.705,40.420,690
+-3.695,40.420,675
+-3.715,40.428,670
+-3.705,40.428,710
+-3.695,40.428,688</textarea>
+        <label class="field-label">Campo de valor en GeoJSON<input id="valueField" type="text" value="elevacion" placeholder="Ej. elevacion, ndvi, temperatura"></label>
+        <div class="options"><label>Intervalo de isolínea<input id="interval" type="number" min="0.000001" step="any" value="10"></label><label>Celdas de la malla<select id="gridSize"><option value="18">18 × 18 · rápido</option><option value="28" selected>28 × 28 · equilibrado</option><option value="42">42 × 42 · detalle</option></select></label></div>
+        <div class="actions"><button id="calculateBtn" class="primary" type="button">Generar isolíneas</button><button id="sampleBtn" type="button">Cargar ejemplo</button></div>
+        <p id="status" class="status" role="status" aria-live="polite">El IDW y las isolíneas se calculan en el navegador.</p>
+      </article>
+      <article class="panel map-panel">
+        <div class="heading"><div><h2>2 · Superficie e isolíneas</h2><p class="hint">Colores más cálidos representan valores altos.</p></div><span id="contourBadge" class="count-badge">0 líneas</span></div>
+        <div id="map" aria-label="Mapa de isolíneas"></div>
+        <div id="mapFallback" class="fallback" hidden>El mapa necesita conexión para descargar las teselas. La interpolación y la exportación local siguen disponibles.</div>
+      </article>
+    </section>
+    <section class="panel results-panel">
+      <div class="heading"><div><h2>3 · Resumen y exportación</h2><p class="hint">El informe conserva el intervalo y el método de interpolación.</p></div><span id="quality" class="quality muted">Sin calcular</span></div>
+      <div class="stats"><div><span>Puntos válidos</span><strong id="pointCount">—</strong></div><div><span>Rango de valores</span><strong id="valueRange">—</strong></div><div><span>Isolíneas</span><strong id="lineCount">—</strong></div><div><span>Intervalo</span><strong id="intervalReadout">—</strong></div></div>
+      <div id="tableWrap" class="table-wrap"><p class="empty">Genera isolíneas para ver el resumen por nivel.</p></div>
+      <div class="exports"><button id="geojsonBtn" type="button" disabled><strong>Exportar isolíneas GeoJSON</strong><small>Segmentos con nivel y método</small></button><button id="csvBtn" type="button" disabled><strong>Exportar isolíneas CSV</strong><small>Vértices y valores</small></button></div>
+      <p class="fineprint">La superficie se interpola con distancia inversa ponderada y las líneas se calculan con marching squares. Es una exploración cartográfica: no sustituye un modelo digital del terreno, una interpolación validada ni una medición oficial.</p>
+    </section>
+    <footer class="credits">Mapa base © <a href="https://www.openstreetmap.org/copyright" rel="noreferrer">OpenStreetMap contributors</a> · datos y cálculos locales.</footer>
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script src="app.js?v=20260927-1"></script>
+</body>
+</html>
