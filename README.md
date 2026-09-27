@@ -43,6 +43,7 @@ Colección de herramientas web abiertas para cartografía, rutas y datos geoespa
 - [Suitability Lab](herramientas/suitability-lab/): combina hasta tres atributos numéricos con pesos y dirección, calcula una puntuación de aptitud 0–100 y exporta un ranking cartográfico trazable.
 - [Zonal Stats Lab](herramientas/zonal-stats-lab/): cruza puntos con polígonos y calcula conteo, suma, media, mínimo y máximo por zona, enriqueciendo la capa sin enviar datos a un servidor.
 - [Hexbin Stats Lab](herramientas/hexbin-stats-lab/): agrega puntos en celdas hexagonales y calcula conteo, suma o media de un atributo para producir mapas temáticos exportables.
+- [Photo Geotag Lab](herramientas/photo-geotag-lab/): extrae coordenadas GPS EXIF de fotografías JPEG localmente, muestra la campaña en un mapa y exporta los puntos GeoJSON y el informe CSV.
 - [Grid Lab](herramientas/grid-lab/): cuadrícula AOI numerada con exportación GeoJSON y CSV para muestreo y teselas.
 - [Carto Local AI](herramientas/carto-local-ai/): diagnóstico local de GeoJSON con modo rápido determinista y WebLLM opcional sobre WebGPU.
 - [Layer Mixer](herramientas/layer-mixer/): mezcla capas WMS públicas, incluida cartografía histórica del SCUAM y fuentes del IGN, con opacidad, orden, cortina y exportación de configuración.

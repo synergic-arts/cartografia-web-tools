@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="description" content="Extrae coordenadas GPS de fotografías JPEG y crea una capa GeoJSON local.">
+  <title>Photo Geotag Lab · fotografías con GPS</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+  <link rel="stylesheet" href="styles.css?v=20260927-1">
+</head>
+<body>
+  <main class="shell">
+    <a class="back" href="../">← Catálogo</a>
+    <p class="eyebrow">77 · TRABAJO DE CAMPO · CLIENTE · LOCAL</p>
+    <h1>Convierte fotografías geolocalizadas en un mapa.</h1>
+    <p class="lede">Lee las coordenadas GPS guardadas en los metadatos EXIF de tus fotografías JPEG y crea una capa GeoJSON para revisar campañas, inventarios, prospecciones y documentación de campo.</p>
+    <section class="layout">
+      <article class="panel controls">
+        <div class="heading"><div><h2>1 · Fotografías</h2><p class="hint">Los archivos se leen localmente; no se suben ni se generan copias remotas.</p></div><span class="local-badge">sin servidor</span></div>
+        <label class="drop" for="files"><input id="files" type="file" accept="image/jpeg,.jpg,.jpeg" multiple><b>＋ Abrir fotografías JPEG</b><small>Selecciona una o varias imágenes con GPS EXIF.</small></label>
+        <div class="actions"><button id="sampleBtn" class="secondary" type="button">Cargar ejemplo</button><button id="clearBtn" class="secondary" type="button">Limpiar</button></div>
+        <label class="check"><input id="includeNoGps" type="checkbox" checked> Mostrar también las fotos sin coordenadas</label>
+        <p id="status" class="status" role="status" aria-live="polite">Selecciona fotografías para inspeccionar sus metadatos.</p>
+        <div class="privacy-box"><b>Privacidad</b><br>El navegador procesa el JPEG en memoria. Esta herramienta no envía fotografías a un backend; exporta sólo nombres, tamaños y coordenadas que decidas guardar.</div>
+      </article>
+      <article class="panel map-panel">
+        <div class="heading"><div><h2>2 · Mapa de fotografías</h2><p class="hint">Pulsa un marcador para consultar el archivo y sus coordenadas.</p></div><span id="photoBadge" class="count-badge">0 fotos</span></div>
+        <div id="map" aria-label="Mapa de fotografías geolocalizadas"></div>
+        <div id="mapFallback" class="fallback" hidden>El mapa necesita conexión para las teselas. La lectura EXIF y la exportación local siguen disponibles.</div>
+      </article>
+    </section>
+    <section class="panel results-panel">
+      <div class="heading"><div><h2>3 · Control y exportación</h2><p class="hint">Las fotos sin GPS se conservan en el informe CSV para revisar la cobertura de la campaña.</p></div><span id="quality" class="quality muted">Pendiente</span></div>
+      <div class="stats"><div><span>Fotografías</span><strong id="photoCount">—</strong></div><div><span>Con GPS</span><strong id="gpsCount">—</strong></div><div><span>Sin GPS</span><strong id="noGpsCount">—</strong></div><div><span>Cobertura</span><strong id="coverage">—</strong></div></div>
+      <div id="tableWrap" class="table-wrap"><p class="empty">Carga fotografías para ver el informe EXIF.</p></div>
+      <div class="exports"><button id="geojsonBtn" type="button" disabled><strong>Exportar puntos GeoJSON</strong><small>Sólo fotografías con coordenadas</small></button><button id="csvBtn" type="button" disabled><strong>Exportar informe CSV</strong><small>Incluye fotos con y sin GPS</small></button></div>
+      <p class="fineprint">La lectura GPS interpreta latitud/longitud EXIF en grados, minutos y segundos, incluyendo referencias N/S/E/O. Se ignoran otros metadatos EXIF y no se modifica ningún archivo original.</p>
+    </section>
+    <footer class="credits">Mapa base © <a href="https://www.openstreetmap.org/copyright" rel="noreferrer">OpenStreetMap contributors</a> · procesamiento local sin telemetría.</footer>
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script src="app.js?v=20260927-1"></script>
+</body>
+</html>
