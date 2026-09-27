@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Calcula estadísticas de regiones de interés sobre imágenes locales en el navegador.">
+  <title>ROI Stats Lab · muestras raster</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="shell">
+    <header class="hero">
+      <a class="back" href="../">← Catálogo</a>
+      <p class="eyebrow">68 · TELEDETECCIÓN · CLIENTE · LOCAL</p>
+      <h1>Mide zonas de interés sin sacar la imagen del navegador.</h1>
+      <p class="lede">Dibuja rectángulos sobre una imagen local para comparar muestras, coberturas o áreas de entrenamiento. El laboratorio calcula medias, dispersión, mínimos y máximos por canal y brillo, y deja las regiones documentadas para repetir el análisis.</p>
+    </header>
+
+    <section class="workspace">
+      <article class="panel preview-panel">
+        <div class="panel-heading"><span class="step">1</span><div><h2>Imagen y regiones</h2><p>Arrastra sobre la imagen para añadir una ROI.</p></div><span id="roiBadge" class="badge">0 ROI</span></div>
+        <div class="canvas-wrap"><canvas id="canvas" width="720" height="460" aria-label="Imagen con regiones de interés"></canvas><span id="drawHint">Arrastra aquí para crear una región</span></div>
+        <div class="actions"><label class="file-button">Abrir imagen local<input id="file" type="file" accept="image/png,image/jpeg,image/webp"></label><button id="sampleBtn" class="secondary">Cargar ejemplo</button><button id="sampleRoiBtn" class="secondary">Añadir ROI de ejemplo</button><button id="clearBtn" class="secondary">Borrar ROI</button></div>
+        <p id="status" class="status" role="status">La imagen sintética está lista. Arrastra para crear la primera ROI.</p>
+      </article>
+
+      <article class="panel input-panel">
+        <div class="panel-heading"><span class="step">2</span><div><h2>Opciones de muestra</h2><p>Las estadísticas se calculan por píxel válido.</p></div></div>
+        <label for="minSize">Tamaño mínimo de ROI<input id="minSize" type="number" min="2" max="720" value="8"></label>
+        <label for="alphaMode">Transparencia<select id="alphaMode"><option value="skip">Ignorar píxeles transparentes</option><option value="include">Incluirlos como negro</option></select></label>
+        <p class="hint">Las ROI se expresan en píxeles de la imagen mostrada. Puedes trabajar con una imagen de cualquier tamaño; el visor la ajusta a 720 × 460 para facilitar la comparación.</p>
+        <div class="legend"><span class="legend-swatch swatch-a"></span>ROI 1–4 <span class="legend-swatch swatch-b"></span>ROI 5–8 <span class="legend-swatch swatch-c"></span>ROI 9–12</div>
+        <div class="privacy-box"><strong>Privacidad</strong><span>La imagen, los píxeles y las regiones permanecen en memoria local. No se envía ningún archivo a un backend.</span></div>
+      </article>
+    </section>
+
+    <section class="panel report-panel">
+      <div class="panel-heading"><span class="step">3</span><div><h2>Estadísticas comparables</h2><p>Medias y desviaciones para detectar diferencias entre muestras.</p></div><span id="quality" class="quality">Pendiente</span></div>
+      <div class="stats"><div><strong id="imageSize">—</strong><span>dimensiones</span></div><div><strong id="roiCount">—</strong><span>regiones</span></div><div><strong id="pixelCount">—</strong><span>píxeles medidos</span></div><div><strong id="meanBrightness">—</strong><span>brillo medio global</span></div></div>
+      <div id="tableWrap" class="table-wrap"><p class="empty">Crea una ROI para revisar sus estadísticas.</p></div>
+      <div class="actions export-actions"><button id="jsonBtn" class="secondary" disabled>Exportar informe JSON</button><button id="csvBtn" class="secondary" disabled>Exportar tabla CSV</button></div>
+      <p class="note">Las estadísticas son descriptivas y se calculan sobre los píxeles de la imagen renderizada. Una imagen PNG/JPEG/WebP no contiene por sí sola un CRS; no interpretes una ROI como superficie geográfica sin georreferenciar el ráster.</p>
+    </section>
+
+    <footer>Procesamiento local por diseño. La imagen y las muestras no salen del navegador.</footer>
+  </main>
+  <script src="app.js?v=20260927-1"></script>
+</body>
+</html>
