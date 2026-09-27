@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Calcula posición solar, horas de luz y sombras para trabajos de campo cartográficos.">
+  <title>Solar Lab · posición solar</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIINfQ3d9wM4xL6z7N9hN7e4n2W1mQ8s0yM=" crossorigin="">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="shell">
+    <header class="hero">
+      <a class="back" href="../">← Catálogo</a>
+      <p class="eyebrow">55 · CAMPO · CLIENTE · LOCAL</p>
+      <h1>Calcula la luz del lugar.</h1>
+      <p class="lede">Obtén posición solar, horas de salida y puesta y dirección de sombra para una fecha y coordenadas. Útil para prospección, lectura de ortofotos y planificación de trabajo de campo.</p>
+    </header>
+
+    <section class="workspace">
+      <article class="panel input-panel">
+        <div class="panel-heading"><span class="step">1</span><div><h2>Fecha, hora y lugar</h2><p>La hora se interpreta como UTC. No se solicita geolocalización.</p></div></div>
+        <div class="form-grid">
+          <label>Latitud<input id="lat" type="number" min="-90" max="90" step="0.000001" value="40.416775"></label>
+          <label>Longitud<input id="lon" type="number" min="-180" max="180" step="0.000001" value="-3.703790"></label>
+          <label>Fecha y hora UTC<input id="dateTime" type="datetime-local" value="2026-06-21T12:00"></label>
+          <label>Altura del objeto (m)<input id="height" type="number" min="0" step="0.1" value="2"></label>
+        </div>
+        <div class="actions"><button id="calculateBtn" class="primary">Calcular posición solar</button><button id="nowBtn" class="secondary">Usar fecha actual UTC</button></div>
+        <p id="status" class="status" role="status">Haz clic en el mapa para cambiar el lugar.</p>
+      </article>
+
+      <article class="panel map-panel">
+        <div class="panel-heading"><span class="step">2</span><div><h2>Localización y orientación</h2><p>El marcador se puede mover con un clic en el mapa.</p></div><span id="dayBadge" class="badge">—</span></div>
+        <div id="map" class="map" aria-label="Mapa del lugar seleccionado"></div>
+        <div class="legend"><span class="sun-dot"></span><span>lugar seleccionado</span><span id="mapNote">Mapa base © OpenStreetMap contributors</span></div>
+      </article>
+    </section>
+
+    <section class="panel report-panel">
+      <div class="panel-heading"><span class="step">3</span><div><h2>Resultado solar</h2><p>Azimut medido desde el norte en sentido horario.</p></div><span id="quality" class="quality">Pendiente</span></div>
+      <div class="result-grid">
+        <div class="solar-card"><canvas id="sky" width="320" height="220" aria-label="Diagrama de posición solar"></canvas><p class="sky-caption">Diagrama de horizonte · N arriba</p></div>
+        <div class="stats">
+          <div><strong id="elevation">—</strong><span>elevación solar</span></div>
+          <div><strong id="azimuth">—</strong><span>azimut solar</span></div>
+          <div><strong id="shadowLength">—</strong><span>longitud de sombra</span></div>
+          <div><strong id="shadowBearing">—</strong><span>rumbo de sombra</span></div>
+          <div><strong id="sunrise">—</strong><span>salida solar UTC</span></div>
+          <div><strong id="sunset">—</strong><span>puesta solar UTC</span></div>
+        </div>
+      </div>
+      <div class="actions export-actions"><button id="jsonBtn" class="secondary" disabled>Exportar informe JSON</button><button id="csvBtn" class="secondary" disabled>Exportar informe CSV</button></div>
+      <p class="note">Modelo solar NOAA aproximado para planificación cartográfica. La salida y puesta usan un cenit de 90,833° y pueden variar por refracción, relieve y horizonte local. La sombra solo se calcula con el Sol sobre el horizonte.</p>
+    </section>
+
+    <footer>Procesamiento local por diseño. Leaflet y el mapa base solicitan recursos externos solo para la visualización. <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">Atribución de OpenStreetMap</a>.</footer>
+  </main>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script src="app.js?v=20260927-1"></script>
+</body>
+</html>
