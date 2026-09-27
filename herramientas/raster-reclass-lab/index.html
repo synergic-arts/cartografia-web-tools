@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Reclasificación raster exploratoria de imágenes locales en el navegador.">
+  <title>Raster Reclass Lab · reclasificación local</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="shell">
+    <header class="hero">
+      <a class="back" href="../">← Catálogo</a>
+      <p class="eyebrow">66 · TELEDETECCIÓN · CLIENTE · LOCAL</p>
+      <h1>Convierte una imagen en clases interpretables.</h1>
+      <p class="lede">Reclasifica una imagen local en intervalos de brillo, color o saturación. Es una ayuda rápida para separar coberturas, revisar umbrales y preparar una clasificación antes de pasar a un ráster georreferenciado.</p>
+    </header>
+
+    <section class="workspace">
+      <article class="panel input-panel">
+        <div class="panel-heading"><span class="step">1</span><div><h2>Imagen y reglas</h2><p>La imagen se procesa en memoria.</p></div></div>
+        <label class="file-button">Abrir imagen local<input id="file" type="file" accept="image/png,image/jpeg,image/webp"></label>
+        <div class="form-grid">
+          <label for="mode">Variable<select id="mode"><option value="brightness">Brillo (0–255)</option><option value="red">Componente roja (0–255)</option><option value="green">Componente verde (0–255)</option><option value="blue">Componente azul (0–255)</option><option value="saturation">Saturación (0–100)</option></select></label>
+          <label for="palette">Paleta<select id="palette"><option value="viridis">Viridis</option><option value="terrain">Terreno</option><option value="heat">Calor</option><option value="mono">Monocroma</option></select></label>
+          <label for="breaks">Cortes, de menor a mayor<input id="breaks" type="text" value="70, 130, 190" inputmode="decimal"></label>
+          <label for="nodata">Transparencia<select id="nodata"><option value="transparent">Conservar transparente</option><option value="last">Asignar a última clase</option></select></label>
+        </div>
+        <p class="hint">Los cortes crean clases: ≤ primer corte, entre cortes y &gt; último corte. Usa valores del rango de la variable y separa con comas.</p>
+        <div class="actions"><button id="calculateBtn" class="primary">Reclasificar imagen</button><button id="sampleBtn" class="secondary">Cargar ejemplo</button></div>
+        <p id="status" class="status" role="status">La imagen sintética está lista para reclasificar.</p>
+      </article>
+
+      <article class="panel preview-panel">
+        <div class="panel-heading"><span class="step">2</span><div><h2>Comparación visual</h2><p>Haz clic en la imagen original para consultar un píxel.</p></div><span id="classBadge" class="badge">—</span></div>
+        <div class="canvas-grid"><div><h3>Imagen original</h3><canvas id="sourceCanvas" width="720" height="460" aria-label="Imagen original"></canvas></div><div><h3>Imagen reclasificada</h3><canvas id="classifiedCanvas" width="720" height="460" aria-label="Imagen reclasificada"></canvas></div></div>
+        <div class="pixel-readout"><span id="pixelSwatch"></span><span id="pixelText">Píxel: haz clic en la imagen original.</span></div>
+      </article>
+    </section>
+
+    <section class="panel report-panel">
+      <div class="panel-heading"><span class="step">3</span><div><h2>Clases e informe</h2><p>Revisa el reparto de píxeles antes de exportar.</p></div><span id="quality" class="quality">Pendiente</span></div>
+      <div class="stats"><div><strong id="imageSize">—</strong><span>dimensiones</span></div><div><strong id="classCount">—</strong><span>clases</span></div><div><strong id="validPixels">—</strong><span>píxeles válidos</span></div><div><strong id="largestClass">—</strong><span>clase dominante</span></div><div><strong id="activeVariable">—</strong><span>variable</span></div></div>
+      <div id="tableWrap" class="table-wrap"><p class="empty">Reclasifica la imagen para revisar las clases.</p></div>
+      <div class="actions export-actions"><button id="pngBtn" class="secondary" disabled>Exportar PNG clasificado</button><button id="jsonBtn" class="secondary" disabled>Exportar informe JSON</button><button id="csvBtn" class="secondary" disabled>Exportar resumen CSV</button></div>
+      <p class="note">Una imagen PNG/JPEG/WebP no contiene por sí sola un CRS fiable. Esta clasificación es exploratoria y conserva solo píxeles y clases; para análisis cuantitativo utiliza un ráster georreferenciado con su metadato espacial.</p>
+    </section>
+
+    <footer>Procesamiento local por diseño. La imagen no se sube a un servidor y las exportaciones se generan en el navegador.</footer>
+  </main>
+  <script src="app.js?v=20260927-1"></script>
+</body>
+</html>
