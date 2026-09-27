@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Genera leyendas cartográficas y clasificaciones reproducibles para GeoJSON en el navegador.">
+  <title>Legend Lab · leyendas cartográficas</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIINfQ3d9wM4xL6z7N9hN7e4n2W1mQ8s0yM=" crossorigin="">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="shell">
+    <header class="hero">
+      <a class="back" href="../">← Catálogo</a>
+      <p class="eyebrow">60 · LEYENDAS · CLIENTE · LOCAL</p>
+      <h1>Una leyenda que explica el mapa.</h1>
+      <p class="lede">Detecta atributos, clasifica valores y genera una leyenda lista para documentar tu mapa. La propuesta se aplica sobre Leaflet y se exporta como especificación reproducible y capa GeoJSON enriquecida.</p>
+    </header>
+
+    <section class="workspace">
+      <article class="panel input-panel">
+        <div class="panel-heading"><span class="step">1</span><div><h2>Datos y clasificación</h2><p>Elige el atributo que quieres simbolizar.</p></div></div>
+        <label class="file-button">Abrir GeoJSON local<input id="file" type="file" accept=".geojson,.json,application/geo+json"></label>
+        <label for="source">Capa GeoJSON</label>
+        <textarea id="source" spellcheck="false" aria-label="Capa GeoJSON">{
+  "type": "FeatureCollection",
+  "features": [
+    {"type":"Feature","properties":{"nombre":"Norte","tipo":"Patrimonio","valor":92},"geometry":{"type":"Point","coordinates":[-3.710,40.425]}},
+    {"type":"Feature","properties":{"nombre":"Este","tipo":"Patrimonio","valor":74},"geometry":{"type":"Point","coordinates":[-3.692,40.421]}},
+    {"type":"Feature","properties":{"nombre":"Sur","tipo":"Paisaje","valor":51},"geometry":{"type":"Point","coordinates":[-3.701,40.408]}},
+    {"type":"Feature","properties":{"nombre":"Oeste","tipo":"Paisaje","valor":28},"geometry":{"type":"Point","coordinates":[-3.724,40.414]}},
+    {"type":"Feature","properties":{"nombre":"Centro","tipo":"Infraestructura","valor":12},"geometry":{"type":"Point","coordinates":[-3.703,40.418]}},
+    {"type":"Feature","properties":{"nombre":"Área de estudio","tipo":"Área","valor":65},"geometry":{"type":"Polygon","coordinates":[[[-3.718,40.430],[-3.690,40.430],[-3.690,40.400],[-3.718,40.400],[-3.718,40.430]]]}}
+  ]
+}</textarea>
+        <div class="form-grid">
+          <label for="field">Campo a simbolizar<select id="field"></select></label>
+          <label for="dataMode">Tipo de dato<select id="dataMode"><option value="auto">Detectar automáticamente</option><option value="numeric">Numérico</option><option value="categorical">Categórico</option></select></label>
+          <label for="method">Clasificación numérica<select id="method"><option value="quantile">Cuantiles</option><option value="equal">Intervalos iguales</option></select></label>
+          <label for="classCount">Número de clases<input id="classCount" type="number" min="2" max="9" value="5"></label>
+          <label for="palette">Paleta<select id="palette"><option value="teal">Turquesa</option><option value="sunset">Atardecer</option><option value="viridis">Viridis</option><option value="mono">Monocroma</option></select></label>
+        </div>
+        <p class="hint">Los campos numéricos admiten coma decimal. Para categorías, las clases se ordenan por frecuencia y las restantes se agrupan como «Otros».</p>
+        <div class="actions"><button id="calculateBtn" class="primary">Generar leyenda</button><button id="sampleBtn" class="secondary">Cargar ejemplo</button></div>
+        <p id="status" class="status" role="status">El ejemplo está listo para generar una leyenda en local.</p>
+      </article>
+
+      <article class="panel map-panel">
+        <div class="panel-heading"><span class="step">2</span><div><h2>Mapa simbolizado</h2><p>El mapa aplica la misma clasificación que la leyenda.</p></div><span id="classBadge" class="badge">—</span></div>
+        <div id="map" class="map" aria-label="Mapa GeoJSON simbolizado"></div>
+        <div id="legend" class="legend-box"><p class="empty">Genera una leyenda para verla aquí.</p></div>
+        <p class="map-note">Mapa base © OpenStreetMap contributors · el color de la capa procede del atributo seleccionado.</p>
+      </article>
+    </section>
+
+    <section class="panel report-panel">
+      <div class="panel-heading"><span class="step">3</span><div><h2>Especificación y exportación</h2><p>Conserva método, paleta, clases y recuentos para documentar el mapa.</p></div><span id="quality" class="quality">Pendiente</span></div>
+      <div class="stats">
+        <div><strong id="featureCount">—</strong><span>entidades</span></div>
+        <div><strong id="valueType">—</strong><span>tipo detectado</span></div>
+        <div><strong id="classCountReadout">—</strong><span>clases</span></div>
+        <div><strong id="missingCount">—</strong><span>sin valor</span></div>
+        <div><strong id="fieldReadout">—</strong><span>campo</span></div>
+      </div>
+      <div class="class-table" id="classTable"><p class="empty">Genera una leyenda para revisar sus clases.</p></div>
+      <div class="actions export-actions"><button id="geojsonBtn" class="secondary" disabled>Exportar GeoJSON enriquecido</button><button id="styleBtn" class="secondary" disabled>Exportar especificación JSON</button><button id="svgBtn" class="secondary" disabled>Exportar leyenda SVG</button></div>
+      <p class="note">La clasificación es descriptiva y reproducible, no una recomendación temática. Revisa unidades, escala y el significado del atributo antes de publicar un mapa.</p>
+    </section>
+
+    <footer>Procesamiento local por diseño. El GeoJSON no se envía a un backend. Leaflet y el mapa base solicitan teselas directamente a OpenStreetMap. <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">Atribución de OpenStreetMap</a>.</footer>
+  </main>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script src="app.js?v=20260927-1"></script>
+</body>
+</html>

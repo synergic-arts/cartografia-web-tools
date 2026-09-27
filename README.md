@@ -26,6 +26,7 @@ Colección de herramientas web abiertas para cartografía, rutas y datos geoespa
 - [Projection Lab](herramientas/projection-lab/): transforma GeoJSON WGS84 a Web Mercator, UTM o equirectangular, compara extensiones, previsualiza la geometría y exporta la capa y sus vértices.
 - [Track Lab](herramientas/track-lab/): analiza recorridos GeoJSON 3D, calcula distancia, desnivel, pendiente, velocidad y perfil de elevación y exporta segmentos y puntos.
 - [Label Lab](herramientas/label-lab/): calcula una propuesta local de etiquetado GeoJSON con prioridades, separación, detección de conflictos, mapa de anclajes y exportación enriquecida.
+- [Legend Lab](herramientas/legend-lab/): detecta atributos GeoJSON, crea clasificaciones cuantitativas o categóricas, aplica paletas, genera leyendas y exporta una especificación reproducible.
 - [Grid Lab](herramientas/grid-lab/): cuadrícula AOI numerada con exportación GeoJSON y CSV para muestreo y teselas.
 - [Carto Local AI](herramientas/carto-local-ai/): diagnóstico local de GeoJSON con modo rápido determinista y WebLLM opcional sobre WebGPU.
 - [Layer Mixer](herramientas/layer-mixer/): mezcla capas WMS públicas, incluida cartografía histórica del SCUAM y fuentes del IGN, con opacidad, orden, cortina y exportación de configuración.
