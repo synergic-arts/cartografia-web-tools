@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Analiza una red lineal GeoJSON en el navegador, detecta nodos, componentes y extremos y exporta resultados.">
+  <title>Network Lab · red lineal</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIINfQ3d9wM4xL6z7N9hN7e4n2W1mQ8s0yM=" crossorigin="">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="shell">
+    <header class="hero">
+      <a class="back" href="../">← Catálogo</a>
+      <p class="eyebrow">56 · REDES · CLIENTE · LOCAL</p>
+      <h1>Entiende la red que has dibujado.</h1>
+      <p class="lede">Carga líneas GeoJSON, ajusta sus extremos con una tolerancia métrica y obtén nodos, grados, componentes conectados, extremos y longitudes para revisar caminos, cauces o redes de transporte.</p>
+    </header>
+
+    <section class="workspace">
+      <article class="panel input-panel">
+        <div class="panel-heading"><span class="step">1</span><div><h2>Red lineal</h2><p>Se analizan LineString y MultiLineString. Los cruces interiores no se parten automáticamente.</p></div></div>
+        <label class="file-button">Abrir GeoJSON local<input id="file" type="file" accept=".geojson,.json,application/geo+json"></label>
+        <label for="source">GeoJSON de líneas</label>
+        <textarea id="source" spellcheck="false" aria-label="Red lineal">{
+  "type": "FeatureCollection",
+  "features": [
+    {"type":"Feature","properties":{"nombre":"Eje norte"},"geometry":{"type":"LineString","coordinates":[[-3.710,40.410],[-3.700,40.420],[-3.690,40.430]]}},
+    {"type":"Feature","properties":{"nombre":"Eje sur"},"geometry":{"type":"LineString","coordinates":[[-3.730,40.390],[-3.720,40.400],[-3.710,40.410]]}},
+    {"type":"Feature","properties":{"nombre":"Ramal oeste"},"geometry":{"type":"LineString","coordinates":[[-3.760,40.410],[-3.740,40.410],[-3.710,40.410]]}},
+    {"type":"Feature","properties":{"nombre":"Ramal este"},"geometry":{"type":"LineString","coordinates":[[-3.710,40.410],[-3.680,40.410],[-3.660,40.410]]}},
+    {"type":"Feature","properties":{"nombre":"Conexión"},"geometry":{"type":"LineString","coordinates":[[-3.690,40.430],[-3.680,40.420],[-3.660,40.410]]}},
+    {"type":"Feature","properties":{"nombre":"Componente aislado"},"geometry":{"type":"LineString","coordinates":[[-3.800,40.380],[-3.790,40.385]]}}
+  ]
+}</textarea>
+        <label>Tolerancia de ajuste de extremos (m)<input id="tolerance" type="number" min="0" max="1000" step="1" value="10"><small>Extremos cercanos se consideran el mismo nodo.</small></label>
+        <div class="actions"><button id="calculateBtn" class="primary">Analizar red</button><button id="sampleBtn" class="secondary">Cargar ejemplo</button></div>
+        <p id="status" class="status" role="status">La red de ejemplo se analiza en local.</p>
+      </article>
+
+      <article class="panel map-panel">
+        <div class="panel-heading"><span class="step">2</span><div><h2>Componentes y nodos</h2><p>Los colores distinguen componentes conectados; los nodos muestran su grado.</p></div><span id="componentBadge" class="badge">—</span></div>
+        <div id="map" class="map" aria-label="Mapa de la red lineal"></div>
+        <p id="mapFallback" class="map-fallback" hidden>El mapa base necesita conexión; el análisis y las exportaciones siguen disponibles.</p>
+        <div class="legend"><span class="line-swatch one"></span><span>componente</span><span class="node-swatch"></span><span>nodo</span><span id="mapNote">Mapa base © OpenStreetMap contributors</span></div>
+      </article>
+    </section>
+
+    <section class="panel report-panel">
+      <div class="panel-heading"><span class="step">3</span><div><h2>Informe de red</h2><p>Los identificadores y métricas permiten revisar la conectividad antes de exportar.</p></div><span id="quality" class="quality">Pendiente</span></div>
+      <div class="stats">
+        <div><strong id="edgeCount">—</strong><span>tramos</span></div>
+        <div><strong id="nodeCount">—</strong><span>nodos</span></div>
+        <div><strong id="componentCount">—</strong><span>componentes</span></div>
+        <div><strong id="totalLength">—</strong><span>longitud total</span></div>
+        <div><strong id="deadEndCount">—</strong><span>extremos</span></div>
+        <div><strong id="junctionCount">—</strong><span>nodos de unión</span></div>
+      </div>
+      <div id="tableWrap" class="table-wrap"><p class="empty">Analiza una red para ver sus nodos.</p></div>
+      <div class="actions export-actions"><button id="nodesBtn" class="secondary" disabled>Exportar nodos GeoJSON</button><button id="edgesBtn" class="secondary" disabled>Exportar tramos GeoJSON</button><button id="csvBtn" class="secondary" disabled>Exportar resumen CSV</button></div>
+      <p class="note">El ajuste conecta únicamente extremos de líneas dentro de la tolerancia indicada. Un cruce en mitad de un tramo seguirá siendo un cruce geométrico, no un nodo topológico, hasta que se parta la línea previamente.</p>
+    </section>
+
+    <footer>Procesamiento local por diseño. Leaflet y el mapa base solicitan teselas directamente a OpenStreetMap. <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">Atribución de OpenStreetMap</a>.</footer>
+  </main>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script src="app.js?v=20260927-1"></script>
+</body>
+</html>

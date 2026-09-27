@@ -22,6 +22,7 @@ Colección de herramientas web abiertas para cartografía, rutas y datos geoespa
 - [Contour Lab](herramientas/contour-lab/): interpola puntos XYZ con IDW local y genera segmentos de isolíneas exploratorias mediante marching squares; exporta GeoJSON/CSV.
 - [Hillshade Lab](herramientas/hillshade-lab/): calcula sombreado, pendiente y orientación desde una malla regular de elevaciones, muestra el resultado en Leaflet y exporta CSV, GeoJSON o PNG.
 - [Solar Lab](herramientas/solar-lab/): calcula posición solar, horas de salida y puesta y dirección y longitud de sombra para una fecha y lugar, con mapa y exportación local.
+- [Network Lab](herramientas/network-lab/): analiza redes LineString y MultiLineString, ajusta extremos, calcula nodos, grados, componentes, extremos y longitudes y exporta GeoJSON/CSV.
 - [Grid Lab](herramientas/grid-lab/): cuadrícula AOI numerada con exportación GeoJSON y CSV para muestreo y teselas.
 - [Carto Local AI](herramientas/carto-local-ai/): diagnóstico local de GeoJSON con modo rápido determinista y WebLLM opcional sobre WebGPU.
 - [Layer Mixer](herramientas/layer-mixer/): mezcla capas WMS públicas, incluida cartografía histórica del SCUAM y fuentes del IGN, con opacidad, orden, cortina y exportación de configuración.
