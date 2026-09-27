@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Calcula pendiente, orientación, TPI y rugosidad desde una malla de elevaciones en el navegador.">
+  <title>Terrain Metrics Lab · Cartografía Web Tools</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
+  <link rel="stylesheet" href="styles.css?v=82">
+</head>
+<body>
+  <main>
+    <a class="back" href="../">← Catálogo</a>
+    <header class="hero">
+      <p class="eyebrow">82 · MORFOMETRÍA · CLIENTE · LOCAL</p>
+      <h1>Terrain Metrics Lab</h1>
+      <p class="lede">Calcula pendiente, orientación, posición topográfica y rugosidad desde un DEM regular para explorar relieve, visibilidad y potencial arqueológico.</p>
+    </header>
+
+    <section class="panel" aria-labelledby="input-title">
+      <div class="section-heading"><div><p class="eyebrow">01 · ENTRADA</p><h2 id="input-title">Malla de elevaciones</h2></div><span class="badge">sin backend propio</span></div>
+      <div class="control-grid">
+        <label class="file-control">Abrir CSV o JSON
+          <input id="fileInput" type="file" accept=".csv,.txt,.json,text/csv,application/json">
+          <span id="fileName">Ningún archivo seleccionado</span>
+        </label>
+        <label>Tamaño de celda (m)
+          <input id="cellSize" type="number" min="1" max="10000" step="1" value="100">
+        </label>
+        <label>Métrica a visualizar
+          <select id="metric"><option value="slope" selected>Pendiente · grados</option><option value="aspect">Orientación · grados</option><option value="tpi">TPI · posición local</option><option value="roughness">Rugosidad · rango</option></select>
+        </label>
+        <label>Longitud oeste (°)
+          <input id="west" type="number" min="-180" max="180" step="0.000001" value="-3.750000">
+        </label>
+        <label>Latitud sur (°)
+          <input id="south" type="number" min="-90" max="90" step="0.000001" value="40.390000">
+        </label>
+      </div>
+      <label class="data-control">CSV o JSON de la malla
+        <textarea id="source" rows="6" spellcheck="false" aria-label="Malla regular de elevaciones"></textarea>
+        <span>CSV: una fila por línea. JSON: <code>{"rows":5,"cols":5,"values":[...]}</code>. Las celdas de borde usan los vecinos disponibles.</span>
+      </label>
+      <div class="button-row"><button id="exampleBtn" class="secondary">Cargar ejemplo</button><button id="clearBtn" class="secondary">Limpiar</button><button id="runBtn">Calcular métricas</button></div>
+      <p id="status" class="status" role="status">Introduce una malla regular o usa el ejemplo.</p>
+    </section>
+
+    <section id="summary" class="panel" hidden aria-labelledby="summary-title">
+      <div class="section-heading"><div><p class="eyebrow">02 · RESULTADO</p><h2 id="summary-title">Morfometría local</h2></div><span id="gridLabel" class="badge">—</span></div>
+      <div class="metrics">
+        <div class="metric"><span>Celdas válidas</span><strong id="validCount">—</strong></div>
+        <div class="metric"><span>Valores calculados</span><strong id="metricCount">—</strong></div>
+        <div class="metric"><span>Mínimo</span><strong id="minMetric">—</strong></div>
+        <div class="metric"><span>Máximo</span><strong id="maxMetric">—</strong></div>
+        <div class="metric"><span>Media</span><strong id="meanMetric">—</strong></div>
+        <div class="metric"><span>Elevación min–máx</span><strong id="elevationRange">—</strong></div>
+      </div>
+      <div class="interpretation" id="interpretation">—</div>
+    </section>
+
+    <section class="panel" aria-labelledby="map-title">
+      <div class="section-heading"><div><p class="eyebrow">03 · INSPECCIÓN</p><h2 id="map-title">Métrica sobre el relieve</h2></div><span id="metricLabel" class="badge">pendiente</span></div>
+      <div id="map" class="map" aria-label="Mapa de métrica del terreno">
+        <div class="map-place-search cartografia-place-search">
+          <label for="placeQuery">Buscar lugar</label>
+          <input id="placeQuery" type="search" placeholder="Buscar un lugar para centrar el mapa" autocomplete="off">
+          <button id="placeSearchButton" type="button">Buscar</button>
+          <div id="placeResults" class="cartografia-place-results" role="listbox" hidden></div>
+          <p id="placeStatus" class="cartografia-place-status">Busca un topónimo para centrar el mapa.</p>
+        </div>
+      </div>
+      <div class="legend"><span><i class="swatch low"></i>Bajo</span><span><i class="swatch mid"></i>Medio</span><span><i class="swatch high"></i>Alto</span></div>
+      <p id="mapFallback" class="status" hidden>El mapa necesita cargar Leaflet con conexión. El cálculo local sigue disponible.</p>
+    </section>
+
+    <section id="tablePanel" class="panel" hidden aria-labelledby="table-title">
+      <div class="section-heading"><div><p class="eyebrow">04 · DETALLE</p><h2 id="table-title">Celdas extremas</h2></div><span class="badge">hasta 40 filas</span></div>
+      <div class="table-wrap"><table><thead><tr><th>Fila</th><th>Columna</th><th>Elevación</th><th>Métrica</th><th>Centro lon</th><th>Centro lat</th></tr></thead><tbody id="resultsBody"></tbody></table></div>
+    </section>
+
+    <section class="panel" aria-labelledby="export-title">
+      <div class="section-heading"><div><p class="eyebrow">05 · SALIDA</p><h2 id="export-title">Exporta la métrica</h2></div></div>
+      <div class="button-row"><button id="geojsonBtn" disabled>Descargar GeoJSON</button><button id="csvBtn" class="secondary" disabled>Descargar CSV</button></div>
+      <p class="note">Pendiente y orientación usan diferencias centrales aproximadas; TPI es la elevación central menos la media de sus vecinos; rugosidad es el rango local. Interpreta el resultado según la resolución y el sistema vertical del DEM.</p>
+    </section>
+
+    <section class="privacy"><p class="eyebrow">MÉTODO Y PRIVACIDAD</p><p>La malla se lee y procesa en este navegador. No se envía a un servidor propio ni se guarda fuera de la sesión. El mapa base usa teselas de <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>; la consulta de topónimos, si la utilizas, se realiza contra Nominatim y queda sujeta a su política de uso.</p></section>
+  </main>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+  <script src="../place-search.js"></script>
+  <script src="app.js?v=82"></script>
+</body>
+</html>
