@@ -37,6 +37,7 @@ Colección de herramientas web abiertas para cartografía, rutas y datos geoespa
 - [ROI Stats Lab](herramientas/roi-stats-lab/): dibuja regiones de interés sobre imágenes locales, calcula estadísticas RGB y de brillo por muestra y exporta una tabla reproducible.
 - [WFS Explorer](herramientas/wfs-explorer/): descubre tipos de entidad en servicios WFS públicos, consulta GeoJSON desde el navegador, visualiza el resultado y exporta entidades y atributos.
 - [Join Lab](herramientas/join-lab/): une un GeoJSON con una tabla CSV o TSV por una clave, detecta coincidencias, ausencias y duplicados y exporta una capa temática trazable.
+- [WMS Identify Lab](herramientas/wms-identify-lab/): descubre capas WMS, carga una previsualización y consulta `GetFeatureInfo` al hacer clic para ver y guardar la respuesta real del servicio.
 - [Grid Lab](herramientas/grid-lab/): cuadrícula AOI numerada con exportación GeoJSON y CSV para muestreo y teselas.
 - [Carto Local AI](herramientas/carto-local-ai/): diagnóstico local de GeoJSON con modo rápido determinista y WebLLM opcional sobre WebGPU.
 - [Layer Mixer](herramientas/layer-mixer/): mezcla capas WMS públicas, incluida cartografía histórica del SCUAM y fuentes del IGN, con opacidad, orden, cortina y exportación de configuración.
