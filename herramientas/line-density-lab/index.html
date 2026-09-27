@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Calcula densidad lineal por celdas a partir de líneas GeoJSON en el navegador.">
+  <title>Line Density Lab · Cartografía Web Tools</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
+  <link rel="stylesheet" href="styles.css?v=80">
+</head>
+<body>
+  <main>
+    <a class="back" href="../">← Catálogo</a>
+    <header class="hero">
+      <p class="eyebrow">80 · ANÁLISIS LINEAL · CLIENTE · LOCAL</p>
+      <h1>Line Density Lab</h1>
+      <p class="lede">Mide cuánta longitud de líneas cae dentro de cada celda para localizar corredores, trazados, ríos, caminos o intensidad de prospección.</p>
+    </header>
+
+    <section class="panel" aria-labelledby="input-title">
+      <div class="section-heading"><div><p class="eyebrow">01 · ENTRADA</p><h2 id="input-title">Líneas GeoJSON y tamaño de celda</h2></div><span class="badge">sin backend propio</span></div>
+      <div class="control-grid">
+        <label class="file-control">Cargar GeoJSON de líneas
+          <input id="fileInput" type="file" accept=".json,.geojson,application/json,application/geo+json">
+          <span id="fileName">Ningún archivo seleccionado</span>
+        </label>
+        <label>Tamaño de celda (km)
+          <input id="cellSize" type="number" min="0.1" max="100" step="0.1" value="1">
+        </label>
+        <label>Color de densidad
+          <select id="palette"><option value="ember" selected>Ámbar → rojo</option><option value="ocean">Azul → violeta</option><option value="terrain">Verde → marrón</option></select>
+        </label>
+      </div>
+      <div class="button-row"><button id="exampleBtn" class="secondary">Cargar ejemplo</button><button id="clearBtn" class="secondary">Limpiar</button><button id="runBtn" disabled>Calcular densidad</button></div>
+      <p id="status" class="status" role="status">Carga líneas GeoJSON o usa el ejemplo.</p>
+    </section>
+
+    <section id="summary" class="panel" hidden aria-labelledby="summary-title">
+      <div class="section-heading"><div><p class="eyebrow">02 · RESULTADO</p><h2 id="summary-title">Densidad lineal por celda</h2></div><span id="sizeLabel" class="badge">—</span></div>
+      <div class="metrics">
+        <div class="metric"><span>Entidades lineales</span><strong id="featureCount">—</strong></div>
+        <div class="metric"><span>Longitud total</span><strong id="totalLength">—</strong></div>
+        <div class="metric"><span>Celdas de malla</span><strong id="cellCount">—</strong></div>
+        <div class="metric"><span>Máx. densidad</span><strong id="maxDensity">—</strong></div>
+        <div class="metric"><span>Área analizada</span><strong id="areaCount">—</strong></div>
+        <div class="metric"><span>Segmentos muestreados</span><strong id="sampleCount">—</strong></div>
+      </div>
+      <div class="interpretation" id="interpretation">—</div>
+    </section>
+
+    <section class="panel" aria-labelledby="map-title">
+      <div class="section-heading"><div><p class="eyebrow">03 · INSPECCIÓN</p><h2 id="map-title">Corredores y celdas densas</h2></div><span class="badge">longitud / km²</span></div>
+      <div id="map" class="map" aria-label="Mapa de densidad lineal">
+        <div class="map-place-search cartografia-place-search">
+          <label for="placeQuery">Buscar lugar</label>
+          <input id="placeQuery" type="search" placeholder="Buscar un lugar para centrar el mapa" autocomplete="off">
+          <button id="placeSearchButton" type="button">Buscar</button>
+          <div id="placeResults" class="cartografia-place-results" role="listbox" hidden></div>
+          <p id="placeStatus" class="cartografia-place-status">Busca un topónimo para centrar el mapa.</p>
+        </div>
+      </div>
+      <div class="legend"><span><i class="swatch low"></i>Baja densidad</span><span><i class="swatch mid"></i>Media densidad</span><span><i class="swatch high"></i>Alta densidad</span><span><i class="swatch line"></i>Líneas de entrada</span></div>
+      <p id="mapFallback" class="status" hidden>El mapa necesita cargar Leaflet con conexión. El cálculo local sigue disponible.</p>
+    </section>
+
+    <section id="tablePanel" class="panel" hidden aria-labelledby="table-title">
+      <div class="section-heading"><div><p class="eyebrow">04 · DETALLE</p><h2 id="table-title">Celdas con mayor densidad</h2></div><span class="badge">hasta 40 filas</span></div>
+      <div class="table-wrap"><table><thead><tr><th>Celda</th><th>Longitud km</th><th>Densidad km/km²</th><th>Líneas</th><th>Centro lon</th><th>Centro lat</th></tr></thead><tbody id="resultsBody"></tbody></table></div>
+    </section>
+
+    <section class="panel" aria-labelledby="export-title">
+      <div class="section-heading"><div><p class="eyebrow">05 · SALIDA</p><h2 id="export-title">Exporta la superficie de densidad</h2></div></div>
+      <div class="button-row"><button id="geojsonBtn" disabled>Descargar GeoJSON de celdas</button><button id="csvBtn" class="secondary" disabled>Descargar CSV de densidad</button></div>
+      <p class="note">La longitud se reparte por el punto medio de subsegmentos de cada línea; el resultado es una aproximación cartográfica para comparar intensidad espacial. La capa y todos los cálculos se procesan localmente.</p>
+    </section>
+
+    <section class="privacy"><p class="eyebrow">MÉTODO Y PRIVACIDAD</p><p>El archivo se lee y procesa en este navegador. No se envía a un servidor propio ni se guarda fuera de la sesión. El mapa base usa teselas de <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>; la consulta de topónimos, si la utilizas, se realiza contra Nominatim y queda sujeta a su política de uso.</p></section>
+  </main>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+  <script src="../place-search.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
