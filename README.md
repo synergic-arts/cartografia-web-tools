@@ -24,6 +24,7 @@ Colección de herramientas web abiertas para cartografía, rutas y datos geoespa
 - [Solar Lab](herramientas/solar-lab/): calcula posición solar, horas de salida y puesta y dirección y longitud de sombra para una fecha y lugar, con mapa y exportación local.
 - [Network Lab](herramientas/network-lab/): analiza redes LineString y MultiLineString, ajusta extremos, calcula nodos, grados, componentes, extremos y longitudes y exporta GeoJSON/CSV.
 - [Projection Lab](herramientas/projection-lab/): transforma GeoJSON WGS84 a Web Mercator, UTM o equirectangular, compara extensiones, previsualiza la geometría y exporta la capa y sus vértices.
+- [Track Lab](herramientas/track-lab/): analiza recorridos GeoJSON 3D, calcula distancia, desnivel, pendiente, velocidad y perfil de elevación y exporta segmentos y puntos.
 - [Grid Lab](herramientas/grid-lab/): cuadrícula AOI numerada con exportación GeoJSON y CSV para muestreo y teselas.
 - [Carto Local AI](herramientas/carto-local-ai/): diagnóstico local de GeoJSON con modo rápido determinista y WebLLM opcional sobre WebGPU.
 - [Layer Mixer](herramientas/layer-mixer/): mezcla capas WMS públicas, incluida cartografía histórica del SCUAM y fuentes del IGN, con opacidad, orden, cortina y exportación de configuración.
