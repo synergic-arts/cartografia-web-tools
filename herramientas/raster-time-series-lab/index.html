@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Compara una serie temporal de GeoTIFF locales y calcula cambios y tendencias píxel a píxel en el navegador.">
+  <link rel="icon" href="../../icons/icon.svg" type="image/svg+xml">
+  <title>Raster Time Series Lab · Cartografía Web Tools</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
+  <link rel="stylesheet" href="styles.css?v=97">
+</head>
+<body>
+  <main>
+    <header class="hero"><a class="back" href="../">← Catálogo</a><p class="eyebrow">97 · CAMBIO RÁSTER · CLIENTE</p><h1>Raster Time Series Lab</h1><p class="intro">Compara varias imágenes GeoTIFF de una misma malla y genera mapas de media, cambio entre fechas y tendencia por píxel. Pensado para teledetección, vuelos históricos, humedad, elevación o seguimiento de excavaciones.</p></header>
+    <section class="panel" aria-labelledby="input-title">
+      <div class="section-heading"><div><p class="eyebrow">01 · SERIE</p><h2 id="input-title">Carga imágenes comparables</h2></div><span class="badge">sin servidor</span></div>
+      <label class="data-control">GeoTIFF locales (puedes seleccionar varios)
+        <input id="fileInput" type="file" multiple accept=".tif,.tiff,image/tiff,application/octet-stream">
+        <span>Se usa la primera banda de cada imagen. Todas deben compartir dimensiones, extensión y resolución; la fecha se detecta en el nombre (AAAA, AAAA-MM o AAAA-MM-DD).</span>
+      </label>
+      <div id="fileList" class="file-list" aria-live="polite">No hay imágenes cargadas.</div>
+      <div class="button-row"><button id="exampleBtn" class="secondary">Cargar serie sintética</button><button id="clearBtn" class="secondary">Limpiar</button><button id="runBtn">Calcular serie</button></div><p id="status" class="status" role="status">Carga al menos dos GeoTIFF de la misma malla o usa el ejemplo.</p>
+    </section>
+    <section id="summary" class="panel" hidden aria-labelledby="summary-title"><div class="section-heading"><div><p class="eyebrow">02 · RESUMEN</p><h2 id="summary-title">Cambio entre fechas</h2></div><span id="summaryBadge" class="badge">—</span></div><div class="metrics"><div class="metric"><span>Imágenes</span><strong id="imageCount">—</strong></div><div class="metric"><span>Píxeles válidos</span><strong id="validCount">—</strong></div><div class="metric"><span>Cambio medio</span><strong id="meanChange">—</strong></div><div class="metric"><span>Cambio P05</span><strong id="p05Change">—</strong></div><div class="metric"><span>Cambio P95</span><strong id="p95Change">—</strong></div><div class="metric"><span>Periodo</span><strong id="period">—</strong></div></div><p id="interpretation" class="interpretation">—</p></section>
+    <section class="panel" aria-labelledby="view-title"><div class="section-heading"><div><p class="eyebrow">03 · VISTA</p><h2 id="view-title">Variable cartográfica</h2></div><span id="viewBadge" class="badge">—</span></div><div class="controls-row"><label>Variable<select id="metricSelect"><option value="change">Cambio último − primero</option><option value="mean">Media temporal</option><option value="trend">Tendencia por año</option><option value="last">Última imagen</option></select></label><label>Percentil bajo<input id="lowInput" type="number" min="0" max="49" step="1" value="2"></label><label>Percentil alto<input id="highInput" type="number" min="51" max="100" step="1" value="98"></label><button id="renderBtn" class="secondary" disabled>Actualizar vista</button></div><div class="preview-grid"><div><canvas id="preview" aria-label="Vista previa de la variable ráster"></canvas><p id="previewFallback" class="note">La vista aparecerá tras calcular la serie.</p></div><div class="timeline" id="timeline"><h3>Imágenes y valores globales</h3><div id="timelineBody" class="timeline-body">—</div></div></div></section>
+    <section class="panel" aria-labelledby="map-title"><div class="section-heading"><div><p class="eyebrow">04 · MAPA</p><h2 id="map-title">Cambio espacial</h2></div><span id="mapBadge" class="badge">—</span></div><div id="map" class="map" aria-label="Mapa de cambio ráster"><div class="map-place-search cartografia-place-search"><label for="placeQuery">Buscar lugar</label><input id="placeQuery" type="search" placeholder="Centrar el mapa en un lugar" autocomplete="off"><button id="placeSearchButton" type="button">Buscar</button><div id="placeResults" role="status"></div><small id="placeStatus">La búsqueda es opcional y usa Nominatim.</small></div></div><p id="mapNote" class="note">La superposición se activa cuando la extensión parece lon/lat WGS84. Los colores del cambio usan una rampa divergente: azul negativo, blanco neutro y rojo positivo.</p></section>
+    <section class="panel" aria-labelledby="export-title"><div class="section-heading"><div><p class="eyebrow">05 · SALIDA</p><h2 id="export-title">Exporta la serie</h2></div></div><div class="button-row"><button id="pngBtn" class="secondary" disabled>Descargar PNG</button><button id="csvBtn" class="secondary" disabled>Descargar muestra CSV</button><button id="reportBtn" class="secondary" disabled>Descargar informe JSON</button></div><p class="note">El cambio y la tendencia se calculan sobre los valores disponibles en cada píxel. La tendencia es una regresión lineal exploratoria por año; revisa nubes, máscaras, unidades y normalización radiométrica antes de interpretar causas.</p></section>
+    <footer class="privacy"><strong>Privacidad y trazabilidad.</strong> GeoTIFF.js se carga desde <a href="https://github.com/geotiffjs/geotiff.js" target="_blank" rel="noopener">GeoTIFF.js</a>; las imágenes se procesan en memoria local. Mapa: <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>; búsqueda opcional: Nominatim.</footer>
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/geotiff@2.1.3/dist-browser/geotiff.js" crossorigin="anonymous"></script><script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script><script src="../place-search.js?v=place-search-1"></script><script src="app.js?v=97.1"></script>
+</body>
+</html>
