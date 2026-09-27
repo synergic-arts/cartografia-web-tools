@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Calcula dirección D8 y acumulación de flujo desde una malla de elevaciones en el navegador.">
+  <title>Flow Accumulation Lab · Cartografía Web Tools</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
+  <link rel="stylesheet" href="styles.css?v=81">
+</head>
+<body>
+  <main>
+    <a class="back" href="../">← Catálogo</a>
+    <header class="hero">
+      <p class="eyebrow">81 · HIDROLOGÍA · CLIENTE · LOCAL</p>
+      <h1>Flow Accumulation Lab</h1>
+      <p class="lede">Deriva dirección D8, acumulación y posibles cauces desde una malla regular de elevaciones para revisar escorrentía y relieve.</p>
+    </header>
+
+    <section class="panel" aria-labelledby="input-title">
+      <div class="section-heading"><div><p class="eyebrow">01 · ENTRADA</p><h2 id="input-title">Malla de elevaciones</h2></div><span class="badge">sin backend propio</span></div>
+      <div class="control-grid">
+        <label class="file-control">Abrir CSV o JSON
+          <input id="fileInput" type="file" accept=".csv,.txt,.json,.geojson,text/csv,application/json">
+          <span id="fileName">Ningún archivo seleccionado</span>
+        </label>
+        <label>Tamaño de celda (m)
+          <input id="cellSize" type="number" min="1" max="10000" step="1" value="100">
+        </label>
+        <label>Umbral de cauce (celdas)
+          <input id="threshold" type="number" min="1" max="1000000" step="1" value="8">
+        </label>
+        <label>Longitud oeste (°)
+          <input id="west" type="number" min="-180" max="180" step="0.000001" value="-3.750000">
+        </label>
+        <label>Latitud sur (°)
+          <input id="south" type="number" min="-90" max="90" step="0.000001" value="40.390000">
+        </label>
+        <label class="check-control"><input id="streamOnly" type="checkbox"> Mostrar solo cauces sobre el mapa</label>
+      </div>
+      <label class="data-control">CSV o JSON de la malla
+        <textarea id="source" rows="6" spellcheck="false" aria-label="Malla regular de elevaciones"></textarea>
+        <span>CSV: una fila por línea y una elevación por columna. JSON: <code>{"rows":5,"cols":5,"values":[...]}</code>.</span>
+      </label>
+      <div class="button-row"><button id="exampleBtn" class="secondary">Cargar ejemplo</button><button id="clearBtn" class="secondary">Limpiar</button><button id="runBtn">Calcular acumulación</button></div>
+      <p id="status" class="status" role="status">Introduce una malla regular o usa el ejemplo.</p>
+    </section>
+
+    <section id="summary" class="panel" hidden aria-labelledby="summary-title">
+      <div class="section-heading"><div><p class="eyebrow">02 · RESULTADO</p><h2 id="summary-title">Red de escorrentía D8</h2></div><span id="gridLabel" class="badge">—</span></div>
+      <div class="metrics">
+        <div class="metric"><span>Celdas válidas</span><strong id="validCount">—</strong></div>
+        <div class="metric"><span>Área de celda</span><strong id="cellArea">—</strong></div>
+        <div class="metric"><span>Máx. acumulación</span><strong id="maxAccum">—</strong></div>
+        <div class="metric"><span>Celdas de cauce</span><strong id="streamCount">—</strong></div>
+        <div class="metric"><span>Salidas locales</span><strong id="outletCount">—</strong></div>
+        <div class="metric"><span>Elevación min–máx</span><strong id="elevationRange">—</strong></div>
+      </div>
+      <div class="interpretation" id="interpretation">—</div>
+    </section>
+
+    <section class="panel" aria-labelledby="map-title">
+      <div class="section-heading"><div><p class="eyebrow">03 · INSPECCIÓN</p><h2 id="map-title">Acumulación y cauces</h2></div><span class="badge">D8 · log1p</span></div>
+      <div id="map" class="map" aria-label="Mapa de acumulación de flujo">
+        <div class="map-place-search cartografia-place-search">
+          <label for="placeQuery">Buscar lugar</label>
+          <input id="placeQuery" type="search" placeholder="Buscar un lugar para centrar el mapa" autocomplete="off">
+          <button id="placeSearchButton" type="button">Buscar</button>
+          <div id="placeResults" class="cartografia-place-results" role="listbox" hidden></div>
+          <p id="placeStatus" class="cartografia-place-status">Busca un topónimo para centrar el mapa.</p>
+        </div>
+      </div>
+      <div class="legend"><span><i class="swatch low"></i>Baja acumulación</span><span><i class="swatch mid"></i>Acumulación media</span><span><i class="swatch high"></i>Alta acumulación</span><span><i class="swatch stream"></i>Cauce umbral</span></div>
+      <p id="mapFallback" class="status" hidden>El mapa necesita cargar Leaflet con conexión. El cálculo local sigue disponible.</p>
+    </section>
+
+    <section id="tablePanel" class="panel" hidden aria-labelledby="table-title">
+      <div class="section-heading"><div><p class="eyebrow">04 · DETALLE</p><h2 id="table-title">Celdas de mayor acumulación</h2></div><span class="badge">hasta 40 filas</span></div>
+      <div class="table-wrap"><table><thead><tr><th>Fila</th><th>Columna</th><th>Elevación</th><th>Acumulación</th><th>Área ha</th><th>Dirección</th><th>Cauce</th></tr></thead><tbody id="resultsBody"></tbody></table></div>
+    </section>
+
+    <section class="panel" aria-labelledby="export-title">
+      <div class="section-heading"><div><p class="eyebrow">05 · SALIDA</p><h2 id="export-title">Exporta la red derivada</h2></div></div>
+      <div class="button-row"><button id="geojsonBtn" disabled>Descargar GeoJSON</button><button id="csvBtn" class="secondary" disabled>Descargar CSV</button></div>
+      <p class="note">La implementación usa un flujo D8 determinista: cada celda dirige hacia el vecino con mayor descenso positivo y acumula una contribución de una celda. Es una exploración de relieve, no un modelo hidrológico calibrado.</p>
+    </section>
+
+    <section class="privacy"><p class="eyebrow">MÉTODO Y PRIVACIDAD</p><p>La malla se lee y procesa en este navegador. No se envía a un servidor propio ni se guarda fuera de la sesión. El mapa base usa teselas de <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>; la consulta de topónimos, si la utilizas, se realiza contra Nominatim y queda sujeta a su política de uso.</p></section>
+  </main>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+  <script src="../place-search.js"></script>
+  <script src="app.js?v=81"></script>
+</body>
+</html>

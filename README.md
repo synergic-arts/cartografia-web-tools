@@ -47,6 +47,7 @@ Colección de herramientas web abiertas para cartografía, rutas y datos geoespa
 - [Kriging Lab](herramientas/kriging-lab/): interpola un campo numérico puntual con kriging ordinario exploratorio, permite ajustar alcance, nugget y modelo y exporta la superficie estimada.
 - [Hotspot Lab](herramientas/hotspot-lab/): detecta concentraciones locales de valores altos y bajos con Getis-Ord Gi*, vecindad configurable y exportación enriquecida.
 - [Line Density Lab](herramientas/line-density-lab/): calcula longitud lineal y densidad por km² en una malla configurable para caminos, ríos, transectos y redes cartográficas.
+- [Flow Accumulation Lab](herramientas/flow-accumulation-lab/): deriva flujo D8, acumulación, salidas y posibles cauces desde una malla regular de elevaciones, con mapa y exportación.
 - [Grid Lab](herramientas/grid-lab/): cuadrícula AOI numerada con exportación GeoJSON y CSV para muestreo y teselas.
 - [Carto Local AI](herramientas/carto-local-ai/): diagnóstico local de GeoJSON con modo rápido determinista y WebLLM opcional sobre WebGPU.
 - [Layer Mixer](herramientas/layer-mixer/): mezcla capas WMS públicas, incluida cartografía histórica del SCUAM y fuentes del IGN, con opacidad, orden, cortina y exportación de configuración.
