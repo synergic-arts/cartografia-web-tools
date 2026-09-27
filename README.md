@@ -39,6 +39,7 @@ Colección de herramientas web abiertas para cartografía, rutas y datos geoespa
 - [Join Lab](herramientas/join-lab/): une un GeoJSON con una tabla CSV o TSV por una clave, detecta coincidencias, ausencias y duplicados y exporta una capa temática trazable.
 - [WMS Identify Lab](herramientas/wms-identify-lab/): descubre capas WMS, carga una previsualización y consulta `GetFeatureInfo` al hacer clic para ver y guardar la respuesta real del servicio.
 - [Explode Lab](herramientas/explode-lab/): separa MultiPoint, MultiLineString, MultiPolygon y GeometryCollection, conserva atributos y añade índices de origen para edición y análisis.
+- [Segment Lab](herramientas/segment-lab/): divide líneas GeoJSON en tramos consecutivos de longitud controlada, conserva atributos y calcula kilometraje, longitud y rumbo para campo o SIG.
 - [Grid Lab](herramientas/grid-lab/): cuadrícula AOI numerada con exportación GeoJSON y CSV para muestreo y teselas.
 - [Carto Local AI](herramientas/carto-local-ai/): diagnóstico local de GeoJSON con modo rápido determinista y WebLLM opcional sobre WebGPU.
 - [Layer Mixer](herramientas/layer-mixer/): mezcla capas WMS públicas, incluida cartografía histórica del SCUAM y fuentes del IGN, con opacidad, orden, cortina y exportación de configuración.

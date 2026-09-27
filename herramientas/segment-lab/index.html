@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="description" content="Divide líneas GeoJSON en tramos de longitud controlada y calcula kilometraje y rumbo localmente.">
+  <title>Segment Lab · segmentación lineal</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+  <link rel="stylesheet" href="styles.css?v=20260927-1">
+</head>
+<body>
+  <main class="shell">
+    <a class="back" href="../">← Catálogo</a>
+    <p class="eyebrow">73 · REFERENCIACIÓN LINEAL · CLIENTE · LOCAL</p>
+    <h1>Divide una ruta en tramos medibles.</h1>
+    <p class="lede">Segmenta LineString y MultiLineString en piezas consecutivas de longitud controlada. Cada tramo conserva los atributos de origen y añade kilometraje, rumbo e índice para inventarios, campañas de campo, carreteras, ríos y transectos.</p>
+    <section class="layout">
+      <article class="panel input-panel">
+        <div class="heading"><div><h2>1 · Línea de entrada</h2><p class="hint">Admite GeoJSON en WGS84; los cálculos de distancia usan Haversine.</p></div><span class="local-badge">sin servidor</span></div>
+        <label class="file-label" for="file">Abrir GeoJSON local<input id="file" type="file" accept=".geojson,.json,application/geo+json,application/json"></label>
+        <textarea id="source" rows="11" spellcheck="false" aria-label="GeoJSON de entrada">{"type":"FeatureCollection","features":[{"type":"Feature","properties":{"nombre":"Transecto de ejemplo","campaña":"2026"},"geometry":{"type":"LineString","coordinates":[[-3.720,40.416],[-3.713,40.419],[-3.705,40.414],[-3.696,40.420],[-3.686,40.417]]}}]}</textarea>
+        <div class="options"><label>Longitud de tramo (m)<input id="interval" type="number" min="1" step="1" value="600" inputmode="decimal"></label><label class="check"><input id="includeRemainder" type="checkbox" checked><span>Conservar el tramo final parcial</span></label></div>
+        <div class="actions"><button id="calculateBtn" class="primary" type="button">Generar tramos</button><button id="sampleBtn" type="button">Cargar ejemplo</button><button id="clearBtn" type="button">Limpiar</button></div>
+        <p id="status" class="status" role="status" aria-live="polite">Los segmentos se calculan localmente sobre la geometría.</p>
+      </article>
+      <article class="panel map-panel">
+        <div class="heading"><div><h2>2 · Segmentos resultantes</h2><p class="hint">Pulsa un tramo para consultar sus medidas.</p></div><span id="segmentBadge" class="count-badge">0 tramos</span></div>
+        <div id="map" aria-label="Mapa de segmentos lineales"></div>
+        <div id="mapFallback" class="fallback" hidden>El mapa necesita conexión para las teselas. El cálculo y la exportación local siguen disponibles.</div>
+      </article>
+    </section>
+    <section class="panel results-panel">
+      <div class="heading"><div><h2>3 · Control de segmentación</h2><p class="hint">El kilometraje reinicia en cada parte de una MultiLineString.</p></div><span id="quality" class="quality muted">Sin calcular</span></div>
+      <div class="stats"><div><span>Líneas</span><strong id="lineCount">—</strong></div><div><span>Longitud total</span><strong id="lengthTotal">—</strong></div><div><span>Tramos</span><strong id="segmentCount">—</strong></div><div><span>Longitud objetivo</span><strong id="intervalReadout">—</strong></div></div>
+      <div id="tableWrap" class="table-wrap"><p class="empty">Genera tramos para ver la tabla.</p></div>
+      <div class="exports"><button id="geojsonBtn" type="button" disabled><strong>Exportar tramos GeoJSON</strong><small>Geometrías segmentadas y medidas</small></button><button id="csvBtn" type="button" disabled><strong>Exportar tabla CSV</strong><small>Resumen para campo o SIG</small></button></div>
+      <p class="fineprint">La interpolación se realiza entre vértices lon/lat y conserva los vértices interiores de cada tramo. Para trabajos legales, grandes extensiones o precisión topográfica, valida el resultado en un CRS proyectado.</p>
+    </section>
+    <footer class="credits">Mapa base © <a href="https://www.openstreetmap.org/copyright" rel="noreferrer">OpenStreetMap contributors</a> · procesamiento local sin telemetría.</footer>
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script src="app.js?v=20260927-1"></script>
+</body>
+</html>
