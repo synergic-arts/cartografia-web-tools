@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Crea composiciones RGB y falso color desde tres bandas raster locales en el navegador.">
+  <title>Raster Composite Lab · composición de bandas</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="shell">
+    <header class="hero">
+      <a class="back" href="../">← Catálogo</a>
+      <p class="eyebrow">67 · TELEDETECCIÓN · CLIENTE · LOCAL</p>
+      <h1>Combina tres bandas y descubre otra lectura del territorio.</h1>
+      <p class="lede">Construye composiciones RGB o falso color a partir de tres imágenes locales. Ajusta el estiramiento radiométrico, cambia el orden de las bandas y revisa los valores de cada píxel antes de exportar.</p>
+    </header>
+
+    <section class="workspace">
+      <article class="panel input-panel">
+        <div class="panel-heading"><span class="step">1</span><div><h2>Bandas y composición</h2><p>Las imágenes permanecen en este dispositivo.</p></div></div>
+        <div class="band-inputs">
+          <label class="file-button band-a">Banda 1<input id="file0" type="file" accept="image/png,image/jpeg,image/webp"></label>
+          <label class="file-button band-b">Banda 2<input id="file1" type="file" accept="image/png,image/jpeg,image/webp"></label>
+          <label class="file-button band-c">Banda 3<input id="file2" type="file" accept="image/png,image/jpeg,image/webp"></label>
+        </div>
+        <div class="form-grid">
+          <label for="preset">Perfil de uso<select id="preset"><option value="natural">RGB / natural</option><option value="falsecolor">Falso color NIR–rojo–verde</option><option value="custom">Orden personalizado</option></select></label>
+          <label for="stretch">Estiramiento<select id="stretch"><option value="percentile">Percentiles 2–98</option><option value="minmax">Mínimo–máximo</option><option value="manual">Manual</option></select></label>
+          <label for="redBand">Canal rojo recibe<select id="redBand"><option value="0">Banda 1</option><option value="1">Banda 2</option><option value="2">Banda 3</option></select></label>
+          <label for="greenBand">Canal verde recibe<select id="greenBand"><option value="1">Banda 2</option><option value="0">Banda 1</option><option value="2">Banda 3</option></select></label>
+          <label for="blueBand">Canal azul recibe<select id="blueBand"><option value="2">Banda 3</option><option value="0">Banda 1</option><option value="1">Banda 2</option></select></label>
+          <label for="transparent">Transparencia<select id="transparent"><option value="yes">Respetar píxeles transparentes</option><option value="no">Forzar opacidad</option></select></label>
+        </div>
+        <div class="manual-grid" id="manualGrid" hidden><label for="min0">Banda 1 · mínimo<input id="min0" type="number" min="0" max="255" value="0"></label><label for="max0">máximo<input id="max0" type="number" min="0" max="255" value="255"></label><label for="min1">Banda 2 · mínimo<input id="min1" type="number" min="0" max="255" value="0"></label><label for="max1">máximo<input id="max1" type="number" min="0" max="255" value="255"></label><label for="min2">Banda 3 · mínimo<input id="min2" type="number" min="0" max="255" value="0"></label><label for="max2">máximo<input id="max2" type="number" min="0" max="255" value="255"></label></div>
+        <p class="hint">Cada imagen se convierte a luminancia 0–255. El modo falso color solo documenta el orden elegido: carga NIR como Banda 1, rojo como Banda 2 y verde como Banda 3 para una composición NIR–R–G.</p>
+        <div class="actions"><button id="calculateBtn" class="primary">Crear composición</button><button id="sampleBtn" class="secondary">Cargar bandas de ejemplo</button></div>
+        <p id="status" class="status" role="status">Tres bandas sintéticas listas para combinar.</p>
+      </article>
+
+      <article class="panel preview-panel">
+        <div class="panel-heading"><span class="step">2</span><div><h2>Composición resultante</h2><p>Haz clic en la imagen para consultar los tres valores.</p></div><span id="profileBadge" class="badge">RGB</span></div>
+        <canvas id="compositeCanvas" width="720" height="460" aria-label="Composición RGB resultante"></canvas>
+        <div class="pixel-readout"><span id="pixelSwatch"></span><span id="pixelText">Píxel: haz clic en la composición.</span></div>
+      </article>
+    </section>
+
+    <section class="panel report-panel">
+      <div class="panel-heading"><span class="step">3</span><div><h2>Control de bandas y exportación</h2><p>Los rangos usados quedan documentados en el informe.</p></div><span id="quality" class="quality">Pendiente</span></div>
+      <div class="stats"><div><strong id="imageSize">—</strong><span>dimensiones</span></div><div><strong id="validPixels">—</strong><span>píxeles válidos</span></div><div><strong id="redSource">—</strong><span>fuente R</span></div><div><strong id="greenSource">—</strong><span>fuente G</span></div><div><strong id="blueSource">—</strong><span>fuente B</span></div></div>
+      <div id="tableWrap" class="table-wrap"><p class="empty">Crea una composición para revisar estadísticas.</p></div>
+      <div class="actions export-actions"><button id="pngBtn" class="secondary" disabled>Exportar PNG</button><button id="jsonBtn" class="secondary" disabled>Exportar informe JSON</button><button id="csvBtn" class="secondary" disabled>Exportar estadísticas CSV</button></div>
+      <p class="note">Una imagen PNG/JPEG/WebP no contiene por sí sola un CRS fiable. Esta composición es una vista radiométrica exploratoria; para análisis científico utiliza bandas georreferenciadas, metadatos y una cadena de calibración documentada.</p>
+    </section>
+
+    <footer>Procesamiento local por diseño. Las bandas no se suben a un backend y las exportaciones se generan en el navegador.</footer>
+  </main>
+  <script src="app.js?v=20260927-1"></script>
+</body>
+</html>

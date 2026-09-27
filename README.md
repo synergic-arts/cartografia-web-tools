@@ -33,6 +33,7 @@ Colección de herramientas web abiertas para cartografía, rutas y datos geoespa
 - [Raster Mask Lab](herramientas/raster-mask-lab/): crea máscaras raster exploratorias desde imágenes locales por brillo, dominancia RGB, saturación o distancia a un color y exporta PNG e informes.
 - [Proportional Lab](herramientas/proportional-lab/): convierte atributos numéricos de puntos GeoJSON en símbolos proporcionales con escalas lineal, raíz o logarítmica y exporta la capa enriquecida.
 - [Raster Reclass Lab](herramientas/raster-reclass-lab/): reclasifica imágenes locales por intervalos de brillo, color o saturación, revisa el reparto de clases y exporta PNG e informes.
+- [Raster Composite Lab](herramientas/raster-composite-lab/): combina tres bandas locales en composiciones RGB o falso color, ajusta el estiramiento radiométrico y exporta PNG e informes.
 - [Grid Lab](herramientas/grid-lab/): cuadrícula AOI numerada con exportación GeoJSON y CSV para muestreo y teselas.
 - [Carto Local AI](herramientas/carto-local-ai/): diagnóstico local de GeoJSON con modo rápido determinista y WebLLM opcional sobre WebGPU.
 - [Layer Mixer](herramientas/layer-mixer/): mezcla capas WMS públicas, incluida cartografía histórica del SCUAM y fuentes del IGN, con opacidad, orden, cortina y exportación de configuración.
