@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Interpolación exploratoria por kriging ordinario sobre puntos GeoJSON en el navegador.">
+  <title>Kriging Lab · interpolación espacial</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
+  <link rel="stylesheet" href="styles.css?v=20260927-1">
+</head>
+<body>
+  <main class="shell">
+    <a class="back" href="../">← Catálogo</a>
+    <p class="eyebrow">78 · INTERPOLACIÓN ESPACIAL · CLIENTE · LOCAL</p>
+    <h1>Estima una superficie a partir de observaciones.</h1>
+    <p class="lede">Aplica kriging ordinario exploratorio sobre puntos GeoJSON con un campo numérico, controla el alcance y el nugget y genera una malla temática para revisar tendencias espaciales sin enviar los datos.</p>
+    <section class="layout">
+      <article class="panel controls">
+        <div class="heading"><div><h2>1 · Observaciones y modelo</h2><p class="hint">Admite puntos GeoJSON en WGS84. Se limita a 80 puntos y 5.000 celdas para mantener el navegador fluido.</p></div><span class="local-badge">sin servidor</span></div>
+        <label class="drop" for="file"><input id="file" type="file" accept=".geojson,.json,application/geo+json,application/json"><b>＋ Abrir puntos GeoJSON</b><small>Las geometrías no puntuales se resumen por su centro representativo.</small></label>
+        <textarea id="source" rows="9" spellcheck="false" aria-label="GeoJSON de observaciones">{"type":"FeatureCollection","features":[{"type":"Feature","properties":{"sitio":"A","valor":12},"geometry":{"type":"Point","coordinates":[-3.724,40.436]}},{"type":"Feature","properties":{"sitio":"B","valor":18},"geometry":{"type":"Point","coordinates":[-3.713,40.430]}},{"type":"Feature","properties":{"sitio":"C","valor":8},"geometry":{"type":"Point","coordinates":[-3.690,40.437]}},{"type":"Feature","properties":{"sitio":"D","valor":21},"geometry":{"type":"Point","coordinates":[-3.682,40.428]}},{"type":"Feature","properties":{"sitio":"E","valor":15},"geometry":{"type":"Point","coordinates":[-3.720,40.404]}},{"type":"Feature","properties":{"sitio":"F","valor":6},"geometry":{"type":"Point","coordinates":[-3.711,40.397]}},{"type":"Feature","properties":{"sitio":"G","valor":11},"geometry":{"type":"Point","coordinates":[-3.728,40.414]}},{"type":"Feature","properties":{"sitio":"H","valor":27},"geometry":{"type":"Point","coordinates":[-3.694,40.402]}}]}</textarea>
+        <div class="options"><label>Campo numérico<select id="valueField" aria-label="Campo numérico"></select></label><label>Modelo de covarianza<select id="model"><option value="exponential">Exponencial</option><option value="gaussian">Gaussiano</option></select></label><label>Tamaño de celda (km)<input id="cellSize" type="number" min="0.1" max="100" step="0.1" value="1"></label><label>Alcance (km)<input id="range" type="number" min="0.1" max="500" step="0.1" value="4"></label><label>Nugget relativo<input id="nugget" type="number" min="0" max="1" step="0.01" value="0.05"><small>Ruido o microvariación</small></label></div>
+        <div class="actions"><button id="runBtn" class="primary" type="button">Interpolar superficie</button><button id="sampleBtn" class="secondary" type="button">Cargar ejemplo</button><button id="clearBtn" class="secondary" type="button">Limpiar</button></div>
+        <p id="status" class="status" role="status" aria-live="polite">Carga puntos para empezar.</p>
+      </article>
+      <article class="panel map-panel">
+        <div class="heading"><div><h2>2 · Superficie interpolada</h2><p class="hint">Pulsa una celda para consultar la estimación.</p></div><span id="cellBadge" class="count-badge">0 celdas</span></div>
+        <div id="map" aria-label="Mapa de kriging"></div>
+        <div id="mapFallback" class="fallback" hidden>El mapa necesita conexión para las teselas. El cálculo y la exportación local siguen disponibles.</div>
+        <div class="legend"><span><i class="low-swatch"></i>Bajo</span><span><i class="high-swatch"></i>Alto</span><span class="legend-note">Valor estimado por celda</span></div>
+      </article>
+    </section>
+    <section class="panel results-panel">
+      <div class="heading"><div><h2>3 · Control y exportación</h2><p class="hint">El resultado es exploratorio: valida el variograma y los residuos en un SIG antes de usarlo como evidencia.</p></div><span id="quality" class="quality muted">Pendiente</span></div>
+      <div class="stats"><div><span>Puntos válidos</span><strong id="pointCount">—</strong></div><div><span>Celdas</span><strong id="cellCount">—</strong></div><div><span>Mínimo estimado</span><strong id="minValue">—</strong></div><div><span>Máximo estimado</span><strong id="maxValue">—</strong></div></div>
+      <div id="tableWrap" class="table-wrap"><p class="empty">Calcula una superficie para ver la tabla.</p></div>
+      <div class="exports"><button id="geojsonBtn" type="button" disabled><strong>Exportar superficie GeoJSON</strong><small>Polígonos con estimación y varianza</small></button><button id="csvBtn" type="button" disabled><strong>Exportar tabla CSV</strong><small>Centro, estimación y varianza</small></button></div>
+      <p class="fineprint">La implementación usa kriging ordinario con covarianza exponencial o gaussiana y una matriz regularizada con nugget. No calcula automáticamente un variograma experimental ni sustituye una validación estadística.</p>
+    </section>
+    <footer class="credits">Mapa base © <a href="https://www.openstreetmap.org/copyright" rel="noreferrer">OpenStreetMap contributors</a> · procesamiento local sin telemetría.</footer>
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+  <script src="app.js?v=20260927-1"></script>
+</body>
+</html>
