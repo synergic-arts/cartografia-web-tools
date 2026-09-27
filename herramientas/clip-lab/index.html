@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Recorta geometrías GeoJSON por una caja de extensión en el navegador, sin servidor.">
+  <title>Clip Lab · recorte espacial</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIINfQ3d9wM4xL6z7N9hN7e4n2W1mQ8s0yM=" crossorigin="">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="shell">
+    <header class="hero">
+      <a class="back" href="../">← Catálogo</a>
+      <p class="eyebrow">63 · RECORTE VECTORIAL · CLIENTE · LOCAL</p>
+      <h1>Trabaja solo con el área que necesitas.</h1>
+      <p class="lede">Recorta puntos, líneas y polígonos GeoJSON por una caja WGS84. El proceso genera geometrías nuevas, conserva los atributos y deja claro qué entidades quedaron fuera o fueron modificadas.</p>
+    </header>
+
+    <section class="workspace">
+      <article class="panel input-panel">
+        <div class="panel-heading"><span class="step">1</span><div><h2>Capa y área de interés</h2><p>El recorte se ejecuta completamente en el navegador.</p></div></div>
+        <label class="file-button">Abrir GeoJSON local<input id="file" type="file" accept=".geojson,.json,application/geo+json"></label>
+        <label for="source">Capa GeoJSON</label>
+        <textarea id="source" spellcheck="false" aria-label="Capa GeoJSON">{
+  "type": "FeatureCollection",
+  "features": [
+    {"type":"Feature","properties":{"nombre":"Punto dentro","tipo":"muestra"},"geometry":{"type":"Point","coordinates":[-3.702,40.419]}},
+    {"type":"Feature","properties":{"nombre":"Punto fuera","tipo":"muestra"},"geometry":{"type":"Point","coordinates":[-3.735,40.445]}},
+    {"type":"Feature","properties":{"nombre":"Camino recortado"},"geometry":{"type":"LineString","coordinates":[[-3.735,40.410],[-3.700,40.430],[-3.675,40.410]]}},
+    {"type":"Feature","properties":{"nombre":"Recinto"},"geometry":{"type":"Polygon","coordinates":[[[-3.730,40.405],[-3.680,40.405],[-3.680,40.438],[-3.730,40.438],[-3.730,40.405]]]}}
+  ]
+}</textarea>
+        <div class="form-grid">
+          <label for="minLon">Longitud mínima<input id="minLon" type="number" step="any" value="-3.720"></label>
+          <label for="minLat">Latitud mínima<input id="minLat" type="number" step="any" value="40.410"></label>
+          <label for="maxLon">Longitud máxima<input id="maxLon" type="number" step="any" value="-3.690"></label>
+          <label for="maxLat">Latitud máxima<input id="maxLat" type="number" step="any" value="40.430"></label>
+        </div>
+        <p class="hint">La caja usa longitud/latitud WGS84 en grados decimales. Las líneas se dividen si entran y salen varias veces; los polígonos se recortan por anillo.</p>
+        <div class="actions"><button id="calculateBtn" class="primary">Recortar capa</button><button id="extentBtn" class="secondary">Usar extensión de capa</button><button id="sampleBtn" class="secondary">Cargar ejemplo</button></div>
+        <p id="status" class="status" role="status">El ejemplo está listo para recortarse en local.</p>
+      </article>
+
+      <article class="panel map-panel">
+        <div class="panel-heading"><span class="step">2</span><div><h2>Antes y después</h2><p>Azul: capa de entrada. Naranja: geometría recortada.</p></div><span id="resultBadge" class="badge">—</span></div>
+        <div id="map" class="map" aria-label="Mapa de recorte vectorial"></div>
+        <div class="legend"><span class="source-swatch"></span><span>entrada</span><span class="clip-swatch"></span><span>recortada</span><span id="mapNote">Mapa base © OpenStreetMap contributors</span></div>
+      </article>
+    </section>
+
+    <section class="panel report-panel">
+      <div class="panel-heading"><span class="step">3</span><div><h2>Resultado y exportación</h2><p>La tabla muestra el destino de cada entidad de entrada.</p></div><span id="quality" class="quality">Pendiente</span></div>
+      <div class="stats">
+        <div><strong id="sourceCount">—</strong><span>entidades de entrada</span></div>
+        <div><strong id="outputCount">—</strong><span>entidades de salida</span></div>
+        <div><strong id="droppedCount">—</strong><span>descartadas</span></div>
+        <div><strong id="changedCount">—</strong><span>modificadas</span></div>
+        <div><strong id="vertexCount">—</strong><span>vértices de salida</span></div>
+      </div>
+      <div id="tableWrap" class="table-wrap"><p class="empty">Recorta una capa para revisar sus entidades.</p></div>
+      <div class="actions export-actions"><button id="geojsonBtn" class="secondary" disabled>Exportar GeoJSON recortado</button><button id="csvBtn" class="secondary" disabled>Exportar informe CSV</button></div>
+      <p class="note">El recorte utiliza geometría planar sobre grados WGS84 para las intersecciones. Para análisis de precisión, reproyecta después la capa a un CRS métrico adecuado y valida topología.</p>
+    </section>
+
+    <footer>Procesamiento local por diseño. El GeoJSON no se envía a un backend. Leaflet y el mapa base solicitan teselas directamente a OpenStreetMap. <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">Atribución de OpenStreetMap</a>.</footer>
+  </main>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script src="app.js?v=20260927-1"></script>
+</body>
+</html>

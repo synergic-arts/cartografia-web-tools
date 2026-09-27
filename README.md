@@ -29,6 +29,7 @@ Colección de herramientas web abiertas para cartografía, rutas y datos geoespa
 - [Legend Lab](herramientas/legend-lab/): detecta atributos GeoJSON, crea clasificaciones cuantitativas o categóricas, aplica paletas, genera leyendas y exporta una especificación reproducible.
 - [Viewshed Lab](herramientas/viewshed-lab/): calcula una cuenca visual exploratoria desde una malla local de elevaciones, permite mover el observador, clasifica celdas y exporta GeoJSON/CSV.
 - [Route Opt Lab](herramientas/route-opt-lab/): ordena puntos de campo con vecino más cercano y 2-opt, compara el ahorro frente a la entrada y exporta itinerarios GeoJSON/CSV.
+- [Clip Lab](herramientas/clip-lab/): recorta puntos, líneas y polígonos GeoJSON por una caja WGS84, conserva atributos, informa entidades descartadas y exporta la capa resultante.
 - [Grid Lab](herramientas/grid-lab/): cuadrícula AOI numerada con exportación GeoJSON y CSV para muestreo y teselas.
 - [Carto Local AI](herramientas/carto-local-ai/): diagnóstico local de GeoJSON con modo rápido determinista y WebLLM opcional sobre WebGPU.
 - [Layer Mixer](herramientas/layer-mixer/): mezcla capas WMS públicas, incluida cartografía histórica del SCUAM y fuentes del IGN, con opacidad, orden, cortina y exportación de configuración.
