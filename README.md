@@ -49,6 +49,7 @@ Colección de herramientas web abiertas para cartografía, rutas y datos geoespa
 - [Line Density Lab](herramientas/line-density-lab/): calcula longitud lineal y densidad por km² en una malla configurable para caminos, ríos, transectos y redes cartográficas.
 - [Flow Accumulation Lab](herramientas/flow-accumulation-lab/): deriva flujo D8, acumulación, salidas y posibles cauces desde una malla regular de elevaciones, con mapa y exportación.
 - [Terrain Metrics Lab](herramientas/terrain-metrics-lab/): calcula pendiente, orientación, TPI y rugosidad desde una malla regular de elevaciones, con mapa temático y exportación.
+- [Raster Algebra Lab](herramientas/raster-algebra-lab/): combina hasta tres mallas regulares locales con diferencias, ratios, índices normalizados o expresiones reproducibles y exporta la superficie derivada.
 - [Grid Lab](herramientas/grid-lab/): cuadrícula AOI numerada con exportación GeoJSON y CSV para muestreo y teselas.
 - [Carto Local AI](herramientas/carto-local-ai/): diagnóstico local de GeoJSON con modo rápido determinista y WebLLM opcional sobre WebGPU.
 - [Layer Mixer](herramientas/layer-mixer/): mezcla capas WMS públicas, incluida cartografía histórica del SCUAM y fuentes del IGN, con opacidad, orden, cortina y exportación de configuración.
