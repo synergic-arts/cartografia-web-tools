@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Crea máscaras raster exploratorias a partir de imágenes locales y umbrales de color en el navegador.">
+  <title>Raster Mask Lab · clasificación visual</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="shell">
+    <header class="hero">
+      <a class="back" href="../">← Catálogo</a>
+      <p class="eyebrow">64 · TELEDETECCIÓN · CLIENTE · LOCAL</p>
+      <h1>Separa una señal y mira dónde aparece.</h1>
+      <p class="lede">Genera una máscara exploratoria desde una imagen local usando brillo, dominancia RGB, saturación o distancia a un color de referencia. Es útil para cribados rápidos de ortofotos e imágenes renderizadas antes de pasar a un flujo ráster completo.</p>
+    </header>
+
+    <section class="workspace">
+      <article class="panel input-panel">
+        <div class="panel-heading"><span class="step">1</span><div><h2>Imagen y criterio</h2><p>La imagen nunca sale del navegador.</p></div></div>
+        <label class="file-button">Abrir imagen local<input id="file" type="file" accept="image/png,image/jpeg,image/webp"></label>
+        <div class="form-grid">
+          <label for="mode">Variable a clasificar<select id="mode"><option value="brightness">Brillo (0–255)</option><option value="red">Dominancia roja</option><option value="green">Dominancia verde</option><option value="blue">Dominancia azul</option><option value="saturation">Saturación (0–100)</option><option value="distance">Distancia al color seleccionado</option></select></label>
+          <label for="lower">Límite inferior<input id="lower" type="number" step="any" value="130"></label>
+          <label for="upper">Límite superior<input id="upper" type="number" step="any" value="255"></label>
+          <label for="targetTolerance">Tolerancia de color<input id="targetTolerance" type="number" min="0" max="441" step="any" value="70"></label>
+        </div>
+        <p class="hint">En modo «Distancia», haz clic en la imagen original para elegir el color objetivo y usa la tolerancia. En los demás modos se acepta el rango entre los dos límites.</p>
+        <div class="target-readout"><span id="targetSwatch"></span><span id="targetText">Color objetivo: RGB 80, 150, 110</span></div>
+        <div class="actions"><button id="calculateBtn" class="primary">Crear máscara</button><button id="sampleBtn" class="secondary">Cargar imagen de ejemplo</button></div>
+        <p id="status" class="status" role="status">La imagen sintética de ejemplo está lista para procesarse localmente.</p>
+      </article>
+
+      <article class="panel preview-panel">
+        <div class="panel-heading"><span class="step">2</span><div><h2>Vista de clasificación</h2><p>Haz clic en la imagen para seleccionar un color objetivo.</p></div><span id="matchBadge" class="badge">—</span></div>
+        <div class="canvas-grid"><div><h3>Imagen original</h3><canvas id="sourceCanvas" width="720" height="460" aria-label="Imagen original"></canvas></div><div><h3>Máscara resultante</h3><canvas id="maskCanvas" width="720" height="460" aria-label="Máscara raster"></canvas></div></div>
+        <div class="legend"><span class="match-swatch"></span><span>seleccionado</span><span class="empty-swatch"></span><span>no seleccionado</span><span id="imageNote">La imagen se conserva solo en memoria.</span></div>
+      </article>
+    </section>
+
+    <section class="panel report-panel">
+      <div class="panel-heading"><span class="step">3</span><div><h2>Informe y exportación</h2><p>El informe describe píxeles, porcentaje y caja de la máscara.</p></div><span id="quality" class="quality">Pendiente</span></div>
+      <div class="stats">
+        <div><strong id="imageSize">—</strong><span>dimensiones</span></div>
+        <div><strong id="matchedPixels">—</strong><span>píxeles seleccionados</span></div>
+        <div><strong id="matchedPercent">—</strong><span>porcentaje</span></div>
+        <div><strong id="maskBounds">—</strong><span>caja de píxeles</span></div>
+        <div><strong id="activeMode">—</strong><span>criterio</span></div>
+      </div>
+      <div id="tableWrap" class="table-wrap"><p class="empty">Crea una máscara para revisar sus parámetros.</p></div>
+      <div class="actions export-actions"><button id="pngBtn" class="secondary" disabled>Exportar máscara PNG</button><button id="jsonBtn" class="secondary" disabled>Exportar informe JSON</button><button id="csvBtn" class="secondary" disabled>Exportar resumen CSV</button></div>
+      <p class="note">Una imagen PNG/JPEG/WebP no contiene por sí sola un CRS fiable. Esta máscara es una clasificación visual exploratoria; para análisis cuantitativo utiliza un ráster georreferenciado y conserva su metadato espacial.</p>
+    </section>
+
+    <footer>Procesamiento local por diseño. La imagen y los píxeles no se envían a un backend. Las exportaciones se generan en el navegador.</footer>
+  </main>
+  <script src="app.js?v=20260927-1"></script>
+</body>
+</html>
