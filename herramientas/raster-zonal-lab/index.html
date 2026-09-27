@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Calcula estadísticas zonales sobre un GeoTIFF y polígonos GeoJSON locales en el navegador.">
+  <link rel="icon" href="../../icons/icon.svg" type="image/svg+xml">
+  <title>Raster Zonal Lab · Cartografía Web Tools</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
+  <link rel="stylesheet" href="styles.css?v=96">
+</head>
+<body>
+  <main>
+    <header class="hero"><a class="back" href="../">← Catálogo</a><p class="eyebrow">96 · ESTADÍSTICA RÁSTER · CLIENTE</p><h1>Raster Zonal Lab</h1><p class="intro">Cruza un GeoTIFF local con polígonos GeoJSON y resume los valores que caen dentro de cada zona: conteo, media, mínimo, máximo y P95. Ideal para coberturas, elevación, teledetección y unidades arqueológicas.</p></header>
+    <section class="panel" aria-labelledby="input-title">
+      <div class="section-heading"><div><p class="eyebrow">01 · FUENTES</p><h2 id="input-title">Ráster y zonas</h2></div><span class="badge">sin servidor</span></div>
+      <label class="data-control">GeoTIFF local
+        <input id="rasterFile" type="file" accept=".tif,.tiff,image/tiff,application/octet-stream">
+        <span>Se usa la primera imagen y la primera banda; la extensión debe estar georreferenciada en lon/lat compatible con WGS84.</span>
+      </label>
+      <label class="data-control">Polígonos GeoJSON o archivo local
+        <input id="polygonFile" type="file" accept=".geojson,.json,application/geo+json,application/json">
+        <textarea id="polygonSource" rows="8" spellcheck="false" aria-label="Polígonos GeoJSON"></textarea>
+        <span>Se usan Polygon y MultiPolygon. Las propiedades del polígono se conservan en las salidas.</span>
+      </label>
+      <div class="grid-2"><label>Campo identificador de zona<select id="idField"><option value="">Índice de entidad</option></select></label><label>Máximo de píxeles por zona<input id="pixelCap" type="number" min="1000" step="1000" value="120000"></label></div>
+      <div class="button-row"><button id="exampleBtn" class="secondary">Cargar ejemplo sintético</button><button id="clearBtn" class="secondary">Limpiar</button><button id="runBtn">Calcular estadísticas</button></div><p id="status" class="status" role="status">Carga un GeoTIFF y una capa poligonal para empezar.</p>
+    </section>
+    <section id="summary" class="panel" hidden aria-labelledby="summary-title"><div class="section-heading"><div><p class="eyebrow">02 · RESUMEN</p><h2 id="summary-title">Lectura zonal</h2></div><span id="summaryBadge" class="badge">—</span></div><div class="metrics"><div class="metric"><span>Zonas procesadas</span><strong id="zoneCount">—</strong></div><div class="metric"><span>Píxeles muestreados</span><strong id="pixelCount">—</strong></div><div class="metric"><span>Media global</span><strong id="globalMean">—</strong></div><div class="metric"><span>Media mínima</span><strong id="minMean">—</strong></div><div class="metric"><span>Media máxima</span><strong id="maxMean">—</strong></div><div class="metric"><span>Zonas sin dato</span><strong id="emptyZones">—</strong></div></div><p id="interpretation" class="interpretation">—</p></section>
+    <section class="panel" aria-labelledby="map-title"><div class="section-heading"><div><p class="eyebrow">03 · MAPA</p><h2 id="map-title">Zonas y superficie ráster</h2></div><span id="mapBadge" class="badge">—</span></div><div id="map" class="map" aria-label="Mapa de estadística zonal"><div class="map-place-search cartografia-place-search"><label for="placeQuery">Buscar lugar</label><input id="placeQuery" type="search" placeholder="Centrar el mapa en un lugar" autocomplete="off"><button id="placeSearchButton" type="button">Buscar</button><div id="placeResults" role="status"></div><small id="placeStatus">La búsqueda es opcional y usa Nominatim.</small></div></div><p class="note">El color de cada polígono representa su media ráster. El muestreo usa el centro de cada píxel y limita el número de píxeles por zona para mantener la aplicación responsive.</p></section>
+    <section id="detailPanel" class="panel" hidden aria-labelledby="detail-title"><div class="section-heading"><div><p class="eyebrow">04 · DETALLE</p><h2 id="detail-title">Estadísticas por zona</h2></div><span id="detailBadge" class="badge">—</span></div><div class="table-wrap"><table><caption class="sr-only">Estadísticas zonales</caption><thead><tr><th>Zona</th><th>Píxeles</th><th>Media</th><th>Mínimo</th><th>Máximo</th><th>P95</th><th>Propiedades</th></tr></thead><tbody id="detailBody"></tbody></table></div></section>
+    <section class="panel" aria-labelledby="export-title"><div class="section-heading"><div><p class="eyebrow">05 · SALIDA</p><h2 id="export-title">Exporta la capa enriquecida</h2></div></div><div class="button-row"><button id="csvBtn" class="secondary" disabled>Descargar CSV zonal</button><button id="geoBtn" class="secondary" disabled>Descargar GeoJSON enriquecido</button><button id="reportBtn" class="secondary" disabled>Descargar informe JSON</button></div><p class="note">Las estadísticas dependen de la resolución, georreferenciación y NoData del ráster. No se reproyectan datos: si el GeoTIFF está en UTM u otro CRS, reproyéctalo previamente a lon/lat WGS84 para evitar resultados espaciales incorrectos.</p></section>
+    <footer class="privacy"><strong>Privacidad y trazabilidad.</strong> GeoTIFF.js se carga desde <a href="https://github.com/geotiffjs/geotiff.js" target="_blank" rel="noopener">GeoTIFF.js</a>; el ráster y GeoJSON se procesan en memoria local. Mapa: <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>; búsqueda opcional: Nominatim.</footer>
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/geotiff@2.1.3/dist-browser/geotiff.js" crossorigin="anonymous"></script><script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script><script src="../place-search.js?v=place-search-1"></script><script src="app.js?v=96.1"></script>
+</body>
+</html>
