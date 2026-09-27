@@ -17,6 +17,7 @@ Colección de herramientas web abiertas para cartografía, rutas y datos geoespa
 - [Geo Format Bridge](herramientas/format-bridge/): convierte GeoJSON, KML y CSV/TSV de puntos localmente, conserva atributos, previsualiza la capa y exporta a GeoJSON, KML o CSV sin subir los datos.
 - [Layer Merge Lab](herramientas/layer-merge/): combina varios GeoJSON locales, conserva la procedencia de cada entidad, permite eliminar duplicados geométricos exactos, muestra las fuentes por color y exporta GeoJSON o CSV.
 - [Footprint Lab](herramientas/footprint-lab/): calcula una envolvente convexa y una caja de extensión desde vértices o centros aproximados de una capa GeoJSON, mide su superficie y exporta la huella.
+- [Digitize Lab](herramientas/digitize-lab/): digitaliza puntos, líneas y polígonos sobre Leaflet o mediante coordenadas manuales, permite deshacer vértices y exporta GeoJSON/CSV localmente.
 - [Grid Lab](herramientas/grid-lab/): cuadrícula AOI numerada con exportación GeoJSON y CSV para muestreo y teselas.
 - [Carto Local AI](herramientas/carto-local-ai/): diagnóstico local de GeoJSON con modo rápido determinista y WebLLM opcional sobre WebGPU.
 - [Layer Mixer](herramientas/layer-mixer/): mezcla capas WMS públicas, incluida cartografía histórica del SCUAM y fuentes del IGN, con opacidad, orden, cortina y exportación de configuración.
