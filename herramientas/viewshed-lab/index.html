@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Calcula una cuenca visual exploratoria desde un modelo digital de elevaciones local en el navegador.">
+  <title>Viewshed Lab · cuenca visual</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIINfQ3d9wM4xL6z7N9hN7e4n2W1mQ8s0yM=" crossorigin="">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="shell">
+    <header class="hero">
+      <a class="back" href="../">← Catálogo</a>
+      <p class="eyebrow">61 · VISIBILIDAD · CLIENTE · LOCAL</p>
+      <h1>Descubre lo que alcanza la mirada.</h1>
+      <p class="lede">Calcula una cuenca visual exploratoria desde una malla local de elevaciones. El análisis compara ángulos de terreno entre celdas, permite cambiar el observador con un clic y exporta cada celda con su estado de visibilidad.</p>
+    </header>
+
+    <section class="workspace">
+      <article class="panel input-panel">
+        <div class="panel-heading"><span class="step">1</span><div><h2>Modelo y observador</h2><p>CSV, JSON o GeoJSON de puntos con elevación.</p></div></div>
+        <label class="file-button">Abrir elevaciones locales<input id="file" type="file" accept=".csv,.tsv,.json,.geojson, text/csv, application/geo+json"></label>
+        <label for="source">Malla de elevación</label>
+        <textarea id="source" spellcheck="false" aria-label="Malla de elevación">lon,lat,elevation
+-3.720,40.400,610
+-3.710,40.400,618
+-3.700,40.400,624
+-3.690,40.400,617
+-3.680,40.400,608
+-3.720,40.410,616
+-3.710,40.410,630
+-3.700,40.410,648
+-3.690,40.410,634
+-3.680,40.410,614
+-3.720,40.420,620
+-3.710,40.420,646
+-3.700,40.420,684
+-3.690,40.420,652
+-3.680,40.420,622
+-3.720,40.430,616
+-3.710,40.430,636
+-3.700,40.430,660
+-3.690,40.430,640
+-3.680,40.430,618
+-3.720,40.440,606
+-3.710,40.440,620
+-3.700,40.440,632
+-3.690,40.440,621
+-3.680,40.440,606</textarea>
+        <div class="form-grid">
+          <label for="observerLon">Longitud observador<input id="observerLon" type="number" step="any" value="-3.700"></label>
+          <label for="observerLat">Latitud observador<input id="observerLat" type="number" step="any" value="40.420"></label>
+          <label for="observerHeight">Altura sobre el terreno (m)<input id="observerHeight" type="number" min="0" step="any" value="1.7"></label>
+          <label for="maxRange">Distancia máxima (km)<input id="maxRange" type="number" min="0" step="any" value="3"></label>
+        </div>
+        <p class="hint">La ubicación se ajusta a la celda de elevación más cercana. Haz clic en el mapa para mover el observador; deja la distancia a 0 para analizar toda la malla.</p>
+        <div class="actions"><button id="calculateBtn" class="primary">Calcular visibilidad</button><button id="sampleBtn" class="secondary">Cargar ejemplo</button></div>
+        <p id="status" class="status" role="status">La malla de ejemplo está lista para analizarse en local.</p>
+      </article>
+
+      <article class="panel map-panel">
+        <div class="panel-heading"><span class="step">2</span><div><h2>Cuenca visual</h2><p>Verde: visible. Rojo: oculto por el relieve. Gris: fuera del alcance.</p></div><span id="visibleBadge" class="badge">—</span></div>
+        <div id="map" class="map" aria-label="Mapa de cuenca visual"></div>
+        <div class="legend"><span class="visible-swatch"></span><span>visible</span><span class="hidden-swatch"></span><span>oculto</span><span class="range-swatch"></span><span>fuera de rango</span><span id="mapNote">Mapa base © OpenStreetMap contributors</span></div>
+      </article>
+    </section>
+
+    <section class="panel report-panel">
+      <div class="panel-heading"><span class="step">3</span><div><h2>Resultado y exportación</h2><p>La prueba de visibilidad es una aproximación sobre la malla proporcionada.</p></div><span id="quality" class="quality">Pendiente</span></div>
+      <div class="stats">
+        <div><strong id="pointCount">—</strong><span>celdas analizadas</span></div>
+        <div><strong id="visibleCount">—</strong><span>visibles</span></div>
+        <div><strong id="hiddenCount">—</strong><span>ocultas</span></div>
+        <div><strong id="observerReadout">—</strong><span>celda observador</span></div>
+        <div><strong id="maxDistance">—</strong><span>distancia máxima</span></div>
+      </div>
+      <div id="tableWrap" class="table-wrap"><p class="empty">Calcula una cuenca visual para revisar las celdas.</p></div>
+      <div class="actions export-actions"><button id="geojsonBtn" class="secondary" disabled>Exportar GeoJSON</button><button id="csvBtn" class="secondary" disabled>Exportar CSV</button></div>
+      <p class="note">El método no sustituye un análisis SIG con un MDT validado: depende de la resolución, el sistema de coordenadas, la vegetación, los edificios y la altura del observador. Los datos permanecen en el navegador.</p>
+    </section>
+
+    <footer>Procesamiento local por diseño. El GeoJSON y la malla no se envían a un backend. Leaflet y el mapa base solicitan teselas directamente a OpenStreetMap. <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">Atribución de OpenStreetMap</a>.</footer>
+  </main>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script src="app.js?v=20260927-1"></script>
+</body>
+</html>
