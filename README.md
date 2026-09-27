@@ -61,6 +61,7 @@ Colección de herramientas web abiertas para cartografía, rutas y datos geoespa
 - [Positional Accuracy Lab](herramientas/positional-accuracy-lab/): compara posiciones observadas y de referencia en WGS84, calcula RMSE, CEP50, P95, sesgo y rumbo, muestra vectores y exporta un control trazable.
 - [Vector Field Lab](herramientas/vector-field-lab/): cartografía observaciones de viento, corrientes o desplazamientos con flechas escaladas, rosa direccional, estadísticas de módulo y exportación GeoJSON, CSV e informe.
 - [Network Access Lab](herramientas/network-access-lab/): calcula distancias y tiempos sobre redes LineString, identifica nodos y tramos alcanzables desde un origen y exporta el resultado cartográfico.
+- [GeoTIFF Lab](herramientas/geotiff-lab/): inspecciona GeoTIFF locales, revisa metadatos, estadísticas y NoData, aplica estiramientos y paletas, visualiza su huella WGS84 y exporta PNG, CSV e informe.
 - [Grid Lab](herramientas/grid-lab/): cuadrícula AOI numerada con exportación GeoJSON y CSV para muestreo y teselas.
 - [Carto Local AI](herramientas/carto-local-ai/): diagnóstico local de GeoJSON con modo rápido determinista y WebLLM opcional sobre WebGPU.
 - [Layer Mixer](herramientas/layer-mixer/): mezcla capas WMS públicas, incluida cartografía histórica del SCUAM y fuentes del IGN, con opacidad, orden, cortina y exportación de configuración.
