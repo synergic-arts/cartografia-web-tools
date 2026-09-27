@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Transforma GeoJSON desde WGS84 a proyecciones cartográficas habituales y compara sus extensiones en el navegador.">
+  <title>Projection Lab · proyecciones cartográficas</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIINfQ3d9wM4xL6z7N9hN7e4n2W1mQ8s0yM=" crossorigin="">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="shell">
+    <header class="hero">
+      <a class="back" href="../">← Catálogo</a>
+      <p class="eyebrow">57 · PROYECCIONES · CLIENTE · LOCAL</p>
+      <h1>Compara la forma de tus datos.</h1>
+      <p class="lede">Transforma una capa GeoJSON WGS84 a Web Mercator, UTM o equirectangular, revisa sus extensiones y previsualiza la geometría proyectada antes de descargarla.</p>
+    </header>
+
+    <section class="workspace">
+      <article class="panel input-panel">
+        <div class="panel-heading"><span class="step">1</span><div><h2>Capa de entrada</h2><p>La entrada se interpreta como GeoJSON con coordenadas lon/lat WGS84.</p></div></div>
+        <label class="file-button">Abrir GeoJSON local<input id="file" type="file" accept=".geojson,.json,application/geo+json"></label>
+        <label for="source">GeoJSON WGS84</label>
+        <textarea id="source" spellcheck="false" aria-label="GeoJSON WGS84">{
+  "type": "FeatureCollection",
+  "features": [
+    {"type":"Feature","properties":{"nombre":"Área de estudio"},"geometry":{"type":"Polygon","coordinates":[[[-3.75,40.39],[-3.66,40.39],[-3.66,40.45],[-3.75,40.45],[-3.75,40.39]]]}},
+    {"type":"Feature","properties":{"nombre":"Eje de referencia"},"geometry":{"type":"LineString","coordinates":[[-3.74,40.40],[-3.71,40.42],[-3.67,40.44]]}},
+    {"type":"Feature","properties":{"nombre":"Punto de control"},"geometry":{"type":"Point","coordinates":[-3.70379,40.416775]}}
+  ]
+}</textarea>
+        <label>Proyección de salida<select id="projection"><option value="mercator">Web Mercator · EPSG:3857</option><option value="utm">UTM WGS84 · EPSG:326/327xx</option><option value="equirectangular">Equirectangular · EPSG:4087 aproximado</option></select></label>
+        <div id="utmOptions" class="utm-options"><label>Zona UTM<select id="zoneMode"><option value="auto">Automática desde el centro de la capa</option><option value="custom">Zona manual</option></select></label><label>Zona manual<input id="zone" type="number" min="1" max="60" step="1" value="30"></label></div>
+        <div class="actions"><button id="calculateBtn" class="primary">Transformar capa</button><button id="sampleBtn" class="secondary">Cargar ejemplo</button></div>
+        <p id="status" class="status" role="status">La capa de ejemplo se transforma en local.</p>
+      </article>
+
+      <article class="panel map-panel">
+        <div class="panel-heading"><span class="step">2</span><div><h2>Fuente y previsualización</h2><p>El mapa mantiene la fuente WGS84; el lienzo muestra la capa proyectada normalizada.</p></div><span id="epsgBadge" class="badge">—</span></div>
+        <div id="map" class="map" aria-label="Mapa de la capa WGS84"></div>
+        <div class="preview-wrap"><canvas id="preview" width="720" height="420" aria-label="Previsualización de la capa proyectada"></canvas><span id="previewLabel">Proyección de salida</span></div>
+        <div class="legend"><span class="source-swatch"></span><span>fuente WGS84</span><span class="target-swatch"></span><span>geometría proyectada</span><span id="mapNote">Mapa base © OpenStreetMap contributors</span></div>
+      </article>
+    </section>
+
+    <section class="panel report-panel">
+      <div class="panel-heading"><span class="step">3</span><div><h2>Informe de transformación</h2><p>Las coordenadas de salida están expresadas en metros cuando la proyección lo permite.</p></div><span id="quality" class="quality">Pendiente</span></div>
+      <div class="stats">
+        <div><strong id="featureCount">—</strong><span>entidades</span></div>
+        <div><strong id="vertexCount">—</strong><span>vértices</span></div>
+        <div><strong id="sourceSize">—</strong><span>extensión fuente</span></div>
+        <div><strong id="targetSize">—</strong><span>extensión salida</span></div>
+        <div><strong id="centerPoint">—</strong><span>centro de la capa</span></div>
+        <div><strong id="units">—</strong><span>unidades de salida</span></div>
+      </div>
+      <div id="tableWrap" class="table-wrap"><p class="empty">Transforma una capa para ver el resumen por entidad.</p></div>
+      <div class="actions export-actions"><button id="geojsonBtn" class="secondary" disabled>Exportar GeoJSON proyectado</button><button id="csvBtn" class="secondary" disabled>Exportar vértices CSV</button></div>
+      <p class="note">La reproyección conserva la estructura GeoJSON y añade <code>projection</code>, <code>source_crs</code> y <code>target_crs</code> en cada entidad. Web Mercator y UTM no son equivalentes: elige la proyección según el uso cartográfico y la escala.</p>
+    </section>
+
+    <footer>Procesamiento local por diseño. Las teselas del mapa base se solicitan a OpenStreetMap. <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">Atribución de OpenStreetMap</a>.</footer>
+  </main>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script src="app.js?v=20260927-1"></script>
+</body>
+</html>
