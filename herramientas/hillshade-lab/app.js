@@ -101,7 +101,10 @@
     const meanLat = (ys[0] + ys.at(-1)) / 2 * Math.PI / 180;
     const stepX = isWgs84 ? dx * 111320 * Math.cos(meanLat) : dx;
     const stepY = isWgs84 ? dy * 110540 : dy;
-    return { xs, ys, z, dx, dy, stepX, stepY, isWgs84, points, min: Math.min(...z.flat()), max: Math.max(...z.flat()) };
+    const elevations = points.map(point => point.z);
+    let min = elevations[0], max = elevations[0];
+    elevations.slice(1).forEach(value => { if (value < min) min = value; if (value > max) max = value; });
+    return { xs, ys, z, dx, dy, stepX, stepY, isWgs84, points, min, max };
   }
 
   function median(values) {
