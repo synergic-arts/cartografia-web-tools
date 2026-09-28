@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Mosaico y control de calidad de varios GeoTIFF locales en el navegador.">
+  <link rel="icon" href="../../icons/icon.svg" type="image/svg+xml">
+  <title>Raster Mosaic Lab · Cartografía Web Tools</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
+  <link rel="stylesheet" href="styles.css?v=98">
+</head>
+<body>
+  <main>
+    <header class="hero"><a class="back" href="../">← Catálogo</a><p class="eyebrow">98 · MOSAICO RÁSTER · CLIENTE</p><h1>Raster Mosaic Lab</h1><p class="intro">Une teselas GeoTIFF locales, revisa su compatibilidad espacial y genera un mosaico continuo sin subir los archivos a un servidor. Útil para vuelos históricos, ortofotos, modelos digitales y campañas de teledetección.</p></header>
+
+    <section class="panel" aria-labelledby="input-title">
+      <div class="section-heading"><div><p class="eyebrow">01 · FUENTES</p><h2 id="input-title">Teselas GeoTIFF</h2></div><span class="badge">sin servidor</span></div>
+      <label class="data-control">GeoTIFF locales (puedes seleccionar varios)
+        <input id="fileInput" type="file" multiple accept=".tif,.tiff,image/tiff,application/octet-stream">
+        <span>Se usa la primera banda. Las teselas deben compartir CRS, resolución, orientación y tamaño de píxel; no se reproyectan.</span>
+      </label>
+      <div id="fileList" class="file-list" aria-live="polite"><span class="muted">No hay teselas cargadas.</span></div>
+      <div class="grid-3"><label>Solape<select id="overlapMode"><option value="mean">Media de píxeles solapados</option><option value="first">Conservar primera tesela</option><option value="last">Conservar última tesela</option></select></label><label>Paleta<select id="palette"><option value="viridis">Viridis</option><option value="terrain">Terreno</option><option value="gray">Grises</option><option value="diverging">Divergente</option></select></label><label>Percentil alto<input id="highInput" type="number" min="50" max="100" step="1" value="98"></label></div>
+      <div class="button-row"><button id="exampleBtn" class="secondary">Cargar mosaico sintético</button><button id="clearBtn" class="secondary">Limpiar</button><button id="runBtn">Construir mosaico</button></div>
+      <p id="status" class="status" role="status">Carga dos o más GeoTIFF comparables o usa el ejemplo.</p>
+    </section>
+
+    <section id="summary" class="panel" hidden aria-labelledby="summary-title">
+      <div class="section-heading"><div><p class="eyebrow">02 · RESUMEN</p><h2 id="summary-title">Control del mosaico</h2></div><span id="summaryBadge" class="badge">—</span></div>
+      <div class="metrics"><div class="metric"><span>Teselas</span><strong id="sourceCount">—</strong></div><div class="metric"><span>Malla de salida</span><strong id="gridSize">—</strong></div><div class="metric"><span>Celdas cubiertas</span><strong id="coveredCount">—</strong></div><div class="metric"><span>Huecos</span><strong id="gapCount">—</strong></div><div class="metric"><span>Solapes</span><strong id="overlapCount">—</strong></div><div class="metric"><span>Media válida</span><strong id="globalMean">—</strong></div></div>
+      <p id="interpretation" class="interpretation">—</p>
+    </section>
+
+    <section class="panel" aria-labelledby="map-title"><div class="section-heading"><div><p class="eyebrow">03 · MAPA</p><h2 id="map-title">Mosaico y huellas de origen</h2></div><span id="mapBadge" class="badge">—</span></div><div id="map" class="map" aria-label="Mapa del mosaico ráster"><div class="map-place-search cartografia-place-search"><label for="placeQuery">Buscar lugar</label><input id="placeQuery" type="search" placeholder="Centrar el mapa en un lugar" autocomplete="off"><button id="placeSearchButton" type="button">Buscar</button><div id="placeResults" role="status"></div><small id="placeStatus">La búsqueda es opcional y usa Nominatim.</small></div></div><p class="note">El mapa muestra la superposición calculada y las huellas de cada tesela. Los huecos se dejan transparentes; en los solapes puedes elegir media, primera o última fuente.</p></section>
+
+    <section id="detailPanel" class="panel" hidden aria-labelledby="detail-title"><div class="section-heading"><div><p class="eyebrow">04 · DIAGNÓSTICO</p><h2 id="detail-title">Compatibilidad por tesela</h2></div><span id="detailBadge" class="badge">—</span></div><div class="table-wrap"><table><caption class="sr-only">Diagnóstico de teselas GeoTIFF</caption><thead><tr><th>Archivo</th><th>Malla</th><th>Origen</th><th>Resolución</th><th>Válidos</th><th>Estado</th></tr></thead><tbody id="detailBody"></tbody></table></div></section>
+
+    <section class="panel" aria-labelledby="export-title"><div class="section-heading"><div><p class="eyebrow">05 · SALIDA</p><h2 id="export-title">Exporta el resultado</h2></div></div><div class="button-row"><button id="pngBtn" class="secondary" disabled>Descargar PNG</button><button id="csvBtn" class="secondary" disabled>Descargar muestra CSV</button><button id="reportBtn" class="secondary" disabled>Descargar informe JSON</button></div><p class="note">La imagen PNG es una representación cartográfica; para análisis cuantitativo conserva los GeoTIFF originales y el informe de procedencia. El mosaico no se guarda como GeoTIFF para no inventar CRS ni metadatos.</p></section>
+
+    <footer class="privacy"><strong>Privacidad y trazabilidad.</strong> GeoTIFF.js se carga desde <a href="https://github.com/geotiffjs/geotiff.js" target="_blank" rel="noopener">GeoTIFF.js</a>; los archivos se procesan en memoria local. Mapa: <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>; búsqueda opcional: Nominatim.</footer>
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/geotiff@2.1.3/dist-browser/geotiff.js" crossorigin="anonymous"></script><script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script><script src="../place-search.js?v=place-search-1"></script><script src="app.js?v=98.1"></script>
+</body>
+</html>
