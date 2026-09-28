@@ -65,6 +65,7 @@ Colección de herramientas web abiertas para cartografía, rutas y datos geoespa
 - [Raster Zonal Lab](herramientas/raster-zonal-lab/): cruza un GeoTIFF con polígonos GeoJSON, calcula conteo, media, mínimo, máximo y P95 por zona, revisa el mapa temático y exporta la capa enriquecida.
 - [Raster Time Series Lab](herramientas/raster-time-series-lab/): compara varias imágenes GeoTIFF de la misma malla, calcula media, cambio y tendencia por píxel, visualiza el resultado y exporta PNG, CSV e informe.
 - [Raster Mosaic Lab](herramientas/raster-mosaic-lab/): une teselas GeoTIFF locales, diagnostica compatibilidad, resuelve solapes y huecos, visualiza el mosaico y exporta PNG, CSV e informe sin inventar un CRS.
+- [STAC Explorer](herramientas/stac-explorer/): busca escenas en APIs STAC públicas por extensión, fechas y nubosidad, revisa huellas y activos sobre Leaflet y exporta metadatos GeoJSON, CSV o JSON.
 - [Grid Lab](herramientas/grid-lab/): cuadrícula AOI numerada con exportación GeoJSON y CSV para muestreo y teselas.
 - [Carto Local AI](herramientas/carto-local-ai/): diagnóstico local de GeoJSON con modo rápido determinista y WebLLM opcional sobre WebGPU.
 - [Layer Mixer](herramientas/layer-mixer/): mezcla capas WMS públicas, incluida cartografía histórica del SCUAM y fuentes del IGN, con opacidad, orden, cortina y exportación de configuración.

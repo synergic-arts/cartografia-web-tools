@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Explora catálogos STAC públicos y descarga metadatos de imágenes satelitales sin servidor propio.">
+  <link rel="icon" href="../../icons/icon.svg" type="image/svg+xml">
+  <title>STAC Explorer · Cartografía Web Tools</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
+  <link rel="stylesheet" href="styles.css?v=99">
+</head>
+<body>
+  <main>
+    <header class="hero"><a class="back" href="../">← Catálogo</a><p class="eyebrow">99 · TELEDETECCIÓN · CLIENTE</p><h1>STAC Explorer</h1><p class="intro">Busca escenas satelitales y otros recursos geoespaciales en catálogos STAC públicos, filtra por área, fecha y nubosidad, revisa las huellas sobre el mapa y exporta los metadatos para tu flujo SIG.</p></header>
+
+    <section class="panel" aria-labelledby="source-title">
+      <div class="section-heading"><div><p class="eyebrow">01 · CATÁLOGO</p><h2 id="source-title">Conecta un API STAC</h2></div><span class="badge">metadatos</span></div>
+      <label class="data-control">URL del catálogo o API STAC
+        <input id="apiUrl" type="url" value="https://earth-search.aws.element84.com/v1" spellcheck="false">
+        <span>Por defecto se usa Earth Search de Element 84. Puedes sustituirlo por cualquier API STAC pública con CORS habilitado.</span>
+      </label>
+      <div class="button-row"><button id="collectionsBtn" class="secondary">Cargar colecciones</button><button id="clearBtn" class="secondary">Limpiar resultados</button></div>
+      <p id="status" class="status" role="status">Carga las colecciones para empezar.</p>
+    </section>
+
+    <section class="panel" aria-labelledby="search-title">
+      <div class="section-heading"><div><p class="eyebrow">02 · CONSULTA</p><h2 id="search-title">Filtra escenas</h2></div><span class="badge">STAC Search</span></div>
+      <label class="data-control">Colección<select id="collectionSelect"><option value="">Todas las colecciones</option></select></label>
+      <div class="grid-4"><label>Oeste<input id="west" type="number" step="any" value="-9.5"></label><label>Sur<input id="south" type="number" step="any" value="35.8"></label><label>Este<input id="east" type="number" step="any" value="4.5"></label><label>Norte<input id="north" type="number" step="any" value="43.9"></label></div>
+      <div class="grid-3"><label>Fecha inicial<input id="dateStart" type="date"></label><label>Fecha final<input id="dateEnd" type="date"></label><label>Nubosidad máxima (%)<input id="cloudMax" type="number" min="0" max="100" step="1" placeholder="sin filtro"></label></div>
+      <div class="grid-2"><label>Máximo de resultados<input id="limit" type="number" min="1" max="100" step="1" value="50"></label><label>Orden<select id="sortSelect"><option value="datetime:desc">Más recientes primero</option><option value="datetime:asc">Más antiguas primero</option></select></label></div>
+      <div class="button-row"><button id="searchBtn">Buscar escenas</button><button id="mapExtentBtn" class="secondary">Usar extensión visible</button></div>
+      <p class="note">La búsqueda envía al catálogo solo la extensión, fechas y filtros que ves aquí. La descarga de una imagen se realiza después y directamente desde el enlace del proveedor.</p>
+    </section>
+
+    <section id="summary" class="panel" hidden aria-labelledby="summary-title"><div class="section-heading"><div><p class="eyebrow">03 · RESULTADO</p><h2 id="summary-title">Escenas encontradas</h2></div><span id="summaryBadge" class="badge">—</span></div><div class="metrics"><div class="metric"><span>Escenas</span><strong id="itemCount">—</strong></div><div class="metric"><span>Colecciones</span><strong id="collectionCount">—</strong></div><div class="metric"><span>Con fecha</span><strong id="datedCount">—</strong></div><div class="metric"><span>Con huella</span><strong id="geometryCount">—</strong></div></div><p id="summaryText" class="interpretation">—</p></section>
+
+    <section class="panel" aria-labelledby="map-title"><div class="section-heading"><div><p class="eyebrow">04 · MAPA</p><h2 id="map-title">Huellas de las escenas</h2></div><span id="mapBadge" class="badge">—</span></div><div id="map" class="map" aria-label="Mapa de escenas STAC"><div class="map-place-search cartografia-place-search"><label for="placeQuery">Buscar lugar</label><input id="placeQuery" type="search" placeholder="Centrar el mapa en un lugar" autocomplete="off"><button id="placeSearchButton" type="button">Buscar</button><div id="placeResults" role="status"></div><small id="placeStatus">La búsqueda es opcional y usa Nominatim.</small></div></div><p class="note">Haz clic en una huella para ver sus propiedades y los enlaces de activos disponibles. El mapa base procede de OpenStreetMap.</p></section>
+
+    <section id="resultsPanel" class="panel" hidden aria-labelledby="results-title"><div class="section-heading"><div><p class="eyebrow">05 · DETALLE</p><h2 id="results-title">Catálogo de escenas</h2></div><span id="resultsBadge" class="badge">—</span></div><div class="table-wrap"><table><caption class="sr-only">Resultados de búsqueda STAC</caption><thead><tr><th>Escena</th><th>Colección</th><th>Fecha</th><th>Nubosidad</th><th>Activos</th></tr></thead><tbody id="resultsBody"></tbody></table></div><div id="detail" class="detail" hidden><h3 id="detailTitle">—</h3><p id="detailMeta" class="muted">—</p><div id="assetList" class="asset-list"></div><details><summary>Propiedades STAC</summary><pre id="propertyDump"></pre></details></div></section>
+
+    <section class="panel" aria-labelledby="export-title"><div class="section-heading"><div><p class="eyebrow">06 · SALIDA</p><h2 id="export-title">Exporta la consulta</h2></div></div><div class="button-row"><button id="geoBtn" class="secondary" disabled>Descargar GeoJSON</button><button id="csvBtn" class="secondary" disabled>Descargar CSV</button><button id="jsonBtn" class="secondary" disabled>Descargar JSON STAC</button></div><p class="note">Las exportaciones contienen metadatos y enlaces publicados por el catálogo, no descargan automáticamente los rásteres.</p></section>
+
+    <footer class="privacy"><strong>Privacidad y trazabilidad.</strong> La consulta se ejecuta desde tu navegador contra el API elegido; este sitio no recibe tus datos ni almacena resultados. Catálogo inicial: <a href="https://earth-search.aws.element84.com/v1" target="_blank" rel="noopener">Earth Search / Element 84</a>. Mapa: <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>; búsqueda opcional: Nominatim.</footer>
+  </main>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script><script src="../place-search.js?v=place-search-1"></script><script src="app.js?v=99.1"></script>
+</body>
+</html>
